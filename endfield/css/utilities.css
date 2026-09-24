@@ -1,0 +1,362 @@
+/* ==========================================================================
+   Endfield 设计系统 — 视觉手法原子类
+   13 种标志性手法的实现。这些类是本设计系统的视觉指纹。
+   ========================================================================== */
+
+/* ---------- 1. 切角矩形 ---------- */
+/* 注意：clip-path 会裁掉 border，需要描边时改用 .ef-corner-frame 或内嵌伪元素。 */
+.ef-chamfer {
+  --ef-chamfer-size: var(--ef-chamfer);
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--ef-chamfer-size)) 0,
+    100% var(--ef-chamfer-size),
+    100% 100%,
+    var(--ef-chamfer-size) 100%,
+    0 calc(100% - var(--ef-chamfer-size))
+  );
+}
+
+.ef-chamfer-sm {
+  --ef-chamfer-size: var(--ef-chamfer-sm);
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--ef-chamfer-size)) 0,
+    100% var(--ef-chamfer-size),
+    100% 100%,
+    var(--ef-chamfer-size) 100%,
+    0 calc(100% - var(--ef-chamfer-size))
+  );
+}
+
+/* ---------- 2. 四角括号 ---------- */
+/* 用 4 个伪元素不可行（每元素只有 2 个），改用 background 四角定位。 */
+.ef-corner-frame {
+  position: relative;
+}
+
+.ef-corner-frame::before,
+.ef-corner-frame::after {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--ef-heading-bracket);
+  pointer-events: none;
+}
+
+.ef-corner-frame::before {
+  top: -1px;
+  left: -1px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.ef-corner-frame::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: 0;
+  border-top: 0;
+}
+
+/* 需要完整四角时，在外层再套一个 .ef-corner-frame 并翻转 */
+.ef-corner-frame--all {
+  background-image:
+    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket));
+  background-repeat: no-repeat;
+  /* 左上横 / 左上竖 / 右上横 / 右上竖 / 左下横 / 左下竖 / 右下横 / 右下竖 */
+  background-size:
+    14px 1px, 1px 14px,
+    14px 1px, 1px 14px,
+    14px 1px, 1px 14px,
+    14px 1px, 1px 14px;
+  background-position:
+    left top, left top,
+    right top, right top,
+    left bottom, left bottom,
+    right bottom, right bottom;
+}
+
+.ef-corner-frame--all::before,
+.ef-corner-frame--all::after {
+  display: none;
+}
+
+/* ---------- 3. 网格底纹 ---------- */
+.ef-grid-backdrop {
+  background-image:
+    linear-gradient(var(--ef-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ef-grid-line) 1px, transparent 1px);
+  background-size: var(--ef-grid-size) var(--ef-grid-size);
+}
+
+/* ---------- 4. 工业底 ---------- */
+.ef-industrial-shell {
+  background-image:
+    radial-gradient(
+      circle at 81% 16%,
+      color-mix(in srgb, var(--ef-accent) 18%, transparent),
+      transparent 24rem
+    ),
+    linear-gradient(var(--ef-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ef-grid-line) 1px, transparent 1px);
+  background-size: auto, var(--ef-grid-size) var(--ef-grid-size),
+    var(--ef-grid-size) var(--ef-grid-size);
+  background-color: var(--ef-surface);
+}
+
+/* ---------- 5. 扫描线 ---------- */
+.ef-scanline {
+  background-image: repeating-linear-gradient(
+    0deg,
+    var(--ef-scanline) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+/* ---------- 6. 斜纹 ---------- */
+/* 颜色继承 currentColor，用于激活态与选中态填充。 */
+.ef-hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    currentColor 0 1px,
+    transparent 1px 5px
+  );
+}
+
+/* ---------- 7. 中英双行标签 ---------- */
+.ef-label-pair {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.15;
+}
+
+.ef-label-pair > b {
+  font-family: var(--ef-font-display);
+  font-size: var(--ef-text-sm);
+  font-weight: var(--ef-weight-semibold);
+}
+
+.ef-label-pair > i {
+  font-family: var(--ef-font-mono);
+  font-size: 0.625rem;
+  font-style: normal;
+  letter-spacing: var(--ef-tracking-caps);
+  text-transform: uppercase;
+  color: var(--ef-ink-subtle);
+}
+
+/* ---------- 8. 标题竖条 / 双斜杠 / 方括号 ---------- */
+.ef-bar-title {
+  display: flex;
+  align-items: center;
+  gap: var(--ef-space-3);
+  font-family: var(--ef-font-display);
+  font-size: var(--ef-text-xl);
+  font-weight: var(--ef-weight-bold);
+}
+
+.ef-bar-title::before {
+  content: "";
+  flex: none;
+  width: 3px;
+  height: 1.1em;
+  background: var(--ef-accent-ink);
+}
+
+.ef-slash::before {
+  content: "// ";
+  font-family: var(--ef-font-mono);
+  color: var(--ef-ink-subtle);
+}
+
+.ef-bracket::before {
+  content: "[ ";
+  color: var(--ef-heading-bracket);
+}
+
+.ef-bracket::after {
+  content: " ]";
+  color: var(--ef-heading-bracket);
+}
+
+.ef-eyebrow {
+  font-family: var(--ef-font-mono);
+  font-size: var(--ef-text-xs);
+  letter-spacing: var(--ef-tracking-caps);
+  text-transform: uppercase;
+  color: var(--ef-ink-subtle);
+}
+
+/* ---------- 9. 标题渐变条 ---------- */
+.ef-h2-title {
+  display: inline;
+  padding-bottom: 0.12em;
+  background-image:
+    linear-gradient(
+      to right,
+      var(--ef-heading-bar) 0%,
+      var(--ef-heading-bar) 55%,
+      var(--ef-heading-bar-fade) 100%
+    ),
+    linear-gradient(var(--ef-heading-rule), var(--ef-heading-rule));
+  background-repeat: no-repeat;
+  background-position: 0 calc(100% - 3px), 0 100%;
+  background-size: 100% 9px, 100% 3px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+/* ---------- 10. 信号波形条 ---------- */
+.ef-signal-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 26px;
+}
+
+.ef-signal-bars > i {
+  display: block;
+  width: 4px;
+  background: var(--ef-border-strong);
+}
+
+/* 高度序列固定，保证可复现，不用随机数 */
+.ef-signal-bars > i:nth-child(4n + 1) { height: 30%; }
+.ef-signal-bars > i:nth-child(4n + 2) { height: 70%; }
+.ef-signal-bars > i:nth-child(4n + 3) { height: 45%; }
+.ef-signal-bars > i:nth-child(4n + 4) { height: 100%; }
+
+.ef-signal-bars > i.is-active {
+  background: var(--ef-accent-ink);
+}
+
+/* ---------- 11. 顶部信号条 ---------- */
+.ef-top-signal-strip {
+  height: var(--ef-header-signal-h);
+  background-image: linear-gradient(
+    90deg,
+    var(--ef-signal-magenta) 0 35%,
+    var(--ef-accent) 35% 82%,
+    var(--ef-system) 82% 100%
+  );
+}
+
+/* ---------- 12. 分级条 ---------- */
+.ef-tier-strip {
+  --ef-tier-color: var(--ef-tier-3);
+  height: 3px;
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ef-tier-color) 70%, transparent) 0 62%,
+    var(--ef-signal-cyan) 62% 74%,
+    var(--ef-signal-magenta) 74% 86%,
+    var(--ef-signal-yellow) 86% 100%
+  );
+}
+
+[data-tier="1"] { --ef-tier-color: var(--ef-tier-1); }
+[data-tier="2"] { --ef-tier-color: var(--ef-tier-2); }
+[data-tier="3"] { --ef-tier-color: var(--ef-tier-3); }
+[data-tier="4"] { --ef-tier-color: var(--ef-tier-4); }
+[data-tier="5"] { --ef-tier-color: var(--ef-tier-5); }
+[data-tier="6"] { --ef-tier-color: var(--ef-tier-6); }
+
+/* ---------- 13. 入场动效 ---------- */
+@keyframes ef-boot-wipe {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0); }
+}
+
+@keyframes ef-title-print {
+  from { clip-path: inset(-0.3em 100% -0.3em 0); opacity: 0; }
+  to   { clip-path: inset(-0.3em 0); opacity: 1; }
+}
+
+@keyframes ef-corner-in {
+  from { opacity: 0; transform: scale(0.55); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes ef-rise-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes ef-live-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.4; }
+}
+
+@keyframes ef-bar-grow {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+.ef-boot-strip {
+  animation: ef-boot-wipe 0.45s var(--ef-ease-out-expo) both;
+}
+
+.ef-boot-title {
+  animation: ef-title-print 0.56s var(--ef-ease-out-expo) both;
+}
+
+.ef-corner-in {
+  animation: ef-corner-in 0.38s var(--ef-ease-out-quint) both;
+}
+
+.ef-rise-in {
+  animation: ef-rise-in 0.4s var(--ef-ease-out-quint) both;
+}
+
+.ef-live {
+  animation: ef-live-pulse 2.4s ease-in-out infinite;
+}
+
+.ef-bar-grow {
+  transform-origin: bottom;
+  animation: ef-bar-grow 0.38s var(--ef-ease-out-quint) both;
+  animation-delay: calc(var(--ef-i, 0) * 18ms);
+}
+
+/* 滚动进入视口时揭示。初始 opacity: 0，故 reduced-motion 下必须强制终态。 */
+.ef-reveal {
+  opacity: 0;
+  transform: translateY(26px);
+  transition:
+    opacity 0.6s var(--ef-ease-out-quint),
+    transform 0.6s var(--ef-ease-out-quint);
+  transition-delay: var(--ef-reveal-delay, 0s);
+  will-change: opacity, transform;
+}
+
+.ef-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* 降低动效偏好：关闭全部动效，并让 .ef-reveal 直接可见 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .ef-reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
