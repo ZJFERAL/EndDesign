@@ -1,0 +1,309 @@
+/* ==========================================================================
+   Endfield 设计系统 — 布局骨架
+   顶栏（固定 56px + 3px 信号条）+ 侧栏（214px，可收起）+ 内容区 + 页脚。
+   ========================================================================== */
+
+.ef-app {
+  --ef-sidebar-current-w: var(--ef-sidebar-w);
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--ef-sidebar-current-w) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "topbar topbar"
+    "sidebar main"
+    "footer footer";
+}
+
+.ef-app.is-collapsed {
+  --ef-sidebar-current-w: var(--ef-sidebar-w-collapsed);
+}
+
+/* ---------- 顶栏 ---------- */
+.ef-topbar {
+  grid-area: topbar;
+  position: sticky;
+  top: 0;
+  z-index: var(--ef-z-header);
+  background-color: var(--ef-surface);
+  border-bottom: 1px solid var(--ef-border);
+}
+
+.ef-topbar__signal {
+  height: var(--ef-header-signal-h);
+  background-image: linear-gradient(
+    90deg,
+    var(--ef-signal-magenta) 0 35%,
+    var(--ef-accent) 35% 82%,
+    var(--ef-system) 82% 100%
+  );
+}
+
+.ef-topbar__bar {
+  height: var(--ef-header-bar-h);
+  display: flex;
+  align-items: center;
+  gap: var(--ef-space-4);
+  padding: 0 var(--ef-space-4);
+}
+
+.ef-topbar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--ef-space-3);
+  font-family: var(--ef-font-display);
+  font-size: var(--ef-text-lg);
+  font-weight: var(--ef-weight-bold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.ef-topbar__search {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 42rem;
+}
+
+.ef-topbar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ef-space-1);
+  margin-left: auto;
+}
+
+.ef-topbar__user {
+  display: flex;
+  align-items: center;
+  gap: var(--ef-space-2);
+  padding-left: var(--ef-space-3);
+  border-left: 1px solid var(--ef-border);
+  white-space: nowrap;
+}
+
+/* ---------- 侧栏 ---------- */
+.ef-sidebar {
+  grid-area: sidebar;
+  position: sticky;
+  top: calc(var(--ef-header-bar-h) + var(--ef-header-signal-h));
+  align-self: start;
+  height: calc(100vh - var(--ef-header-bar-h) - var(--ef-header-signal-h));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--ef-space-3) 0;
+  background-color: var(--ef-surface);
+  border-right: 1px solid var(--ef-border);
+}
+
+.ef-sidebar__section {
+  padding: var(--ef-space-2) var(--ef-space-3);
+}
+
+.ef-sidebar__section-title {
+  display: flex;
+  align-items: center;
+  gap: var(--ef-space-2);
+  padding: var(--ef-space-2) var(--ef-space-2);
+  font-family: var(--ef-font-mono);
+  font-size: 0.625rem;
+  letter-spacing: var(--ef-tracking-caps);
+  text-transform: uppercase;
+  color: var(--ef-ink-subtle);
+}
+
+.ef-sidebar__section-title::before {
+  content: "◆";
+  font-size: 0.5rem;
+  color: var(--ef-accent-ink);
+}
+
+.ef-sidebar__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--ef-space-3);
+  padding: var(--ef-space-2) var(--ef-space-3);
+  border-radius: var(--ef-radius-sm);
+  color: var(--ef-ink-muted);
+  text-decoration: none;
+  transition:
+    background-color var(--ef-duration-fast) var(--ef-ease-out),
+    color var(--ef-duration-fast) var(--ef-ease-out);
+}
+
+/* 激活态 2px 主色竖条 */
+.ef-sidebar__item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 30%;
+  bottom: 30%;
+  width: 2px;
+  border-radius: 999px;
+  background-color: var(--ef-accent-ink);
+  opacity: 0;
+  transform: scaleY(0.45);
+  transition:
+    opacity var(--ef-duration-fast) var(--ef-ease-out),
+    transform var(--ef-duration-fast) var(--ef-ease-out);
+  pointer-events: none;
+}
+
+.ef-sidebar__item:hover,
+.ef-sidebar__item:focus-visible {
+  background-color: var(--ef-surface-muted);
+  color: var(--ef-ink);
+}
+
+.ef-sidebar__item:hover::before,
+.ef-sidebar__item:focus-visible::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.ef-sidebar__item[aria-current="page"] {
+  background-color: var(--ef-surface-muted);
+  color: var(--ef-ink);
+}
+
+.ef-sidebar__item[aria-current="page"]::before {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+.ef-sidebar__item svg {
+  flex: none;
+  width: 18px;
+  height: 18px;
+}
+
+/* 收起态：只留图标，隐藏文字 */
+.is-collapsed .ef-sidebar__section-title,
+.is-collapsed .ef-sidebar__item > .ef-label-pair {
+  display: none;
+}
+
+.is-collapsed .ef-sidebar__item {
+  justify-content: center;
+  padding-inline: 0;
+}
+
+.ef-sidebar__footer {
+  margin-top: var(--ef-space-4);
+  padding: var(--ef-space-3);
+  border-top: 1px solid var(--ef-border);
+}
+
+/* ---------- 主内容区 ---------- */
+.ef-main {
+  grid-area: main;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ef-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: var(--ef-space-6) var(--ef-space-6) var(--ef-space-12);
+}
+
+/* ---------- 页脚 ---------- */
+.ef-footer {
+  grid-area: footer;
+  border-top: 1px solid var(--ef-border);
+  background-color: var(--ef-surface);
+  padding: var(--ef-space-8) var(--ef-space-6);
+  font-size: var(--ef-text-sm);
+  color: var(--ef-ink-muted);
+}
+
+.ef-footer__inner {
+  max-width: 80rem;
+  margin-inline: auto;
+  display: grid;
+  gap: var(--ef-space-6);
+}
+
+.ef-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ef-space-2) var(--ef-space-5);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ef-footer__legal {
+  color: var(--ef-ink-subtle);
+  font-size: var(--ef-text-xs);
+  line-height: var(--ef-leading-relaxed);
+}
+
+/* ---------- 响应式 ---------- */
+
+/* 窄屏：侧栏变抽屉，从左侧滑出，用 .is-open 控制 */
+@media (max-width: 900px) {
+  .ef-app {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "topbar"
+      "main"
+      "footer";
+  }
+
+  .ef-sidebar {
+    position: fixed;
+    top: calc(var(--ef-header-bar-h) + var(--ef-header-signal-h));
+    bottom: 0;
+    left: 0;
+    z-index: var(--ef-z-overlay);
+    width: min(280px, 85vw);
+    height: auto;
+    transform: translateX(-100%);
+    transition: transform var(--ef-duration-base) var(--ef-ease-out-quint);
+    box-shadow: 0 0 0 1px var(--ef-border);
+  }
+
+  .ef-app.is-open .ef-sidebar {
+    transform: none;
+  }
+
+  .ef-content {
+    padding: var(--ef-space-4) var(--ef-space-4) var(--ef-space-10);
+  }
+}
+
+/* 抽屉打开时的遮罩 */
+.ef-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--ef-z-scrim);
+  background-color: rgb(0 0 0 / 50%);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--ef-duration-base) var(--ef-ease-out),
+    visibility var(--ef-duration-base);
+}
+
+@media (max-width: 900px) {
+  .ef-app.is-open .ef-scrim {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+@media (min-width: 901px) {
+  .ef-scrim {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ef-sidebar {
+    transition: none;
+  }
+}
