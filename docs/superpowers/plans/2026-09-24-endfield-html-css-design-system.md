@@ -1430,7 +1430,7 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
   position: sticky;
   top: 0;
   z-index: var(--ef-z-header);
-  background: var(--ef-surface);
+  background-color: var(--ef-surface);
   border-bottom: 1px solid var(--ef-border);
 }
 
@@ -1499,7 +1499,7 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--ef-space-3) 0;
-  background: var(--ef-surface);
+  background-color: var(--ef-surface);
   border-right: 1px solid var(--ef-border);
 }
 
@@ -1548,7 +1548,7 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
   bottom: 30%;
   width: 2px;
   border-radius: 999px;
-  background: var(--ef-accent-ink);
+  background-color: var(--ef-accent-ink);
   opacity: 0;
   transform: scaleY(0.45);
   transition:
@@ -1559,7 +1559,7 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
 
 .ef-sidebar__item:hover,
 .ef-sidebar__item:focus-visible {
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink);
 }
 
@@ -1570,7 +1570,7 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
 }
 
 .ef-sidebar__item[aria-current="page"] {
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink);
 }
 
@@ -1623,10 +1623,15 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
 .ef-footer {
   grid-area: footer;
   border-top: 1px solid var(--ef-border);
-  background: var(--ef-surface);
+  background-color: var(--ef-surface);
   padding: var(--ef-space-8) var(--ef-space-6);
   font-size: var(--ef-text-sm);
   color: var(--ef-ink-muted);
+  /* 建立层叠上下文并压过 sticky 侧栏：长页面滚到底时，侧栏（sticky，
+     z-index 自动）会盖住页脚左侧 214px，导致前两个页脚链接点不中。
+     实测无此行时 elementFromPoint 返回 ASIDE.ef-sidebar，加上后返回链接本身。 */
+  position: relative;
+  z-index: 1;
 }
 
 .ef-footer__inner {
@@ -1691,7 +1696,7 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
   position: fixed;
   inset: 0;
   z-index: var(--ef-z-scrim);
-  background: rgb(0 0 0 / 50%);
+  background-color: rgb(0 0 0 / 50%);
   opacity: 0;
   visibility: hidden;
   transition:
