@@ -1,0 +1,648 @@
+/* ==========================================================================
+   Endfield 设计系统 — 组件样式
+   原子组件（本文件前半）与结构组件（本文件后半）。
+   ========================================================================== */
+
+/* ==========================================================================
+   按钮
+   ========================================================================== */
+
+.ef-btn {
+  --ef-btn-bg: var(--ef-surface-muted);
+  --ef-btn-fg: var(--ef-ink);
+  --ef-btn-border: var(--ef-border);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ef-space-2);
+  padding: 0.55rem 1rem;
+  border: 1px solid var(--ef-btn-border);
+  border-radius: var(--ef-radius);
+  background: var(--ef-btn-bg);
+  color: var(--ef-btn-fg);
+  font-family: var(--ef-font-sans);
+  font-size: var(--ef-text-sm);
+  font-weight: var(--ef-weight-medium);
+  line-height: 1.2;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--ef-duration-fast) var(--ef-ease-out),
+    border-color var(--ef-duration-fast) var(--ef-ease-out),
+    color var(--ef-duration-fast) var(--ef-ease-out);
+}
+
+.ef-btn:hover {
+  border-color: var(--ef-border-strong);
+  background: color-mix(in srgb, var(--ef-btn-bg) 88%, var(--ef-ink) 12%);
+}
+
+.ef-btn:active {
+  transform: translateY(1px);
+}
+
+.ef-btn[disabled],
+.ef-btn[aria-disabled="true"] {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ef-btn svg {
+  flex: none;
+  width: 1em;
+  height: 1em;
+}
+
+/* 主按钮：主色实底 + 深墨字 */
+.ef-btn--primary {
+  --ef-btn-bg: var(--ef-accent);
+  --ef-btn-fg: var(--ef-accent-fg);
+  --ef-btn-border: var(--ef-accent-strong);
+  font-weight: var(--ef-weight-semibold);
+}
+
+.ef-btn--primary:hover {
+  background: var(--ef-accent-strong);
+  border-color: var(--ef-accent-strong);
+}
+
+/* 次按钮：透明底 + 描边 */
+.ef-btn--secondary {
+  --ef-btn-bg: transparent;
+  --ef-btn-fg: var(--ef-ink);
+  --ef-btn-border: var(--ef-border-strong);
+}
+
+.ef-btn--secondary:hover {
+  background: var(--ef-surface-muted);
+}
+
+/* 幽灵按钮 */
+.ef-btn--ghost {
+  --ef-btn-bg: transparent;
+  --ef-btn-fg: var(--ef-ink-muted);
+  --ef-btn-border: transparent;
+}
+
+.ef-btn--ghost:hover {
+  background: var(--ef-surface-muted);
+  border-color: transparent;
+  color: var(--ef-ink);
+}
+
+/* 危险按钮 */
+.ef-btn--danger {
+  --ef-btn-bg: var(--ef-danger);
+  --ef-btn-fg: #ffffff;
+  --ef-btn-border: var(--ef-danger);
+}
+
+.ef-btn--danger:hover {
+  background: color-mix(in srgb, var(--ef-danger) 82%, #000000);
+  border-color: color-mix(in srgb, var(--ef-danger) 82%, #000000);
+}
+
+/* 尺寸 */
+.ef-btn--sm {
+  padding: 0.3rem 0.6rem;
+  font-size: var(--ef-text-xs);
+}
+
+.ef-btn--lg {
+  padding: 0.8rem 1.5rem;
+  font-size: var(--ef-text-base);
+}
+
+/* 载入态：文字降透明度，叠一个旋转指示器 */
+.ef-btn.is-loading {
+  color: transparent;
+  pointer-events: none;
+}
+
+.ef-btn.is-loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  color: var(--ef-btn-fg);
+  animation: ef-spin 0.7s linear infinite;
+}
+
+@keyframes ef-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* 图标按钮：方形切角 */
+.ef-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--ef-border);
+  background: var(--ef-surface-muted);
+  color: var(--ef-ink-muted);
+  cursor: pointer;
+  --ef-chamfer-size: var(--ef-chamfer-sm);
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--ef-chamfer-size)) 0,
+    100% var(--ef-chamfer-size),
+    100% 100%,
+    var(--ef-chamfer-size) 100%,
+    0 calc(100% - var(--ef-chamfer-size))
+  );
+  transition:
+    background-color var(--ef-duration-fast) var(--ef-ease-out),
+    color var(--ef-duration-fast) var(--ef-ease-out);
+}
+
+.ef-icon-btn:hover {
+  background: var(--ef-accent);
+  color: var(--ef-accent-fg);
+}
+
+.ef-icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================================
+   表单控件
+   ========================================================================== */
+
+.ef-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ef-space-1);
+  margin-bottom: var(--ef-space-4);
+}
+
+.ef-label {
+  font-family: var(--ef-font-mono);
+  font-size: var(--ef-text-xs);
+  letter-spacing: var(--ef-tracking-caps);
+  text-transform: uppercase;
+  color: var(--ef-ink-muted);
+}
+
+.ef-hint {
+  font-size: var(--ef-text-xs);
+  color: var(--ef-ink-subtle);
+}
+
+.ef-input,
+.ef-textarea,
+.ef-select {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--ef-border);
+  border-radius: var(--ef-radius);
+  background: var(--ef-surface-sunken);
+  color: var(--ef-ink);
+  font-family: var(--ef-font-sans);
+  font-size: var(--ef-text-sm);
+  transition:
+    border-color var(--ef-duration-fast) var(--ef-ease-out),
+    background-color var(--ef-duration-fast) var(--ef-ease-out);
+}
+
+.ef-input::placeholder,
+.ef-textarea::placeholder {
+  color: var(--ef-ink-subtle);
+}
+
+.ef-input:hover,
+.ef-textarea:hover,
+.ef-select:hover {
+  border-color: var(--ef-border-strong);
+}
+
+.ef-input:focus,
+.ef-textarea:focus,
+.ef-select:focus {
+  outline: none;
+  border-color: var(--ef-accent-ink);
+  background-color: var(--ef-surface);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ef-accent) 30%, transparent);
+}
+
+.ef-textarea {
+  min-height: 6rem;
+  resize: vertical;
+  line-height: var(--ef-leading-normal);
+}
+
+.ef-select {
+  appearance: none;
+  padding-right: 2rem;
+  /* 下拉箭头用内联 SVG 数据 URI，避免额外请求 */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23808080' stroke-width='1.6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 12px 8px;
+  cursor: pointer;
+}
+
+/* 带图标的输入框 */
+.ef-input-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ef-input-group > svg {
+  position: absolute;
+  left: 0.65rem;
+  width: 16px;
+  height: 16px;
+  color: var(--ef-ink-subtle);
+  pointer-events: none;
+}
+
+.ef-input-group > .ef-input {
+  padding-left: 2.1rem;
+}
+
+.ef-input-group > kbd {
+  position: absolute;
+  right: 0.5rem;
+}
+
+/* ---------- 复选 / 单选 / 开关 ---------- */
+
+.ef-check,
+.ef-radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ef-space-2);
+  font-size: var(--ef-text-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ef-check input,
+.ef-radio input {
+  appearance: none;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  border: 1px solid var(--ef-border-strong);
+  background: var(--ef-surface-sunken);
+  cursor: pointer;
+  transition:
+    background-color var(--ef-duration-fast) var(--ef-ease-out),
+    border-color var(--ef-duration-fast) var(--ef-ease-out);
+}
+
+.ef-radio input {
+  border-radius: 50%;
+}
+
+.ef-check input {
+  border-radius: var(--ef-radius-sm);
+}
+
+.ef-check input:checked,
+.ef-radio input:checked {
+  border-color: var(--ef-accent-strong);
+  background-color: var(--ef-accent);
+  /* 选中态叠斜纹纹理 */
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgb(0 0 0 / 18%) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+.ef-check input:checked::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2 6.2l2.6 2.6L10 3.4' fill='none' stroke='%23111827' stroke-width='2'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%;
+}
+
+.ef-radio input:checked::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 6px;
+  margin: 4px auto;
+  border-radius: 50%;
+  background: var(--ef-accent-fg);
+}
+
+/* 开关 */
+.ef-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ef-space-2);
+  font-size: var(--ef-text-sm);
+  cursor: pointer;
+  user-select: none;
+}
+
+.ef-switch input {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 2.25rem;
+  height: 1.25rem;
+  margin: 0;
+  border: 1px solid var(--ef-border-strong);
+  border-radius: var(--ef-radius-pill);
+  background: var(--ef-surface-sunken);
+  cursor: pointer;
+  transition:
+    background-color var(--ef-duration-base) var(--ef-ease-out),
+    border-color var(--ef-duration-base) var(--ef-ease-out);
+}
+
+.ef-switch input::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(1.25rem - 6px);
+  height: calc(1.25rem - 6px);
+  border-radius: 50%;
+  background: var(--ef-ink-subtle);
+  transition:
+    transform var(--ef-duration-base) var(--ef-ease-out-quint),
+    background-color var(--ef-duration-base) var(--ef-ease-out);
+}
+
+.ef-switch input:checked {
+  border-color: var(--ef-accent-strong);
+  background: var(--ef-accent);
+}
+
+.ef-switch input:checked::after {
+  transform: translateX(1rem);
+  background: var(--ef-accent-fg);
+}
+
+/* ==========================================================================
+   徽标 / 标签 / 分隔线 / 键盘提示 / 头像 / 载入 / 进度 / 提示气泡
+   ========================================================================== */
+
+.ef-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3em;
+  padding: 0.1em 0.5em;
+  border: 1px solid var(--ef-border);
+  border-radius: var(--ef-radius-sm);
+  background: var(--ef-surface-muted);
+  color: var(--ef-ink-muted);
+  font-family: var(--ef-font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: var(--ef-tracking-wide);
+  line-height: 1.6;
+  white-space: nowrap;
+}
+
+.ef-badge--info    { border-color: var(--ef-info);    color: var(--ef-info);    background: color-mix(in srgb, var(--ef-info) 12%, transparent); }
+.ef-badge--success { border-color: var(--ef-success); color: var(--ef-success); background: color-mix(in srgb, var(--ef-success) 12%, transparent); }
+.ef-badge--warn    { border-color: var(--ef-warn);    color: var(--ef-warn);    background: color-mix(in srgb, var(--ef-warn) 12%, transparent); }
+.ef-badge--danger  { border-color: var(--ef-danger);  color: var(--ef-danger);  background: color-mix(in srgb, var(--ef-danger) 12%, transparent); }
+.ef-badge--accent  { border-color: var(--ef-accent-strong); color: var(--ef-accent-fg); background: var(--ef-accent); }
+
+/* 分级徽标：色由 data-tier 决定 */
+.ef-badge--tier {
+  border-color: var(--ef-tier-color, var(--ef-border));
+  color: var(--ef-tier-color, var(--ef-ink-muted));
+  background: color-mix(in srgb, var(--ef-tier-color, transparent) 14%, transparent);
+}
+
+/* ---------- 标签（可选中，用于筛选行） ---------- */
+
+.ef-chip-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ef-space-2);
+}
+
+.ef-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--ef-border);
+  border-radius: var(--ef-radius-pill);
+  background: var(--ef-surface-muted);
+  color: var(--ef-ink-muted);
+  font-size: var(--ef-text-sm);
+  line-height: 1.3;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color var(--ef-duration-fast) var(--ef-ease-out),
+    border-color var(--ef-duration-fast) var(--ef-ease-out),
+    color var(--ef-duration-fast) var(--ef-ease-out);
+}
+
+.ef-chip:hover {
+  border-color: var(--ef-border-strong);
+  color: var(--ef-ink);
+}
+
+.ef-chip[aria-pressed="true"],
+.ef-chip.is-active {
+  border-color: var(--ef-accent-strong);
+  background-color: var(--ef-accent);
+  color: var(--ef-accent-fg);
+  font-weight: var(--ef-weight-semibold);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgb(0 0 0 / 12%) 0 1px,
+    transparent 1px 5px
+  );
+}
+
+.ef-chip svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- 分隔线 ---------- */
+
+.ef-divider {
+  height: 1px;
+  margin: var(--ef-space-4) 0;
+  border: 0;
+  background: var(--ef-border);
+}
+
+.ef-divider--labeled {
+  display: flex;
+  align-items: center;
+  gap: var(--ef-space-3);
+  height: auto;
+  background: none;
+  font-family: var(--ef-font-mono);
+  font-size: var(--ef-text-xs);
+  letter-spacing: var(--ef-tracking-caps);
+  text-transform: uppercase;
+  color: var(--ef-ink-subtle);
+}
+
+.ef-divider--labeled::before,
+.ef-divider--labeled::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: var(--ef-border);
+}
+
+/* ---------- 键盘提示 ---------- */
+
+.ef-kbd {
+  display: inline-block;
+  min-width: 1.5em;
+  padding: 0.1em 0.4em;
+  border: 1px solid var(--ef-border);
+  border-bottom-width: 2px;
+  border-radius: var(--ef-radius-sm);
+  background: var(--ef-surface-raised);
+  color: var(--ef-ink-muted);
+  font-family: var(--ef-font-mono);
+  font-size: 0.6875rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* ---------- 头像 ---------- */
+
+.ef-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--ef-border);
+  background: var(--ef-surface-muted);
+  color: var(--ef-ink-muted);
+  font-family: var(--ef-font-mono);
+  font-size: var(--ef-text-sm);
+  font-weight: var(--ef-weight-semibold);
+  overflow: hidden;
+  --ef-chamfer-size: var(--ef-chamfer-sm);
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--ef-chamfer-size)) 0,
+    100% var(--ef-chamfer-size),
+    100% 100%,
+    var(--ef-chamfer-size) 100%,
+    0 calc(100% - var(--ef-chamfer-size))
+  );
+}
+
+.ef-avatar > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ef-avatar--sm { width: 26px; height: 26px; font-size: var(--ef-text-xs); }
+.ef-avatar--lg { width: 52px; height: 52px; font-size: var(--ef-text-lg); }
+
+/* ---------- 载入指示 ---------- */
+
+.ef-spinner {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--ef-border);
+  border-top-color: var(--ef-accent-ink);
+  border-radius: 50%;
+  animation: ef-spin 0.7s linear infinite;
+}
+
+.ef-skeleton {
+  display: block;
+  height: 1em;
+  border-radius: var(--ef-radius-sm);
+  background: var(--ef-surface-muted);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--ef-ink) 8%, transparent),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: ef-skeleton-sweep 1.4s ease-in-out infinite;
+}
+
+@keyframes ef-skeleton-sweep {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ---------- 进度条 ---------- */
+
+.ef-progress {
+  position: relative;
+  height: 6px;
+  overflow: hidden;
+  border: 1px solid var(--ef-border);
+  border-radius: var(--ef-radius-sm);
+  background: var(--ef-surface-sunken);
+}
+
+.ef-progress__bar {
+  height: 100%;
+  /* 长写而非 background 简写：规格 §6.1 要求进度条「可叠加 hatch」，
+     简写会重置 background-image（utility 的 .ef-hatch 只声明了该长写属性），
+     从而静默抹掉斜纹。 */
+  background-color: var(--ef-accent);
+  transition: width var(--ef-duration-slow) var(--ef-ease-out-quint);
+}
+
+/* ---------- 提示气泡 ---------- */
+
+.ef-tooltip {
+  position: relative;
+}
+
+.ef-tooltip__bubble {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: var(--ef-z-tooltip);
+  transform: translateX(-50%);
+  padding: 0.3rem 0.55rem;
+  border-radius: var(--ef-radius-sm);
+  background: var(--ef-tooltip);
+  color: var(--ef-tooltip-fg);
+  font-family: var(--ef-font-mono);
+  font-size: var(--ef-text-xs);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity var(--ef-duration-fast) var(--ef-ease-out),
+    visibility var(--ef-duration-fast);
+  pointer-events: none;
+}
+
+.ef-tooltip:hover .ef-tooltip__bubble,
+.ef-tooltip:focus-within .ef-tooltip__bubble {
+  opacity: 1;
+  visibility: visible;
+}
