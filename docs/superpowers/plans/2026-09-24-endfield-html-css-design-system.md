@@ -222,10 +222,10 @@ dist/
   --ef-info: #248dff;
 
   /* ---------- 语义色 ink：语义色本身做文字时在 tint 背景上不达标 ---------- */
-  --ef-info-ink: #1963b4;
-  --ef-success-ink: #00726d;
-  --ef-warn-ink: #975304;
-  --ef-danger-ink: #bb2020;
+  --ef-info-ink: #1960ae;
+  --ef-success-ink: #006e69;
+  --ef-warn-ink: #914f04;
+  --ef-danger-ink: #b31f1f;
 
   /* ---------- 分级色 1–6（与主题无关） ---------- */
   --ef-tier-1: #94a0aa;
@@ -236,12 +236,12 @@ dist/
   --ef-tier-6: #ff503c;
 
   /* ---------- 分级色 ink ---------- */
-  --ef-tier-1-ink: #5e666c;
-  --ef-tier-2-ink: #407036;
-  --ef-tier-3-ink: #006a8d;
-  --ef-tier-4-ink: #6955ad;
-  --ef-tier-5-ink: #8c5b00;
-  --ef-tier-6-ink: #af3729;
+  --ef-tier-1-ink: #5b6268;
+  --ef-tier-2-ink: #3e6b34;
+  --ef-tier-3-ink: #006688;
+  --ef-tier-4-ink: #6451a6;
+  --ef-tier-5-ink: #875700;
+  --ef-tier-6-ink: #a83528;
 
   /* ======================================================================
      Light 主题（默认）
@@ -584,6 +584,16 @@ const PAIRS = [
   ['--ef-ink', '--ef-border-strong', 3, '描边可见度'],
 ];
 
+const baseTokens = tokens(block(':root {'));
+
+/**
+ * 语义色与分级色是「与主题无关」的：原色（--ef-info、--ef-tier-N 等）只在
+ * :root 定义一次，暗色块不重复声明。但本检查要按主题取 ink 与表面，
+ * 所以原色列必须回退到 :root 解析；ink 与表面则严格取当前主题块，
+ * 这样「暗色缺少 ink 覆盖」会立刻报错而不是静默通过。
+ */
+const resolveBase = (t, name) => t[name] ?? baseTokens[name];
+
 /**
  * 语义色与分级色的 ink 分叉：原色做文字/边框时，在「自身低百分比 tint 叠加
  * 表面」的背景上会不达标（亮色主题下 success 仅 1.92:1）。这里用同一套
@@ -631,28 +641,34 @@ for (const [name, t] of Object.entries(themes)) {
     );
   }
 
-  // ink 对「原色 tint 叠表面」的背景做检查
-  for (const [inkTok, rawTok, surfTok, tintA, min, label] of INK_PAIRS) {
-    if (!t[inkTok] || !t[rawTok] || !t[surfTok]) {
-      console.error(`  缺失   ${label}：${inkTok} / ${rawTok} / ${surfTok} 未定义`);
-      failed++;
-      continue;
+  // ink 对「原色 tint 叠表面」的背景做检查。
+  // 四种表面都要查：徽标不只出现在主表面上，也会出现在次表面/凹陷表面
+  // （例如表格表头用 sunken），凹陷表面上 tint 双层叠加后对比度最低。
+  const INK_SURFACES = ['--ef-surface', '--ef-surface-muted', '--ef-surface-sunken'];
+  for (const [inkTok, rawTok, , tintA, min, label] of INK_PAIRS) {
+    for (const surfTok of INK_SURFACES) {
+      if (!t[inkTok] || !resolveBase(t, rawTok) || !t[surfTok]) {
+        console.error(`  缺失   ${label}：${inkTok} / ${rawTok} / ${surfTok} 未定义`);
+        failed++;
+        continue;
+      }
+      // 背景 = 原色以 tintA 的比例混到表面上。
+      // 注意不能用 composite()：它取的是「前景」的 alpha，而这里 tint 比例来自
+      // 原色（背景成分），必须显式加权求和，否则等于拿 ink 直接和原色比。
+      // 原色回退到 :root（与主题无关）；ink 与表面取当前主题
+      const rawRgb = parseColor(resolveBase(t, rawTok));
+      const surfRgb = parseColor(t[surfTok]);
+      const bgRgb = [0, 1, 2].map((i) => rawRgb[i] * tintA + surfRgb[i] * (1 - tintA));
+      const bgHex =
+        '#' +
+        bgRgb.map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join('');
+      const r = ratio(t[inkTok], bgHex);
+      const ok = r >= min;
+      if (!ok) failed++;
+      console.log(
+        `  ${ok ? '通过' : '失败'}   ${r.toFixed(2)}:1  (需 >= ${min})  ${label} · ${surfTok}`,
+      );
     }
-    // 背景 = 原色以 tintA 的比例混到表面上。
-    // 注意不能用 composite()：它取的是「前景」的 alpha，而这里 tint 比例来自
-    // 原色（背景成分），必须显式加权求和，否则等于拿 ink 直接和原色比。
-    const rawRgb = parseColor(t[rawTok]);
-    const surfRgb = parseColor(t[surfTok]);
-    const bgRgb = [0, 1, 2].map((i) => rawRgb[i] * tintA + surfRgb[i] * (1 - tintA));
-    const bgHex =
-      '#' +
-      bgRgb.map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join('');
-    const r = ratio(t[inkTok], bgHex);
-    const ok = r >= min;
-    if (!ok) failed++;
-    console.log(
-      `  ${ok ? '通过' : '失败'}   ${r.toFixed(2)}:1  (需 >= ${min})  ${label}`,
-    );
   }
 }
 
