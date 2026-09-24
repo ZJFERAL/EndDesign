@@ -1,0 +1,221 @@
+/* ==========================================================================
+   Endfield 设计系统 — 基础层
+   reset、排版基线、底纹、跳转链接、打印样式。
+   ========================================================================== */
+
+@import url("tokens.css");
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scrollbar-gutter: stable;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--ef-font-sans);
+  font-size: var(--ef-text-base);
+  line-height: var(--ef-text-base--lh);
+  color: var(--ef-ink);
+  background-color: var(--ef-surface);
+  /* 工业底：网格 + 右上角主色辉光 + 表面色 */
+  background-image:
+    radial-gradient(
+      circle at 81% 16%,
+      color-mix(in srgb, var(--ef-accent) 18%, transparent),
+      transparent 24rem
+    ),
+    linear-gradient(var(--ef-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ef-grid-line) 1px, transparent 1px);
+  background-size: auto, var(--ef-grid-size) var(--ef-grid-size),
+    var(--ef-grid-size) var(--ef-grid-size);
+  background-attachment: fixed;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-family: var(--ef-font-display);
+  font-weight: var(--ef-weight-bold);
+  line-height: var(--ef-leading-tight);
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--ef-text-4xl); }
+h2 { font-size: var(--ef-text-3xl); }
+h3 { font-size: var(--ef-text-2xl); }
+h4 { font-size: var(--ef-text-xl); }
+h5 { font-size: var(--ef-text-lg); }
+h6 { font-size: var(--ef-text-base); }
+
+p {
+  margin: 0 0 var(--ef-space-4);
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  text-decoration-color: currentColor;
+}
+
+ul,
+ol {
+  margin: 0 0 var(--ef-space-4);
+  padding-left: 1.25em;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  vertical-align: middle;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--ef-font-mono);
+  font-size: 0.9em;
+}
+
+code {
+  padding: 0.1em 0.35em;
+  border: 1px solid var(--ef-border);
+  border-radius: var(--ef-radius-sm);
+  background: var(--ef-code-bg);
+  color: var(--ef-code-fg);
+}
+
+pre {
+  margin: 0 0 var(--ef-space-4);
+  padding: var(--ef-space-4);
+  overflow-x: auto;
+  border: 1px solid var(--ef-border);
+  border-radius: var(--ef-radius);
+  background: var(--ef-code-bg);
+  color: var(--ef-code-fg);
+  line-height: var(--ef-leading-relaxed);
+}
+
+pre code {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+}
+
+hr {
+  margin: var(--ef-space-6) 0;
+  border: 0;
+  border-top: 1px solid var(--ef-border);
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+/* 超长无断点文本必须能换行，否则会撑破容器 */
+td,
+th,
+.ef-break-anywhere {
+  overflow-wrap: anywhere;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ef-info);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: var(--ef-accent);
+  color: var(--ef-accent-fg);
+}
+
+/* ---------- 跳到主内容 ---------- */
+.ef-skip-link {
+  position: absolute;
+  left: var(--ef-space-4);
+  top: -100px;
+  z-index: 999;
+  padding: var(--ef-space-2) var(--ef-space-4);
+  border: 1px solid var(--ef-accent-ink);
+  border-radius: var(--ef-radius);
+  background: var(--ef-surface-raised);
+  color: var(--ef-ink);
+  font-family: var(--ef-font-mono);
+  font-size: var(--ef-text-sm);
+  text-decoration: none;
+  transition: top var(--ef-duration-fast) var(--ef-ease-out);
+}
+
+.ef-skip-link:focus {
+  top: var(--ef-space-4);
+}
+
+/* ---------- 打印：强制白底黑字 ---------- */
+@media print {
+  :root,
+  html[data-theme="dark"],
+  html[data-theme="light"] {
+    --ef-surface-sunken: #ffffff;
+    --ef-surface: #ffffff;
+    --ef-surface-muted: #ffffff;
+    --ef-surface-raised: #ffffff;
+    --ef-surface-inverse: #000000;
+    --ef-ink: #000000;
+    --ef-ink-muted: #333333;
+    --ef-ink-subtle: #555555;
+    --ef-ink-inverse: #ffffff;
+    --ef-border: #999999;
+    --ef-border-strong: #666666;
+    --ef-accent: #e6e6e6;
+    --ef-accent-strong: #cccccc;
+    --ef-accent-soft: #f2f2f2;
+    --ef-accent-fg: #000000;
+    --ef-accent-glow: #e6e6e6;
+    /* 打印强制白底，暗色主题的 #d8bf00 在白底仅 1.85:1，必须钉成深灰 */
+    --ef-accent-ink: #555555;
+    --ef-grid-line: transparent;
+    --ef-scanline: transparent;
+    --ef-weave-line: transparent;
+    --ef-code-bg: #f5f5f5;
+    --ef-code-fg: #000000;
+  }
+
+  body {
+    background-image: none;
+  }
+
+  .ef-no-print,
+  .ef-sidebar,
+  .ef-topbar {
+    display: none !important;
+  }
+}
