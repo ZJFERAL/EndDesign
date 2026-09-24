@@ -986,6 +986,10 @@ git commit -m "feat(endfield): 加入对比度校验与排版基线层"
 }
 
 /* ---------- 4. 工业底 ---------- */
+/* 注意：这些手法类只能声明 background-image / background-size 等长写属性，
+   不能用 background 简写 —— 简写会重置 background-image，从而清掉同一元素上
+   由其他手法类设置的底纹（例如 .ef-panel 的 background 会抹掉网格与角括号）。
+   底色的赋值放到底层（base.css 的 body / .ef-panel 等），不在这里重复。 */
 .ef-industrial-shell {
   background-image:
     radial-gradient(
@@ -997,7 +1001,6 @@ git commit -m "feat(endfield): 加入对比度校验与排版基线层"
     linear-gradient(90deg, var(--ef-grid-line) 1px, transparent 1px);
   background-size: auto, var(--ef-grid-size) var(--ef-grid-size),
     var(--ef-grid-size) var(--ef-grid-size);
-  background-color: var(--ef-surface);
 }
 
 /* ---------- 5. 扫描线 ---------- */
@@ -1140,11 +1143,13 @@ git commit -m "feat(endfield): 加入对比度校验与排版基线层"
 
 /* ---------- 12. 分级条 ---------- */
 .ef-tier-strip {
-  --ef-tier-color: var(--ef-tier-3);
+  /* 回退只写在 var() 里，不能写成 `--ef-tier-color: var(--ef-tier-3)`：
+     那样会在本元素上直接声明该变量，从而遮蔽祖先 [data-tier] 的值，
+     导致所有条都渲染成 tier-3。 */
   height: 3px;
   background-image: linear-gradient(
     90deg,
-    color-mix(in srgb, var(--ef-tier-color) 70%, transparent) 0 62%,
+    color-mix(in srgb, var(--ef-tier-color, var(--ef-tier-3)) 70%, transparent) 0 62%,
     var(--ef-signal-cyan) 62% 74%,
     var(--ef-signal-magenta) 74% 86%,
     var(--ef-signal-yellow) 86% 100%
@@ -2569,7 +2574,9 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 /* ---------- 面板 ---------- */
 .ef-panel {
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface);
+  /* 用 background-color 而非 background 简写：简写会重置 background-image，
+     抹掉同一元素上 .ef-industrial-shell / .ef-grid-backdrop / .ef-corner-frame--all 的底纹。 */
+  background-color: var(--ef-surface);
 }
 
 .ef-panel__header {
