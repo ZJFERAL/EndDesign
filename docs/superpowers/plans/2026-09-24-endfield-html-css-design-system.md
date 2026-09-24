@@ -221,6 +221,12 @@ dist/
   --ef-danger: #dc2626;
   --ef-info: #248dff;
 
+  /* ---------- 语义色 ink：语义色本身做文字时在 tint 背景上不达标 ---------- */
+  --ef-info-ink: #1963b4;
+  --ef-success-ink: #00726d;
+  --ef-warn-ink: #975304;
+  --ef-danger-ink: #bb2020;
+
   /* ---------- 分级色 1–6（与主题无关） ---------- */
   --ef-tier-1: #94a0aa;
   --ef-tier-2: #68b457;
@@ -228,6 +234,14 @@ dist/
   --ef-tier-4: #9a7dff;
   --ef-tier-5: #ed9a00;
   --ef-tier-6: #ff503c;
+
+  /* ---------- 分级色 ink ---------- */
+  --ef-tier-1-ink: #5e666c;
+  --ef-tier-2-ink: #407036;
+  --ef-tier-3-ink: #006a8d;
+  --ef-tier-4-ink: #6955ad;
+  --ef-tier-5-ink: #8c5b00;
+  --ef-tier-6-ink: #af3729;
 
   /* ======================================================================
      Light 主题（默认）
@@ -306,6 +320,17 @@ dist/
     --ef-accent-glow: var(--ef-user-accent-glow, #ecd548);
     /* 暗色主题的 #d8bf00 在 #181818 上已有 9.62:1，无需分叉 */
     --ef-accent-ink: var(--ef-user-accent-ink, #d8bf00);
+    /* 语义色/分级色 ink 的暗色值：亮色值在深底上会太暗 */
+    --ef-info-ink: #3a98ff;
+    --ef-success-ink: #00c7bd;
+    --ef-warn-ink: #dc8119;
+    --ef-danger-ink: #e76a6a;
+    --ef-tier-1-ink: #94a0aa;
+    --ef-tier-2-ink: #68b457;
+    --ef-tier-3-ink: #16a5d5;
+    --ef-tier-4-ink: #a287ff;
+    --ef-tier-5-ink: #ed9a00;
+    --ef-tier-6-ink: #ff6654;
 
     --ef-grid-line: #ffffff0e;
     --ef-scanline: rgb(255 255 255 / 5%);
@@ -346,6 +371,17 @@ html[data-theme="dark"] {
   --ef-accent-glow: var(--ef-user-accent-glow, #ecd548);
   /* 暗色主题的 #d8bf00 在 #181818 上已有 9.62:1，无需分叉 */
   --ef-accent-ink: var(--ef-user-accent-ink, #d8bf00);
+  /* 语义色/分级色 ink 的暗色值：亮色值在深底上会太暗 */
+  --ef-info-ink: #3a98ff;
+  --ef-success-ink: #00c7bd;
+  --ef-warn-ink: #dc8119;
+  --ef-danger-ink: #e76a6a;
+  --ef-tier-1-ink: #94a0aa;
+  --ef-tier-2-ink: #68b457;
+  --ef-tier-3-ink: #16a5d5;
+  --ef-tier-4-ink: #a287ff;
+  --ef-tier-5-ink: #ed9a00;
+  --ef-tier-6-ink: #ff6654;
 
   --ef-grid-line: #ffffff0e;
   --ef-scanline: rgb(255 255 255 / 5%);
@@ -548,6 +584,30 @@ const PAIRS = [
   ['--ef-ink', '--ef-border-strong', 3, '描边可见度'],
 ];
 
+/**
+ * 语义色与分级色的 ink 分叉：原色做文字/边框时，在「自身低百分比 tint 叠加
+ * 表面」的背景上会不达标（亮色主题下 success 仅 1.92:1）。这里用同一套
+ * 合成逻辑重算，把这类缺陷变成自动拦截，而不是靠肉眼看。
+ * 格式： [ink 令牌, 原色令牌, 表面令牌, tint 比例, 最低比, 说明]
+ */
+const INK_PAIRS = [
+  ['--ef-info-ink', '--ef-info', '--ef-surface', 0.12, 4.5, 'info 徽标文字'],
+  ['--ef-success-ink', '--ef-success', '--ef-surface', 0.12, 4.5, 'success 徽标文字'],
+  ['--ef-warn-ink', '--ef-warn', '--ef-surface', 0.12, 4.5, 'warn 徽标文字'],
+  ['--ef-danger-ink', '--ef-danger', '--ef-surface', 0.12, 4.5, 'danger 徽标文字'],
+  ['--ef-tier-1-ink', '--ef-tier-1', '--ef-surface', 0.14, 4.5, 'tier-1 徽标文字'],
+  ['--ef-tier-2-ink', '--ef-tier-2', '--ef-surface', 0.14, 4.5, 'tier-2 徽标文字'],
+  ['--ef-tier-3-ink', '--ef-tier-3', '--ef-surface', 0.14, 4.5, 'tier-3 徽标文字'],
+  ['--ef-tier-4-ink', '--ef-tier-4', '--ef-surface', 0.14, 4.5, 'tier-4 徽标文字'],
+  ['--ef-tier-5-ink', '--ef-tier-5', '--ef-surface', 0.14, 4.5, 'tier-5 徽标文字'],
+  ['--ef-tier-6-ink', '--ef-tier-6', '--ef-surface', 0.14, 4.5, 'tier-6 徽标文字'],
+  // 3px 左边框属图形，阈值 3:1；背景同样是 tint
+  ['--ef-info-ink', '--ef-info', '--ef-surface', 0.07, 3, 'info 提示块边框'],
+  ['--ef-success-ink', '--ef-success', '--ef-surface', 0.07, 3, 'success 提示块边框'],
+  ['--ef-warn-ink', '--ef-warn', '--ef-surface', 0.07, 3, 'warn 提示块边框'],
+  ['--ef-danger-ink', '--ef-danger', '--ef-surface', 0.07, 3, 'danger 提示块边框'],
+];
+
 const themes = {
   light: tokens(block(':root {')),
   dark: tokens(block('html[data-theme="dark"] {')),
@@ -564,6 +624,30 @@ for (const [name, t] of Object.entries(themes)) {
       continue;
     }
     const r = ratio(t[fg], t[bg]);
+    const ok = r >= min;
+    if (!ok) failed++;
+    console.log(
+      `  ${ok ? '通过' : '失败'}   ${r.toFixed(2)}:1  (需 >= ${min})  ${label}`,
+    );
+  }
+
+  // ink 对「原色 tint 叠表面」的背景做检查
+  for (const [inkTok, rawTok, surfTok, tintA, min, label] of INK_PAIRS) {
+    if (!t[inkTok] || !t[rawTok] || !t[surfTok]) {
+      console.error(`  缺失   ${label}：${inkTok} / ${rawTok} / ${surfTok} 未定义`);
+      failed++;
+      continue;
+    }
+    // 背景 = 原色以 tintA 的比例混到表面上。
+    // 注意不能用 composite()：它取的是「前景」的 alpha，而这里 tint 比例来自
+    // 原色（背景成分），必须显式加权求和，否则等于拿 ink 直接和原色比。
+    const rawRgb = parseColor(t[rawTok]);
+    const surfRgb = parseColor(t[surfTok]);
+    const bgRgb = [0, 1, 2].map((i) => rawRgb[i] * tintA + surfRgb[i] * (1 - tintA));
+    const bgHex =
+      '#' +
+      bgRgb.map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join('');
+    const r = ratio(t[inkTok], bgHex);
     const ok = r >= min;
     if (!ok) failed++;
     console.log(
@@ -799,6 +883,17 @@ th,
     --ef-accent-glow: #e6e6e6;
     /* 打印强制白底，暗色主题的 #d8bf00 在白底仅 1.85:1，必须钉成深灰 */
     --ef-accent-ink: #555555;
+    /* 语义/分级 ink 的暗色值在白底上偏浅，打印统一钉深 */
+    --ef-info-ink: #1c4f8a;
+    --ef-success-ink: #00574f;
+    --ef-warn-ink: #6f3d02;
+    --ef-danger-ink: #8c1a1a;
+    --ef-tier-1-ink: #4a5055;
+    --ef-tier-2-ink: #2f5427;
+    --ef-tier-3-ink: #004f6a;
+    --ef-tier-4-ink: #4e3f82;
+    --ef-tier-5-ink: #6a4500;
+    --ef-tier-6-ink: #83281e;
     --ef-grid-line: transparent;
     --ef-scanline: transparent;
     --ef-weave-line: transparent;
@@ -1171,12 +1266,12 @@ git commit -m "feat(endfield): 加入对比度校验与排版基线层"
   );
 }
 
-[data-tier="1"] { --ef-tier-color: var(--ef-tier-1); }
-[data-tier="2"] { --ef-tier-color: var(--ef-tier-2); }
-[data-tier="3"] { --ef-tier-color: var(--ef-tier-3); }
-[data-tier="4"] { --ef-tier-color: var(--ef-tier-4); }
-[data-tier="5"] { --ef-tier-color: var(--ef-tier-5); }
-[data-tier="6"] { --ef-tier-color: var(--ef-tier-6); }
+[data-tier="1"] { --ef-tier-color: var(--ef-tier-1); --ef-tier-ink: var(--ef-tier-1-ink); }
+[data-tier="2"] { --ef-tier-color: var(--ef-tier-2); --ef-tier-ink: var(--ef-tier-2-ink); }
+[data-tier="3"] { --ef-tier-color: var(--ef-tier-3); --ef-tier-ink: var(--ef-tier-3-ink); }
+[data-tier="4"] { --ef-tier-color: var(--ef-tier-4); --ef-tier-ink: var(--ef-tier-4-ink); }
+[data-tier="5"] { --ef-tier-color: var(--ef-tier-5); --ef-tier-ink: var(--ef-tier-5-ink); }
+[data-tier="6"] { --ef-tier-color: var(--ef-tier-6); --ef-tier-ink: var(--ef-tier-6-ink); }
 
 /* ---------- 13. 入场动效 ---------- */
 @keyframes ef-boot-wipe {
@@ -2294,16 +2389,19 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   white-space: nowrap;
 }
 
-.ef-badge--info    { border-color: var(--ef-info);    color: var(--ef-info);    background: color-mix(in srgb, var(--ef-info) 12%, transparent); }
-.ef-badge--success { border-color: var(--ef-success); color: var(--ef-success); background: color-mix(in srgb, var(--ef-success) 12%, transparent); }
-.ef-badge--warn    { border-color: var(--ef-warn);    color: var(--ef-warn);    background: color-mix(in srgb, var(--ef-warn) 12%, transparent); }
-.ef-badge--danger  { border-color: var(--ef-danger);  color: var(--ef-danger);  background: color-mix(in srgb, var(--ef-danger) 12%, transparent); }
+/* tint 填充用原色；其中文字与描边必须用 *-ink —— 原色在自身 12% tint 上
+   亮色主题仅 1.92–4.01:1，全部低于 4.5:1。 */
+.ef-badge--info    { border-color: var(--ef-info-ink);    color: var(--ef-info-ink);    background: color-mix(in srgb, var(--ef-info) 12%, transparent); }
+.ef-badge--success { border-color: var(--ef-success-ink); color: var(--ef-success-ink); background: color-mix(in srgb, var(--ef-success) 12%, transparent); }
+.ef-badge--warn    { border-color: var(--ef-warn-ink);    color: var(--ef-warn-ink);    background: color-mix(in srgb, var(--ef-warn) 12%, transparent); }
+.ef-badge--danger  { border-color: var(--ef-danger-ink);  color: var(--ef-danger-ink);  background: color-mix(in srgb, var(--ef-danger) 12%, transparent); }
 .ef-badge--accent  { border-color: var(--ef-accent-strong); color: var(--ef-accent-fg); background: var(--ef-accent); }
 
 /* 分级徽标：色由 data-tier 决定 */
 .ef-badge--tier {
-  border-color: var(--ef-tier-color, var(--ef-border));
-  color: var(--ef-tier-color, var(--ef-ink-muted));
+  /* 文字与描边用分级 ink 色，tint 填充用分级原色（见 [data-tier] 的映射） */
+  border-color: var(--ef-tier-ink, var(--ef-border));
+  color: var(--ef-tier-ink, var(--ef-ink-muted));
   background: color-mix(in srgb, var(--ef-tier-color, transparent) 14%, transparent);
 }
 
@@ -2951,12 +3049,14 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 /* ---------- 提示块 ---------- */
 .ef-callout {
   --ef-callout-color: var(--ef-info);
+  --ef-callout-ink: var(--ef-info-ink);
   display: flex;
   gap: var(--ef-space-3);
   margin: var(--ef-space-4) 0;
   padding: var(--ef-space-3) var(--ef-space-4);
   border: 1px solid var(--ef-border);
-  border-left: 3px solid var(--ef-callout-color);
+  /* 3px 边框属图形，需 >=3:1：原色做边框亮色主题下 success 仅 2.00:1，故用 ink */
+  border-left: 3px solid var(--ef-callout-ink, var(--ef-callout-color));
   background: color-mix(in srgb, var(--ef-callout-color) 7%, var(--ef-surface));
   font-size: var(--ef-text-sm);
 }
@@ -2968,12 +3068,13 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   font-size: var(--ef-text-xs);
   letter-spacing: var(--ef-tracking-caps);
   text-transform: uppercase;
-  color: var(--ef-callout-color);
+  /* 用 ink 变量：callout 背景是该色 7% tint，原色做文字亮色主题仅 2.00–4.34:1 */
+  color: var(--ef-callout-ink, var(--ef-callout-color));
 }
 
-.ef-callout--warn   { --ef-callout-color: var(--ef-warn); }
-.ef-callout--danger { --ef-callout-color: var(--ef-danger); }
-.ef-callout--success { --ef-callout-color: var(--ef-success); }
+.ef-callout--warn   { --ef-callout-color: var(--ef-warn);    --ef-callout-ink: var(--ef-warn-ink); }
+.ef-callout--danger { --ef-callout-color: var(--ef-danger);  --ef-callout-ink: var(--ef-danger-ink); }
+.ef-callout--success { --ef-callout-color: var(--ef-success); --ef-callout-ink: var(--ef-success-ink); }
 
 /* ---------- 代码块 ---------- */
 .ef-code {
@@ -3389,6 +3490,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 
 .ef-toast {
   --ef-toast-color: var(--ef-border-strong);
+  --ef-toast-ink: var(--ef-ink-muted);
   display: flex;
   align-items: flex-start;
   gap: var(--ef-space-2);
@@ -3396,7 +3498,8 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   max-width: 24rem;
   padding: var(--ef-space-3) var(--ef-space-4);
   border: 1px solid var(--ef-border);
-  border-left: 3px solid var(--ef-toast-color);
+  /* 3px 边框属图形，需 >=3:1：原色做边框亮色主题下 success 仅 2.12:1，故用 ink */
+  border-left: 3px solid var(--ef-toast-ink, var(--ef-toast-color));
   background: var(--ef-surface-raised);
   font-size: var(--ef-text-sm);
   box-shadow: 0 6px 20px rgb(0 0 0 / 25%);
@@ -3404,9 +3507,9 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   animation: ef-rise-in 0.25s var(--ef-ease-out-quint) both;
 }
 
-.ef-toast--success { --ef-toast-color: var(--ef-success); }
-.ef-toast--warn    { --ef-toast-color: var(--ef-warn); }
-.ef-toast--danger  { --ef-toast-color: var(--ef-danger); }
+.ef-toast--success { --ef-toast-color: var(--ef-success); --ef-toast-ink: var(--ef-success-ink); }
+.ef-toast--warn    { --ef-toast-color: var(--ef-warn);    --ef-toast-ink: var(--ef-warn-ink); }
+.ef-toast--danger  { --ef-toast-color: var(--ef-danger);  --ef-toast-ink: var(--ef-danger-ink); }
 
 /* ---------- 分页 ---------- */
 .ef-pagination {
