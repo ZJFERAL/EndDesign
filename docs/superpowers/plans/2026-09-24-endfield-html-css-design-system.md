@@ -1490,8 +1490,12 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
   grid-area: sidebar;
   position: sticky;
   top: calc(var(--ef-header-bar-h) + var(--ef-header-signal-h));
-  align-self: start;
-  height: calc(100vh - var(--ef-header-bar-h) - var(--ef-header-signal-h));
+  /* 必须 stretch 且只设 max-height：若写死 height 为视口高，侧栏会把整个
+     grid 行撑高（内容高 + 侧栏高），页面永远比视口高，页脚被推到视口外，
+     滚到底还会被 sticky 侧栏盖住。 */
+  align-self: stretch;
+  height: auto;
+  max-height: calc(100vh - var(--ef-header-bar-h) - var(--ef-header-signal-h));
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--ef-space-3) 0;
@@ -1681,7 +1685,8 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
   }
 }
 
-/* 抽屉打开时的遮罩 */
+/* 抽屉打开时的遮罩。显示规则是后代选择器 .ef-app.is-open .ef-scrim，
+   所以标记里 .ef-scrim 必须是 .ef-app 的子元素，放在它外面永远不显示。 */
 .ef-scrim {
   position: fixed;
   inset: 0;
@@ -1791,9 +1796,10 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
       <p class="ef-footer__legal">示例内容，仅用于设计系统演示。</p>
     </div>
   </footer>
-</div>
 
-<div class="ef-scrim"></div>
+  <!-- 遮罩必须是 .ef-app 的子元素：显示规则是后代选择器 .ef-app.is-open .ef-scrim -->
+  <div class="ef-scrim"></div>
+</div>
 </body>
 </html>
 ```
@@ -4443,9 +4449,10 @@ git commit -m "feat(endfield): 实现结构组件样式（面板/卡片/表格/�
       <button class="ef-btn ef-btn--primary" data-modal-close>确定</button>
     </div>
   </div>
-</div>
 
-<div class="ef-scrim"></div>
+  <!-- 遮罩必须是 .ef-app 的子元素：显示规则是后代选择器 .ef-app.is-open .ef-scrim -->
+  <div class="ef-scrim"></div>
+</div>
 
 <script src="../js/theme.js"></script>
 <script src="../js/ui.js"></script>
@@ -4906,9 +4913,10 @@ git commit -m "feat(endfield): 加入页面校验脚本、设计系统总览页�
       <p class="ef-footer__legal">示例内容，仅用于设计系统演示。所有名称与数据均为虚构。</p>
     </div>
   </footer>
-</div>
 
-<div class="ef-scrim"></div>
+  <!-- 遮罩必须是 .ef-app 的子元素：显示规则是后代选择器 .ef-app.is-open .ef-scrim -->
+  <div class="ef-scrim"></div>
+</div>
 <script src="../js/theme.js"></script>
 <script src="../js/ui.js"></script>
 </body>
