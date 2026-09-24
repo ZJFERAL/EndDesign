@@ -947,8 +947,24 @@ git commit -m "feat(endfield): 加入对比度校验与排版基线层"
   border-top: 0;
 }
 
-/* 需要完整四角时，在外层再套一个 .ef-corner-frame 并翻转 */
+/* 完整四角：角括号必须画在伪元素层，不能占用元素自身的 background-image，
+   否则与 .ef-industrial-shell / .ef-grid-backdrop 等同样使用 background-image
+   的手法类无法叠加在同一个元素上（后出现的那条规则会整体胜出）。
+   ::after 保持 display:none —— 同时挂 .ef-corner-frame 与 .ef-corner-frame--all 时，
+   这里的 8 条渐变已包含右下角，::after 再画一次会重复。 */
 .ef-corner-frame--all {
+  position: relative;
+}
+
+.ef-corner-frame--all::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* 覆盖 .ef-corner-frame::before 的 14px 方框，否则角括号层会缩成 14×14 */
+  width: auto;
+  height: auto;
+  border: 0;
   background-image:
     linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
     linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
@@ -972,7 +988,6 @@ git commit -m "feat(endfield): 加入对比度校验与排版基线层"
     right bottom, right bottom;
 }
 
-.ef-corner-frame--all::before,
 .ef-corner-frame--all::after {
   display: none;
 }
