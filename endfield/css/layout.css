@@ -222,6 +222,11 @@
   padding: var(--ef-space-8) var(--ef-space-6);
   font-size: var(--ef-text-sm);
   color: var(--ef-ink-muted);
+  /* 建立层叠上下文并压过 sticky 侧栏：长页面滚到底时，侧栏（sticky，
+     z-index 自动）会盖住页脚左侧 214px，导致前两个页脚链接点不中。
+     实测无此行时 elementFromPoint 返回 ASIDE.ef-sidebar，加上后返回链接本身。 */
+  position: relative;
+  z-index: 1;
 }
 
 .ef-footer__inner {
@@ -280,7 +285,8 @@
   }
 }
 
-/* 抽屉打开时的遮罩 */
+/* 抽屉打开时的遮罩。显示规则是后代选择器 .ef-app.is-open .ef-scrim，
+   所以标记里 .ef-scrim 必须是 .ef-app 的子元素，放在它外面永远不显示。 */
 .ef-scrim {
   position: fixed;
   inset: 0;
