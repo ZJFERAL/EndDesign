@@ -59,8 +59,22 @@
   border-top: 0;
 }
 
-/* 需要完整四角时，在外层再套一个 .ef-corner-frame 并翻转 */
+/* 完整四角。角括号画在伪元素上，不占用元素自身的 background-image，
+   这样与 .ef-industrial-shell / .ef-grid-backdrop 等同样使用
+   background-image 的手法类可以叠加在同一个元素上。 */
 .ef-corner-frame--all {
+  position: relative;
+}
+
+.ef-corner-frame--all::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* 同时挂上 .ef-corner-frame 时，用它来抵消那个 14×14 描边盒 */
+  width: auto;
+  height: auto;
+  border: 0;
   background-image:
     linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
     linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
@@ -84,7 +98,8 @@
     right bottom, right bottom;
 }
 
-.ef-corner-frame--all::before,
+/* ::before 已改为角括号层，这里只需抑制 .ef-corner-frame 的右下角，
+   避免两个类同时使用时重复画角。 */
 .ef-corner-frame--all::after {
   display: none;
 }
