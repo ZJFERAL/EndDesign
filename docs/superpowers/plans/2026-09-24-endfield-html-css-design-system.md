@@ -486,11 +486,17 @@ function block(sel) {
   throw new Error(`选择器未闭合：${sel}`);
 }
 
-/** 从 CSS 文本里抽出 --ef-x: 值 的映射，只保留颜色字面量。 */
+/**
+ * 从 CSS 文本里抽出 --ef-x: 值 的映射，只保留颜色字面量。
+ * 主色令牌写作 var(--ef-user-accent, #f2cc00) —— 宿主覆盖点，
+ * 必须取其回退字面量，否则 --ef-accent 等会被误判为「未定义」。
+ */
 function tokens(text) {
   const out = {};
   for (const m of text.matchAll(/(--ef-[\w-]+)\s*:\s*([^;]+);/g)) {
-    const v = m[2].trim();
+    let v = m[2].trim();
+    const hostOverride = v.match(/^var\(\s*[^,)]+\s*,\s*([\s\S]+?)\s*\)$/);
+    if (hostOverride) v = hostOverride[1].trim();
     if (/^#[0-9a-f]{3,8}$/i.test(v) || /^rgb/i.test(v)) out[m[1]] = v;
   }
   return out;
