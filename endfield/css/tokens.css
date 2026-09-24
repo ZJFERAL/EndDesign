@@ -121,10 +121,10 @@
   --ef-info: #248dff;
 
   /* ---------- 语义色 ink：语义色本身做文字时在 tint 背景上不达标 ---------- */
-  --ef-info-ink: #1963b4;
-  --ef-success-ink: #00726d;
-  --ef-warn-ink: #975304;
-  --ef-danger-ink: #bb2020;
+  --ef-info-ink: #1960ae;
+  --ef-success-ink: #006e69;
+  --ef-warn-ink: #914f04;
+  --ef-danger-ink: #b31f1f;
 
   /* ---------- 分级色 1–6（与主题无关） ---------- */
   --ef-tier-1: #94a0aa;
@@ -135,12 +135,12 @@
   --ef-tier-6: #ff503c;
 
   /* ---------- 分级色 ink ---------- */
-  --ef-tier-1-ink: #5e666c;
-  --ef-tier-2-ink: #407036;
-  --ef-tier-3-ink: #006a8d;
-  --ef-tier-4-ink: #6955ad;
-  --ef-tier-5-ink: #8c5b00;
-  --ef-tier-6-ink: #af3729;
+  --ef-tier-1-ink: #5b6268;
+  --ef-tier-2-ink: #3e6b34;
+  --ef-tier-3-ink: #006688;
+  --ef-tier-4-ink: #6451a6;
+  --ef-tier-5-ink: #875700;
+  --ef-tier-6-ink: #a83528;
 
   /* ======================================================================
      Light 主题（默认）

@@ -147,33 +147,39 @@ for (const [name, t] of Object.entries(themes)) {
     );
   }
 
-  // ink 对「原色 tint 叠表面」的背景做检查
-  for (const [inkTok, rawTok, surfTok, tintA, min, label] of INK_PAIRS) {
+  // ink 对「原色 tint 叠表面」的背景做检查。
+  // 四种表面都要查：徽标不只出现在主表面上，也会出现在次表面/凹陷表面
+  // （例如表格表头用 sunken），凹陷表面上 tint 双层叠加后对比度最低。
+  const INK_SURFACES = ['--ef-surface', '--ef-surface-muted', '--ef-surface-sunken'];
+  for (const [inkTok, rawTok, , tintA, min, label] of INK_PAIRS) {
     // ink 与表面必须在本主题块里单独定义（暗色块漏写就是真缺陷）；
     // 原色是主题无关令牌，允许回退到 :root。
     const raw = resolveBase(t, rawTok);
-    if (!t[inkTok] || !raw || !t[surfTok]) {
-      console.error(
-        `  缺失   ${label}：${[inkTok, t[rawTok] ? null : `${rawTok}(含基础层)`, surfTok].filter(Boolean).join(' / ')} 未定义`,
+    for (const surfTok of INK_SURFACES) {
+      if (!t[inkTok] || !raw || !t[surfTok]) {
+        console.error(
+          `  缺失   ${label}：${[inkTok, t[rawTok] ? null : `${rawTok}(含基础层)`, surfTok].filter(Boolean).join(' / ')} 未定义`,
+        );
+        failed++;
+        continue;
+      }
+      // 背景 = 原色以 tintA 的比例混到表面上。
+      // 注意不能用 composite()：它取的是「前景」的 alpha，而这里 tint 比例来自
+      // 原色（背景成分），必须显式加权求和，否则等于拿 ink 直接和原色比。
+      // 原色回退到 :root（与主题无关）；ink 与表面取当前主题
+      const rawRgb = parseColor(raw);
+      const surfRgb = parseColor(t[surfTok]);
+      const bgRgb = [0, 1, 2].map((i) => rawRgb[i] * tintA + surfRgb[i] * (1 - tintA));
+      const bgHex =
+        '#' +
+        bgRgb.map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join('');
+      const r = ratio(t[inkTok], bgHex);
+      const ok = r >= min;
+      if (!ok) failed++;
+      console.log(
+        `  ${ok ? '通过' : '失败'}   ${r.toFixed(2)}:1  (需 >= ${min})  ${label} · ${surfTok}`,
       );
-      failed++;
-      continue;
     }
-    // 背景 = 原色以 tintA 的比例混到表面上。
-    // 注意不能用 composite()：它取的是「前景」的 alpha，而这里 tint 比例来自
-    // 原色（背景成分），必须显式加权求和，否则等于拿 ink 直接和原色比。
-    const rawRgb = parseColor(raw);
-    const surfRgb = parseColor(t[surfTok]);
-    const bgRgb = [0, 1, 2].map((i) => rawRgb[i] * tintA + surfRgb[i] * (1 - tintA));
-    const bgHex =
-      '#' +
-      bgRgb.map((v) => Math.round(v * 255).toString(16).padStart(2, '0')).join('');
-    const r = ratio(t[inkTok], bgHex);
-    const ok = r >= min;
-    if (!ok) failed++;
-    console.log(
-      `  ${ok ? '通过' : '失败'}   ${r.toFixed(2)}:1  (需 >= ${min})  ${label}`,
-    );
   }
 }
 
