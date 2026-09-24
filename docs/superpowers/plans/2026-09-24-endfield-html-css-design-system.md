@@ -787,6 +787,8 @@ th,
     --ef-accent-soft: #f2f2f2;
     --ef-accent-fg: #000000;
     --ef-accent-glow: #e6e6e6;
+    /* 打印强制白底，暗色主题的 #d8bf00 在白底仅 1.85:1，必须钉成深灰 */
+    --ef-accent-ink: #555555;
     --ef-grid-line: transparent;
     --ef-scanline: transparent;
     --ef-weave-line: transparent;
@@ -1761,7 +1763,7 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
   </footer>
 </div>
 
-<div class="ef-scrim" hidden></div>
+<div class="ef-scrim"></div>
 </body>
 </html>
 ```
@@ -4411,7 +4413,7 @@ git commit -m "feat(endfield): 实现结构组件样式（面板/卡片/表格/�
   </div>
 </div>
 
-<div class="ef-scrim" hidden></div>
+<div class="ef-scrim"></div>
 
 <script src="../js/theme.js"></script>
 <script src="../js/ui.js"></script>
@@ -4874,7 +4876,7 @@ git commit -m "feat(endfield): 加入页面校验脚本、设计系统总览页�
   </footer>
 </div>
 
-<div class="ef-scrim" hidden></div>
+<div class="ef-scrim"></div>
 <script src="../js/theme.js"></script>
 <script src="../js/ui.js"></script>
 </body>
@@ -5305,7 +5307,10 @@ git commit -m "feat(endfield): 加入搜索页、登录页、设置页模板"
 
 - [ ] **Step 2: 写 404 页**
 
-创建 `endfield/pages/error-404.html`。无侧栏，居中布局（同登录页的居中方式）。内容：
+创建 `endfield/pages/error-404.html`。无侧栏，居中布局（同登录页的居中方式）。
+**必须**与 `login.html` 一样包含 `<a class="ef-skip-link" href="#ef-main">跳到主内容</a>`
+与 `<main id="ef-main" class="ef-industrial-shell">`（居中容器即 `<main>`），
+否则 Step 4 的 `check-pages.mjs` 会报错。内容：
 
 - `ef-badge--warn` 显示「404」。
 - `<h1>` 「页面不存在」，字号 `var(--ef-text-5xl)`。
@@ -5315,7 +5320,8 @@ git commit -m "feat(endfield): 加入搜索页、登录页、设置页模板"
 
 - [ ] **Step 3: 写 500 页**
 
-创建 `endfield/pages/error-500.html`，结构与 404 页一致，差异：
+创建 `endfield/pages/error-500.html`，结构与 404 页一致（同样必须含
+`.ef-skip-link` 与 `<main id="ef-main">`），差异：
 
 - `ef-badge--danger` 显示「500」。
 - 标题「服务异常」。
