@@ -283,12 +283,12 @@
   );
 }
 
-[data-tier="1"] { --ef-tier-color: var(--ef-tier-1); }
-[data-tier="2"] { --ef-tier-color: var(--ef-tier-2); }
-[data-tier="3"] { --ef-tier-color: var(--ef-tier-3); }
-[data-tier="4"] { --ef-tier-color: var(--ef-tier-4); }
-[data-tier="5"] { --ef-tier-color: var(--ef-tier-5); }
-[data-tier="6"] { --ef-tier-color: var(--ef-tier-6); }
+[data-tier="1"] { --ef-tier-color: var(--ef-tier-1); --ef-tier-ink: var(--ef-tier-1-ink); }
+[data-tier="2"] { --ef-tier-color: var(--ef-tier-2); --ef-tier-ink: var(--ef-tier-2-ink); }
+[data-tier="3"] { --ef-tier-color: var(--ef-tier-3); --ef-tier-ink: var(--ef-tier-3-ink); }
+[data-tier="4"] { --ef-tier-color: var(--ef-tier-4); --ef-tier-ink: var(--ef-tier-4-ink); }
+[data-tier="5"] { --ef-tier-color: var(--ef-tier-5); --ef-tier-ink: var(--ef-tier-5-ink); }
+[data-tier="6"] { --ef-tier-color: var(--ef-tier-6); --ef-tier-ink: var(--ef-tier-6-ink); }
 
 /* ---------- 13. 入场动效 ---------- */
 @keyframes ef-boot-wipe {

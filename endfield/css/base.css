@@ -206,6 +206,17 @@ th,
     --ef-accent-glow: #e6e6e6;
     /* 打印强制白底，暗色主题的 #d8bf00 在白底仅 1.85:1，必须钉成深灰 */
     --ef-accent-ink: #555555;
+    /* 语义/分级 ink 的暗色值在白底上偏浅，打印统一钉深 */
+    --ef-info-ink: #1c4f8a;
+    --ef-success-ink: #00574f;
+    --ef-warn-ink: #6f3d02;
+    --ef-danger-ink: #8c1a1a;
+    --ef-tier-1-ink: #4a5055;
+    --ef-tier-2-ink: #2f5427;
+    --ef-tier-3-ink: #004f6a;
+    --ef-tier-4-ink: #4e3f82;
+    --ef-tier-5-ink: #6a4500;
+    --ef-tier-6-ink: #83281e;
     --ef-grid-line: transparent;
     --ef-scanline: transparent;
     --ef-weave-line: transparent;

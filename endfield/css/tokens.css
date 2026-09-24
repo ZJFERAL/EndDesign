@@ -120,6 +120,12 @@
   --ef-danger: #dc2626;
   --ef-info: #248dff;
 
+  /* ---------- 语义色 ink：语义色本身做文字时在 tint 背景上不达标 ---------- */
+  --ef-info-ink: #1963b4;
+  --ef-success-ink: #00726d;
+  --ef-warn-ink: #975304;
+  --ef-danger-ink: #bb2020;
+
   /* ---------- 分级色 1–6（与主题无关） ---------- */
   --ef-tier-1: #94a0aa;
   --ef-tier-2: #68b457;
@@ -127,6 +133,14 @@
   --ef-tier-4: #9a7dff;
   --ef-tier-5: #ed9a00;
   --ef-tier-6: #ff503c;
+
+  /* ---------- 分级色 ink ---------- */
+  --ef-tier-1-ink: #5e666c;
+  --ef-tier-2-ink: #407036;
+  --ef-tier-3-ink: #006a8d;
+  --ef-tier-4-ink: #6955ad;
+  --ef-tier-5-ink: #8c5b00;
+  --ef-tier-6-ink: #af3729;
 
   /* ======================================================================
      Light 主题（默认）
@@ -205,6 +219,17 @@
     --ef-accent-glow: var(--ef-user-accent-glow, #ecd548);
     /* 暗色主题的 #d8bf00 在 #181818 上已有 9.62:1，无需分叉 */
     --ef-accent-ink: var(--ef-user-accent-ink, #d8bf00);
+    /* 语义色/分级色 ink 的暗色值：亮色值在深底上会太暗 */
+    --ef-info-ink: #3a98ff;
+    --ef-success-ink: #00c7bd;
+    --ef-warn-ink: #dc8119;
+    --ef-danger-ink: #e76a6a;
+    --ef-tier-1-ink: #94a0aa;
+    --ef-tier-2-ink: #68b457;
+    --ef-tier-3-ink: #16a5d5;
+    --ef-tier-4-ink: #a287ff;
+    --ef-tier-5-ink: #ed9a00;
+    --ef-tier-6-ink: #ff6654;
 
     --ef-grid-line: #ffffff0e;
     --ef-scanline: rgb(255 255 255 / 5%);
@@ -245,6 +270,17 @@ html[data-theme="dark"] {
   --ef-accent-glow: var(--ef-user-accent-glow, #ecd548);
   /* 暗色主题的 #d8bf00 在 #181818 上已有 9.62:1，无需分叉 */
   --ef-accent-ink: var(--ef-user-accent-ink, #d8bf00);
+  /* 语义色/分级色 ink 的暗色值：亮色值在深底上会太暗 */
+  --ef-info-ink: #3a98ff;
+  --ef-success-ink: #00c7bd;
+  --ef-warn-ink: #dc8119;
+  --ef-danger-ink: #e76a6a;
+  --ef-tier-1-ink: #94a0aa;
+  --ef-tier-2-ink: #68b457;
+  --ef-tier-3-ink: #16a5d5;
+  --ef-tier-4-ink: #a287ff;
+  --ef-tier-5-ink: #ed9a00;
+  --ef-tier-6-ink: #ff6654;
 
   --ef-grid-line: #ffffff0e;
   --ef-scanline: rgb(255 255 255 / 5%);
