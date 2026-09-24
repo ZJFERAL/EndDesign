@@ -85,8 +85,12 @@
   grid-area: sidebar;
   position: sticky;
   top: calc(var(--ef-header-bar-h) + var(--ef-header-signal-h));
-  align-self: start;
-  height: calc(100vh - var(--ef-header-bar-h) - var(--ef-header-signal-h));
+  /* 必须 stretch 且只设 max-height：若写死 height 为视口高，侧栏会把整个
+     grid 行撑高（内容高 + 侧栏高），页面永远比视口高，页脚被推到视口外，
+     滚到底还会被 sticky 侧栏盖住。 */
+  align-self: stretch;
+  height: auto;
+  max-height: calc(100vh - var(--ef-header-bar-h) - var(--ef-header-signal-h));
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--ef-space-3) 0;
