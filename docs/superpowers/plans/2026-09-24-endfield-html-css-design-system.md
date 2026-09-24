@@ -774,7 +774,11 @@ th,
 
 /* ---------- 打印：强制白底黑字 ---------- */
 @media print {
+  /* 必须包含 html:not([data-theme="light"])：默认（跟随系统）时不写 data-theme，
+     而 tokens.css 的暗色块正是 html:not([data-theme="light"])（优先级 0,1,1），
+     仅靠 :root（0,1,0）压不住它，会导致打印出来是深底深字。 */
   :root,
+  html:not([data-theme="light"]),
   html[data-theme="dark"],
   html[data-theme="light"] {
     --ef-surface-sunken: #ffffff;
