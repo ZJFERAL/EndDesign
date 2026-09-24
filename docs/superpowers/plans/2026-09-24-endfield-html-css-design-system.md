@@ -321,16 +321,16 @@ dist/
     /* 暗色主题的 #d8bf00 在 #181818 上已有 9.62:1，无需分叉 */
     --ef-accent-ink: var(--ef-user-accent-ink, #d8bf00);
     /* 语义色/分级色 ink 的暗色值：亮色值在深底上会太暗 */
-    --ef-info-ink: #3a98ff;
+    --ef-info-ink: #419cff;
     --ef-success-ink: #00c7bd;
-    --ef-warn-ink: #dc8119;
-    --ef-danger-ink: #e76a6a;
-    --ef-tier-1-ink: #94a0aa;
+    --ef-warn-ink: #dd851f;
+    --ef-danger-ink: #e76d6d;
+    --ef-tier-1-ink: #96a2ab;
     --ef-tier-2-ink: #68b457;
-    --ef-tier-3-ink: #16a5d5;
-    --ef-tier-4-ink: #a287ff;
+    --ef-tier-3-ink: #1da8d6;
+    --ef-tier-4-ink: #a68cff;
     --ef-tier-5-ink: #ed9a00;
-    --ef-tier-6-ink: #ff6654;
+    --ef-tier-6-ink: #ff6a58;
 
     --ef-grid-line: #ffffff0e;
     --ef-scanline: rgb(255 255 255 / 5%);
@@ -372,16 +372,16 @@ html[data-theme="dark"] {
   /* 暗色主题的 #d8bf00 在 #181818 上已有 9.62:1，无需分叉 */
   --ef-accent-ink: var(--ef-user-accent-ink, #d8bf00);
   /* 语义色/分级色 ink 的暗色值：亮色值在深底上会太暗 */
-  --ef-info-ink: #3a98ff;
+  --ef-info-ink: #419cff;
   --ef-success-ink: #00c7bd;
-  --ef-warn-ink: #dc8119;
-  --ef-danger-ink: #e76a6a;
-  --ef-tier-1-ink: #94a0aa;
+  --ef-warn-ink: #dd851f;
+  --ef-danger-ink: #e76d6d;
+  --ef-tier-1-ink: #96a2ab;
   --ef-tier-2-ink: #68b457;
-  --ef-tier-3-ink: #16a5d5;
-  --ef-tier-4-ink: #a287ff;
+  --ef-tier-3-ink: #1da8d6;
+  --ef-tier-4-ink: #a68cff;
   --ef-tier-5-ink: #ed9a00;
-  --ef-tier-6-ink: #ff6654;
+  --ef-tier-6-ink: #ff6a58;
 
   --ef-grid-line: #ffffff0e;
   --ef-scanline: rgb(255 255 255 / 5%);

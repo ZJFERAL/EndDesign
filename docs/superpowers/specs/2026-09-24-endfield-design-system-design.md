@@ -140,16 +140,16 @@ react/                          # 独立包，与上述 CSS 令牌同源
 
 | 令牌 | Light ink | Dark ink |
 |---|---|---|
-| `--ef-info-ink` | `#1960ae` | `#3a98ff` |
+| `--ef-info-ink` | `#1960ae` | `#419cff` |
 | `--ef-success-ink` | `#006e69` | `#00c7bd` |
-| `--ef-warn-ink` | `#914f04` | `#dc8119` |
-| `--ef-danger-ink` | `#b31f1f` | `#e76a6a` |
-| `--ef-tier-1-ink` | `#5b6268` | `#94a0aa` |
+| `--ef-warn-ink` | `#914f04` | `#dd851f` |
+| `--ef-danger-ink` | `#b31f1f` | `#e76d6d` |
+| `--ef-tier-1-ink` | `#5b6268` | `#96a2ab` |
 | `--ef-tier-2-ink` | `#3e6b34` | `#68b457` |
-| `--ef-tier-3-ink` | `#006688` | `#16a5d5` |
-| `--ef-tier-4-ink` | `#6451a6` | `#a287ff` |
+| `--ef-tier-3-ink` | `#006688` | `#1da8d6` |
+| `--ef-tier-4-ink` | `#6451a6` | `#a68cff` |
 | `--ef-tier-5-ink` | `#875700` | `#ed9a00` |
-| `--ef-tier-6-ink` | `#a83528` | `#ff6654` |
+| `--ef-tier-6-ink` | `#a83528` | `#ff6a58` |
 
 全部数值经计算验证：在对应 tint 背景上、且在全部表面层级
 （主表面 / 次表面 / 浮起表面 / 凹陷表面）上均 ≥ 4.5:1（计算模型中 ≥ 4.7:1，
