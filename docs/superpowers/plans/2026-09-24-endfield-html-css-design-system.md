@@ -644,7 +644,13 @@ for (const [name, t] of Object.entries(themes)) {
   // ink 对「原色 tint 叠表面」的背景做检查。
   // 四种表面都要查：徽标不只出现在主表面上，也会出现在次表面/凹陷表面
   // （例如表格表头用 sunken），凹陷表面上 tint 双层叠加后对比度最低。
-  const INK_SURFACES = ['--ef-surface', '--ef-surface-muted', '--ef-surface-sunken'];
+  // 暗色下浮起表面 (#232323) 与主表面 (#181818) 不同，是最紧的未断言组合，故一并列入。
+  const INK_SURFACES = [
+    '--ef-surface',
+    '--ef-surface-muted',
+    '--ef-surface-raised',
+    '--ef-surface-sunken',
+  ];
   for (const [inkTok, rawTok, , tintA, min, label] of INK_PAIRS) {
     for (const surfTok of INK_SURFACES) {
       if (!t[inkTok] || !resolveBase(t, rawTok) || !t[surfTok]) {
