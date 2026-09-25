@@ -4237,8 +4237,24 @@ git commit -m "feat(endfield): 实现结构组件样式（面板/卡片/表格/�
       });
     }
 
+    // 根因修复：窄屏打开抽屉后把窗口拉宽，.is-open 会残留在 .ef-app 上，
+    // 此时 Esc（或合成事件）会把「可见的」宽屏侧栏标成 aria-hidden，
+    // 读屏软件会整块跳过它。切到宽屏时清掉抽屉状态与相关 ARIA。
+    function clearDrawerState() {
+      if (!app.classList.contains('is-open')) return;
+      app.classList.remove('is-open');
+      var toggle = root.querySelector('[data-sidebar-toggle]');
+      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      if (sidebar) sidebar.removeAttribute('aria-hidden');
+    }
+
+    window.addEventListener('resize', function () {
+      if (!isNarrow()) clearDrawerState();
+    });
+
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && app.classList.contains('is-open')) {
+      // 与遮罩分支对称：宽屏下抽屉概念不成立，不该改动侧栏的 ARIA
+      if (e.key === 'Escape' && app.classList.contains('is-open') && isNarrow()) {
         app.classList.remove('is-open');
         // 必须与点击/遮罩分支一样同步 ARIA，否则抽屉视觉上关了、
         // 但 aria-expanded 仍为 true、sidebar 的 aria-hidden 仍为 false，
