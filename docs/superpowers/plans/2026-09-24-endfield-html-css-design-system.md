@@ -811,8 +811,13 @@ code {
   padding: 0.1em 0.35em;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-code-bg);
+  /* 用 background-color 而非简写：简写会重置 background-image，
+     抹掉可能叠加在同一元素上的手法类底纹。 */
+  background-color: var(--ef-code-bg);
   color: var(--ef-code-fg);
+  /* 行内代码常含无空格的长标识符；不换行会把窄屏页面撑出横向滚动条
+     （实测 375px 下 scrollWidth 429 vs clientWidth 360）。 */
+  overflow-wrap: anywhere;
 }
 
 pre {
@@ -5334,6 +5339,9 @@ git commit -m "feat(endfield): 加入文章页、分类索引页、最近更改�
 主体：
 
 1. 顶部一个大的 `ef-searchbar`，`value="示例"`，并有一个「搜索」`ef-btn--primary`。
+   **这一行不要用 `flex-wrap:nowrap`**：窄屏下搜索框与按钮挤在一行会把页面撑出横向
+   滚动条（实测 375px 下 `scrollWidth 429` vs `clientWidth 360`）。允许换行，
+   并给搜索框 `flex:1 1 16rem` 使其至少占满一行。
 2. 结果统计行：`ef-eyebrow` 显示「找到 23 条结果，用时 0.04 秒」。
 3. 双栏 `grid-template-columns: 14rem minmax(0,1fr)`：
    - 左：`ef-panel` 内 3 行 `ef-filter-row`（命名空间 / 类型 / 时间），选项为 `ef-chip`。
@@ -5359,7 +5367,8 @@ git commit -m "feat(endfield): 加入文章页、分类索引页、最近更改�
 ```css
 mark {
   padding: 0 0.15em;
-  background: var(--ef-accent-soft);
+  /* 用 background-color 而非简写：简写会重置 background-image */
+  background-color: var(--ef-accent-soft);
   color: var(--ef-ink);
   font-weight: var(--ef-weight-semibold);
 }

@@ -108,8 +108,13 @@ code {
   padding: 0.1em 0.35em;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-code-bg);
+  /* 用 background-color 而非简写：简写会重置 background-image，
+     抹掉可能叠加在同一元素上的手法类底纹。 */
+  background-color: var(--ef-code-bg);
   color: var(--ef-code-fg);
+  /* 行内代码常含无空格的长标识符；不换行会把窄屏页面撑出横向滚动条
+     （实测 375px 下 scrollWidth 429 vs clientWidth 360）。 */
+  overflow-wrap: anywhere;
 }
 
 pre {

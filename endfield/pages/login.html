@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>登录 · 档案库</title>
+<meta name="description" content="登录页模板：居中单栏布局，切角卡片与表单控件。">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/utilities.css">
+<link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/components.css">
+<style>
+  /* 本页组合样式：新闻区两栏与 Hero 统计块的断点行为无法用内联样式表达。 */
+
+  .ef-home-news {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--ef-space-4);
+  }
+
+  /* 统计块必须允许收缩并在窄屏换行：写成 flex:none 时它不肯收缩，
+     375px 下三个数字的宽度和会顶出横向滚动条。 */
+  .ef-home-hero-stats {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: var(--ef-space-8);
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 900px) {
+    .ef-home-news { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  @media (max-width: 720px) {
+    .ef-home-hero-stats { gap: var(--ef-space-5); justify-content: flex-start; }
+  }
+</style>
+<script>
+  (function () {
+    try {
+      var v = localStorage.getItem('ef-theme');
+      if (v === 'light' || v === 'dark') {
+        document.documentElement.setAttribute('data-theme', v);
+        document.documentElement.style.colorScheme = v;
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="ef-skip-link" href="#ef-main">跳到主内容</a>
+
+<!-- 本页刻意不使用侧栏：登录是独立的居中单栏场景 -->
+<div class="ef-topbar">
+  <div class="ef-topbar__signal"></div>
+  <div class="ef-topbar__bar">
+    <a class="ef-topbar__brand" href="home.html">
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 1l6 7-6 7-6-7z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      档案库
+    </a>
+    <div class="ef-spacer"></div>
+    <button class="ef-icon-btn" data-theme-toggle aria-label="切换主题">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 010 12z" fill="currentColor"/></svg>
+    </button>
+  </div>
+</div>
+
+<main id="ef-main" class="ef-industrial-shell"
+      style="min-height:calc(100vh - var(--ef-header-bar-h) - var(--ef-header-signal-h));
+             display:flex;align-items:center;justify-content:center;padding:var(--ef-space-6)">
+  <div class="ef-panel ef-chamfer" style="width:100%;max-width:24rem;padding:var(--ef-space-8)">
+    <div style="text-align:center;margin-bottom:var(--ef-space-6)">
+      <span class="ef-eyebrow">// Sign In</span>
+      <h1 style="margin:.2em 0 0;font-size:var(--ef-text-2xl);overflow-wrap:anywhere">登录档案库</h1>
+    </div>
+
+    <form>
+      <div class="ef-field">
+        <label class="ef-label" for="loginUser">用户名</label>
+        <input class="ef-input" id="loginUser" name="username" autocomplete="username" required>
+      </div>
+      <div class="ef-field">
+        <label class="ef-label" for="loginPass">密码</label>
+        <input class="ef-input" id="loginPass" name="password" type="password"
+               autocomplete="current-password" required>
+      </div>
+      <div class="ef-row ef-row--between" style="margin-bottom:var(--ef-space-4)">
+        <label class="ef-check"><input type="checkbox" name="remember"> 记住我</label>
+        <a href="#" style="font-size:var(--ef-text-xs)">忘记密码？</a>
+      </div>
+      <button class="ef-btn ef-btn--primary" type="submit" style="width:100%">登录</button>
+    </form>
+
+    <hr class="ef-divider">
+
+    <div class="ef-stack" style="gap:var(--ef-space-2)">
+      <button class="ef-btn" type="button" style="width:100%">使用通行证登录</button>
+      <button class="ef-btn" type="button" style="width:100%">使用密钥登录</button>
+    </div>
+
+    <p style="margin:var(--ef-space-5) 0 0;text-align:center;font-size:var(--ef-text-sm)">
+      <span class="ef-muted">还没有账号？</span> <a href="#">注册</a>
+    </p>
+  </div>
+</main>
+
+<script src="../js/theme.js"></script>
+</body>
+</html>
