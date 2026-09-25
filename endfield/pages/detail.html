@@ -117,8 +117,10 @@
       </a>
     </nav>
     <div class="ef-sidebar__footer">
-      <button class="ef-btn ef-btn--sm" data-sidebar-toggle
-              aria-expanded="true" aria-controls="ef-sidebar" style="width:100%">收起侧栏</button>
+      <!-- 不要在这里再放一个侧栏折叠按钮：ui.js 只更新被点击的那个按钮的
+           aria-expanded，两个折叠按钮会各自持有一份状态，用遮罩或 Esc 关闭后
+           另一个仍停留在 true。侧栏折叠只由顶栏那一个按钮负责，此处放静态文字。 -->
+      <p class="ef-subtle ef-mono" style="margin:0;font-size:var(--ef-text-xs)">v1.0 · 零构建静态站</p>
     </div>
   </aside>
 
@@ -228,7 +230,10 @@
                   <tbody>
                     <tr><td>编号</td><td class="ef-mono">EX-0001</td><td>唯一标识，等宽显示</td></tr>
                     <tr><td>类别</td><td>类别一</td><td>所属内容分类</td></tr>
-                    <tr><td data-tier="4">等级</td><td><span class="ef-badge ef-badge--tier">分级 4</span></td><td>分级色由 data-tier 驱动</td></tr>
+                    <!-- data-tier 必须与徽标同格：自定义属性只沿 DOM 向下继承，
+                         放在隔壁 <td> 上徽标读不到 --ef-tier-color/--ef-tier-ink，
+                         会退化成灰底灰字。 -->
+                    <tr><td>等级</td><td data-tier="4"><span class="ef-badge ef-badge--tier">分级 4</span></td><td>分级色由 data-tier 驱动</td></tr>
                     <tr><td>属性</td><td>属性甲</td><td>主属性</td></tr>
                     <tr><td>状态</td><td><span class="ef-badge ef-badge--success">已归档</span></td><td>归档后仍可检索</td></tr>
                   </tbody>

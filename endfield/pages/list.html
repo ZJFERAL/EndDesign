@@ -120,8 +120,10 @@
       </a>
     </nav>
     <div class="ef-sidebar__footer">
-      <button class="ef-btn ef-btn--sm" data-sidebar-toggle
-              aria-expanded="true" aria-controls="ef-sidebar" style="width:100%">收起侧栏</button>
+      <!-- 不要在这里再放一个侧栏折叠按钮：ui.js 只更新被点击的那个按钮的
+           aria-expanded，两个折叠按钮会各自持有一份状态，用遮罩或 Esc 关闭后
+           另一个仍停留在 true。侧栏折叠只由顶栏那一个按钮负责，此处放静态文字。 -->
+      <p class="ef-subtle ef-mono" style="margin:0;font-size:var(--ef-text-xs)">v1.0 · 零构建静态站</p>
     </div>
   </aside>
 

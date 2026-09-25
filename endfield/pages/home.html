@@ -125,8 +125,10 @@
       </a>
     </nav>
     <div class="ef-sidebar__footer">
-      <button class="ef-btn ef-btn--sm" data-sidebar-toggle
-              aria-expanded="true" aria-controls="ef-sidebar" style="width:100%">收起侧栏</button>
+      <!-- 不要在这里再放一个侧栏折叠按钮：ui.js 只更新被点击的那个按钮的
+           aria-expanded，两个折叠按钮会各自持有一份状态，用遮罩或 Esc 关闭后
+           另一个仍停留在 true。侧栏折叠只由顶栏那一个按钮负责，此处放静态文字。 -->
+      <p class="ef-subtle ef-mono" style="margin:0;font-size:var(--ef-text-xs)">v1.0 · 零构建静态站</p>
     </div>
   </aside>
 
@@ -139,7 +141,9 @@
         <div class="ef-row ef-row--between" style="align-items:flex-start">
           <div style="min-width:0">
             <span class="ef-eyebrow">// Archive Index</span>
-            <h1 class="ef-boot-title" style="font-size:var(--ef-text-5xl);margin:.2em 0">档案库</h1>
+            <!-- 必须自带 overflow-wrap：hero 标题没有 .ef-page-header__title 包裹，
+                 超长无断点文本会撑破页面（list/detail 的 h1 靠该类的 anywhere 生效） -->
+            <h1 class="ef-boot-title" style="font-size:var(--ef-text-5xl);margin:.2em 0;overflow-wrap:anywhere">档案库</h1>
             <p class="ef-muted" style="max-width:36rem">工业军事科幻 HUD 设计系统示例站。全部内容为中性占位文案。</p>
             <div class="ef-row" style="margin-top:var(--ef-space-5)">
               <a class="ef-btn ef-btn--primary ef-btn--lg" href="list.html">浏览条目</a>
@@ -232,14 +236,17 @@
           <ul class="ef-timeline" style="margin:0">
             <li class="ef-timeline__item ef-timeline__item--accent">
               <time class="ef-timeline__time" datetime="2026-07-16">2026.07.16</time>
+              <!-- TODO(Task 10): 指向 article.html -->
               <div class="ef-timeline__body"><a class="ef-timeline__title" href="detail.html">版本更新说明</a></div>
             </li>
             <li class="ef-timeline__item">
               <time class="ef-timeline__time" datetime="2026-06-19">2026.06.19</time>
+              <!-- TODO(Task 10): 指向 article.html -->
               <div class="ef-timeline__body"><a class="ef-timeline__title" href="detail.html">活动开启说明</a></div>
             </li>
             <li class="ef-timeline__item">
               <time class="ef-timeline__time" datetime="2026-06-05">2026.06.05</time>
+              <!-- TODO(Task 10): 指向 article.html -->
               <div class="ef-timeline__body"><a class="ef-timeline__title" href="detail.html">规则调整公告</a></div>
             </li>
           </ul>
