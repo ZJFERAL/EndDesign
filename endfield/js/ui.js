@@ -57,6 +57,12 @@
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape' && app.classList.contains('is-open')) {
         app.classList.remove('is-open');
+        // 必须与点击/遮罩分支一样同步 ARIA，否则抽屉视觉上关了、
+        // 但 aria-expanded 仍为 true、sidebar 的 aria-hidden 仍为 false，
+        // 屏幕阅读器会认为抽屉还开着。
+        var toggle = root.querySelector('[data-sidebar-toggle]');
+        if (toggle) toggle.setAttribute('aria-expanded', 'false');
+        if (sidebar) sidebar.setAttribute('aria-hidden', 'true');
       }
     });
   }
