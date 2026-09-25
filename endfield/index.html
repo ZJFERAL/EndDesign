@@ -1788,7 +1788,10 @@
                 <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">.ef-bar-grow · bar-grow</span>
               </div>
               <div class="ef-stack" style="gap:var(--ef-space-2)">
-                <div class="ef-reveal" style="height:34px;border:1px solid var(--ef-border);background-color:var(--ef-surface-muted)"></div>
+                <!-- 必须自带 is-visible：.ef-reveal 的初始态是 opacity:0，只有滚动
+                     揭示脚本（或 reduced-motion 兜底）会把它变可见。本页把它当静态
+                     演示，无 JS 时若不预置 is-visible 就会永远不可见。 -->
+                <div class="ef-reveal is-visible" style="height:34px;border:1px solid var(--ef-border);background-color:var(--ef-surface-muted)"></div>
                 <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">.ef-reveal · 滚动揭示</span>
               </div>
             </div>

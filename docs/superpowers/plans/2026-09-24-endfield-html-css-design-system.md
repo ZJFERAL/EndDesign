@@ -4860,6 +4860,7 @@ html[data-theme="dark"] {
 2. 顶部信号条 + 顶栏（含主题切换按钮、搜索框）。
 3. 左侧栏列出本页各章节锚点。
 4. 章节：令牌色板（浅/深并排）、分级色、排版尺度、按钮、表单、徽标与标签、卡片、面板与区块头、表格、时间线、折叠与选项卡、模态与 Toast、分页与面包屑、信息网格、图表、动效演示、实时调色。
+   **动效演示里的 `.ef-reveal` 块必须自带 `is-visible`**：该类的初始态是 `opacity: 0`，只有滚动揭示脚本（或 reduced-motion 兜底）会把它变可见；作为静态演示放置时，无 JS 下会永远不可见（实测无 JS 时该块 opacity 仍为 0，属 Review Focus 第 5 条的失效模式）。
 5. 实时调色控件：三个 `<input type="range">` 分别调主色的 H/S/L，用 `style.setProperty('--ef-user-accent', hsl(...))` 实时写回，同时写 `--ef-user-accent-strong`（亮度减 10%）、`--ef-user-accent-glow`（亮度加 8%）与 `--ef-user-accent-ink`（亮度减 28%，保证亮色主题下文字与细图形仍达标）。
 
 内联主题预置脚本（放在 `<head>` 里、CSS 之后）：
