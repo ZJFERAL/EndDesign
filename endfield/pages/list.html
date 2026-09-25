@@ -1,0 +1,516 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>条目列表 · 档案库</title>
+<meta name="description" content="工业军事科幻 HUD 设计系统示例列表页：面包屑、页面标题区、筛选面板、18 张条目卡与分页。">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/utilities.css">
+<link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/components.css">
+<style>
+  /* 本页组合样式：筛选行在窄屏需要把标签与选项改为上下堆叠，
+     这是页面级排版决定，不适合放进通用组件层。 */
+  @media (max-width: 640px) {
+    .ef-filter-row { flex-direction: column; gap: var(--ef-space-2); }
+    .ef-filter-row__label { width: auto; padding-top: 0; }
+  }
+
+  /* 18 张卡按断点固定列数，让每一行都是整行、末行不留缺口：
+     1440px → 6 列（3 行）；768px → 3 列（6 行）；375px → 2 列（9 行）。
+     组件层的 auto-fill/minmax(150px) 在 1440px 可用宽度
+     （1440 − 侧栏 214 − 内容内边距 48 ≈ 1163px）下会排出 7 列，
+     末行只剩 4 张并留出右侧缺口，故按断点钉住列数。 */
+  @media (min-width: 1200px) {
+    .ef-grid--cards { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  }
+
+  @media (min-width: 700px) and (max-width: 1199px) {
+    .ef-grid--cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+</style>
+<script>
+  (function () {
+    try {
+      var v = localStorage.getItem('ef-theme');
+      if (v === 'light' || v === 'dark') {
+        document.documentElement.setAttribute('data-theme', v);
+        document.documentElement.style.colorScheme = v;
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="ef-skip-link" href="#ef-main">跳到主内容</a>
+
+<div class="ef-app">
+
+  <!-- ================= 顶栏 ================= -->
+  <header class="ef-topbar">
+    <div class="ef-topbar__signal"></div>
+    <div class="ef-topbar__bar">
+      <button class="ef-icon-btn ef-sidebar-toggle" data-sidebar-toggle
+              aria-expanded="true" aria-controls="ef-sidebar" aria-label="切换侧栏">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+      <a class="ef-topbar__brand" href="home.html">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 1l6 7-6 7-6-7z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        档案库 <span class="ef-eyebrow">BETA</span>
+      </a>
+      <div class="ef-topbar__search">
+        <div class="ef-searchbar">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+          <input type="search" data-search-input placeholder="搜索条目、分类…" aria-label="搜索条目与分类">
+          <kbd class="ef-kbd">/</kbd>
+        </div>
+      </div>
+      <div class="ef-topbar__actions">
+        <button class="ef-icon-btn" data-theme-toggle aria-label="切换主题">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 010 12z" fill="currentColor"/></svg>
+        </button>
+        <!-- TODO(Task 11): 指向尚未创建的 login.html，暂时指向已存在的页面 -->
+        <a class="ef-btn ef-btn--sm" href="home.html">登录</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 侧栏 =================
+       尚未创建的页面（Task 10–12）暂时指向已存在的页面，链接上留 TODO 注释标明真实目标；
+       Task 13 验收前需逐条改回真实文件名。 -->
+  <aside class="ef-sidebar" id="ef-sidebar">
+    <nav class="ef-sidebar__section" aria-label="浏览">
+      <div class="ef-sidebar__section-title">浏览</div>
+      <a class="ef-sidebar__item" href="home.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13V7l6-4 6 4v6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span class="ef-label-pair"><b>首页</b><i>Home</i></span>
+      </a>
+      <!-- TODO(Task 10): 改为 index-page.html -->
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="2.5" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="9" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>分类索引</b><i>Index</i></span>
+      </a>
+      <!-- TODO(Task 10): 改为 changes.html -->
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3.2l2 1.4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>最近更改</b><i>Recent</i></span>
+      </a>
+    </nav>
+    <nav class="ef-sidebar__section" aria-label="内容分类">
+      <div class="ef-sidebar__section-title">内容分类</div>
+      <a class="ef-sidebar__item" href="list.html" aria-current="page">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>条目列表</b><i>Listing</i></span>
+      </a>
+      <!-- TODO(Task 11): 改为 search.html -->
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5l3 3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>搜索</b><i>Search</i></span>
+      </a>
+      <!-- TODO(Task 12): 改为 dashboard.html -->
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 13.5V2.5M2.5 13.5h11" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 11l3-4 2.5 2 3-4.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>仪表盘</b><i>Dashboard</i></span>
+      </a>
+      <!-- TODO(Task 11): 改为 settings.html -->
+      <a class="ef-sidebar__item" href="home.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        <span class="ef-label-pair"><b>设置</b><i>Settings</i></span>
+      </a>
+    </nav>
+    <div class="ef-sidebar__footer">
+      <button class="ef-btn ef-btn--sm" data-sidebar-toggle
+              aria-expanded="true" aria-controls="ef-sidebar" style="width:100%">收起侧栏</button>
+    </div>
+  </aside>
+
+  <!-- ================= 主内容 ================= -->
+  <main class="ef-main" id="ef-main">
+    <div class="ef-content ef-stack">
+
+      <!-- ---------- 页面标题区 ---------- -->
+      <div class="ef-page-header">
+        <nav aria-label="面包屑">
+          <ol class="ef-breadcrumb">
+            <li><a href="home.html">首页</a></li>
+            <li aria-current="page">条目列表</li>
+          </ol>
+        </nav>
+        <div class="ef-page-header__row">
+          <div class="ef-page-header__main">
+            <span class="ef-eyebrow">// Listing</span>
+            <h1 class="ef-page-header__title ef-boot-title">条目列表</h1>
+            <div class="ef-page-header__meta">
+              <span>共 128 个条目</span>
+              <span>最近更新 2026.09.24</span>
+            </div>
+          </div>
+          <div class="ef-page-header__actions">
+            <button class="ef-btn ef-btn--sm">复制链接</button>
+            <button class="ef-btn ef-btn--sm">导出</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 筛选面板 ---------- -->
+      <section class="ef-panel">
+        <div class="ef-panel__header">
+          <span class="ef-panel__title">筛选</span>
+          <span class="ef-spacer"></span>
+          <span class="ef-badge ef-mono">5 组条件</span>
+        </div>
+        <div class="ef-panel__body">
+          <div class="ef-filter-row">
+            <span class="ef-filter-row__label">类别</span>
+            <div class="ef-filter-row__options">
+              <button class="ef-chip" aria-pressed="true">全部</button>
+              <button class="ef-chip" aria-pressed="false">甲类</button>
+              <button class="ef-chip" aria-pressed="false">乙类</button>
+              <button class="ef-chip" aria-pressed="false">丙类</button>
+              <button class="ef-chip" aria-pressed="false">丁类</button>
+            </div>
+          </div>
+          <div class="ef-filter-row">
+            <span class="ef-filter-row__label">等级</span>
+            <div class="ef-filter-row__options">
+              <button class="ef-chip" aria-pressed="true">全部</button>
+              <button class="ef-chip" aria-pressed="false">1</button>
+              <button class="ef-chip" aria-pressed="false">2</button>
+              <button class="ef-chip" aria-pressed="false">3</button>
+              <button class="ef-chip" aria-pressed="false">4</button>
+              <button class="ef-chip" aria-pressed="false">5</button>
+              <button class="ef-chip" aria-pressed="false">6</button>
+            </div>
+          </div>
+          <div class="ef-filter-row">
+            <span class="ef-filter-row__label">属性</span>
+            <div class="ef-filter-row__options">
+              <button class="ef-chip" aria-pressed="true">全部</button>
+              <button class="ef-chip" aria-pressed="false">属性甲</button>
+              <button class="ef-chip" aria-pressed="false">属性乙</button>
+              <button class="ef-chip" aria-pressed="false">属性丙</button>
+            </div>
+          </div>
+          <div class="ef-filter-row">
+            <span class="ef-filter-row__label">状态</span>
+            <div class="ef-filter-row__options">
+              <button class="ef-chip" aria-pressed="true">全部</button>
+              <button class="ef-chip" aria-pressed="false">已归档</button>
+              <button class="ef-chip" aria-pressed="false">待复核</button>
+              <button class="ef-chip" aria-pressed="false">草稿</button>
+            </div>
+          </div>
+          <div class="ef-filter-row">
+            <span class="ef-filter-row__label">标签</span>
+            <div class="ef-filter-row__options">
+              <button class="ef-chip" aria-pressed="true">全部</button>
+              <button class="ef-chip" aria-pressed="false">标签一</button>
+              <button class="ef-chip" aria-pressed="false">标签二</button>
+              <button class="ef-chip" aria-pressed="false">标签三</button>
+              <button class="ef-chip" aria-pressed="false">标签四</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 结果区 ---------- -->
+      <section>
+        <div class="ef-row ef-row--between" style="margin-bottom:var(--ef-space-3)">
+          <span class="ef-eyebrow">共 128 条</span>
+          <label class="ef-row" style="gap:var(--ef-space-2)">
+            <span class="ef-label" style="text-transform:none">排序</span>
+            <select class="ef-select" style="width:auto">
+              <option>最近更新</option>
+              <option>名称升序</option>
+              <option>名称降序</option>
+              <option>等级从低到高</option>
+              <option>等级从高到低</option>
+            </select>
+          </label>
+        </div>
+
+        <div class="ef-grid ef-grid--cards">
+          <a class="ef-item-card" href="detail.html" data-tier="4">
+            <div class="ef-item-card__media" data-index="01" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称一</span>
+                <span class="ef-item-card__sub">// Item One</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 4">4</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="3">
+            <div class="ef-item-card__media" data-index="02" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称二</span>
+                <span class="ef-item-card__sub">// Item Two</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 3">3</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="5">
+            <div class="ef-item-card__media" data-index="03" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称三</span>
+                <span class="ef-item-card__sub">// Item Three</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 5">5</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="2">
+            <div class="ef-item-card__media" data-index="04" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称四</span>
+                <span class="ef-item-card__sub">// Item Four</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 2">2</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="6">
+            <div class="ef-item-card__media" data-index="05" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称五</span>
+                <span class="ef-item-card__sub">// Item Five</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 6">6</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="1">
+            <div class="ef-item-card__media" data-index="06" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称六</span>
+                <span class="ef-item-card__sub">// Item Six</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 1">1</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="3">
+            <div class="ef-item-card__media" data-index="07" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称七</span>
+                <span class="ef-item-card__sub">// Item Seven</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 3">3</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="4">
+            <div class="ef-item-card__media" data-index="08" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称八</span>
+                <span class="ef-item-card__sub">// Item Eight</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 4">4</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="2">
+            <div class="ef-item-card__media" data-index="09" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称九</span>
+                <span class="ef-item-card__sub">// Item Nine</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 2">2</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="5">
+            <div class="ef-item-card__media" data-index="10" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称十</span>
+                <span class="ef-item-card__sub">// Item Ten</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 5">5</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="1">
+            <div class="ef-item-card__media" data-index="11" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称十一</span>
+                <span class="ef-item-card__sub">// Item Eleven</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 1">1</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="6">
+            <div class="ef-item-card__media" data-index="12" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称十二</span>
+                <span class="ef-item-card__sub">// Item Twelve</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 6">6</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="4">
+            <div class="ef-item-card__media" data-index="13" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称十三</span>
+                <span class="ef-item-card__sub">// Item Thirteen</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 4">4</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="3">
+            <div class="ef-item-card__media" data-index="14" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称十四</span>
+                <span class="ef-item-card__sub">// Item Fourteen</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 3">3</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="5">
+            <div class="ef-item-card__media" data-index="15" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称十五</span>
+                <span class="ef-item-card__sub">// Item Fifteen</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 5">5</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="2">
+            <div class="ef-item-card__media" data-index="16" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称十六</span>
+                <span class="ef-item-card__sub">// Item Sixteen</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 2">2</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="6">
+            <div class="ef-item-card__media" data-index="17" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称十七</span>
+                <span class="ef-item-card__sub">// Item Seventeen</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 6">6</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+          <a class="ef-item-card" href="detail.html" data-tier="1">
+            <div class="ef-item-card__media" data-index="18" role="img" aria-label="条目缩略图占位"></div>
+            <div class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目名称十八</span>
+                <span class="ef-item-card__sub">// Item Eighteen</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span class="ef-badge--tier" aria-label="等级 1">1</span>
+              </span>
+            </div>
+            <div class="ef-tier-strip"></div>
+          </a>
+        </div>
+
+        <!-- ---------- 分页 ---------- -->
+        <nav aria-label="分页">
+          <div class="ef-pagination">
+            <a class="ef-pagination__link" href="list.html" aria-disabled="true">‹ 上一页</a>
+            <a class="ef-pagination__link" href="list.html" aria-current="page">1</a>
+            <a class="ef-pagination__link" href="list.html">2</a>
+            <a class="ef-pagination__link" href="list.html">3</a>
+            <a class="ef-pagination__link" href="list.html">下一页 ›</a>
+          </div>
+        </nav>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ================= 页脚 ================= -->
+  <footer class="ef-footer">
+    <div class="ef-footer__inner">
+      <div class="ef-row ef-row--between" style="align-items:flex-start">
+        <div class="ef-stack" style="gap:var(--ef-space-2)">
+          <span class="ef-label-pair"><b>档案库</b><i>Archive demo</i></span>
+          <span class="ef-hint">零构建 · 无 npm 依赖 · 全部资源相对路径，可直接双击打开</span>
+        </div>
+        <div class="ef-signal-bars">
+          <i></i><i></i><i></i><i></i><i></i><i class="is-active"></i><i></i><i></i>
+        </div>
+      </div>
+      <ul class="ef-footer__links">
+        <!-- TODO(Task 10): 以下四条改为 article.html -->
+        <li><a href="detail.html">关于本站</a></li>
+        <li><a href="detail.html">隐私政策</a></li>
+        <li><a href="detail.html">使用条款</a></li>
+        <li><a href="detail.html">联系我们</a></li>
+      </ul>
+      <p class="ef-footer__legal">示例内容，仅用于设计系统演示。所有名称与数据均为虚构。</p>
+    </div>
+  </footer>
+
+  <!-- 遮罩必须是 .ef-app 的子元素：显示规则是后代选择器 .ef-app.is-open .ef-scrim，
+       且不能带 hidden 属性，否则抽屉打开时遮罩永远不显示。 -->
+  <div class="ef-scrim" aria-hidden="true"></div>
+</div>
+
+<script src="../js/theme.js"></script>
+<script src="../js/ui.js"></script>
+</body>
+</html>

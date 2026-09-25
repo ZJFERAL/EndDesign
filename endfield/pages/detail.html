@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>条目名称一 · 档案库</title>
+<meta name="description" content="工业军事科幻 HUD 设计系统示例详情页：面包屑、页面标题区、图片查看器 + 信息面板双栏、选项卡数据表与数据来源提示。">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/utilities.css">
+<link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/components.css">
+<style>
+  /* 本页组合样式。双栏必须写成类而不是内联样式：内联样式无法被媒体查询覆盖，
+     窄屏下双栏就不会堆叠（brief 给的是同一组数值的内联写法）。 */
+  .ef-detail-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: var(--ef-space-6);
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .ef-detail-cols { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  /* viewer 在窄屏必须允许收缩：min-width:0 缺失时它的 min-content 宽度
+     会顶出横向滚动条。 */
+  .ef-detail-viewer { min-width: 0; }
+</style>
+<script>
+  (function () {
+    try {
+      var v = localStorage.getItem('ef-theme');
+      if (v === 'light' || v === 'dark') {
+        document.documentElement.setAttribute('data-theme', v);
+        document.documentElement.style.colorScheme = v;
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="ef-skip-link" href="#ef-main">跳到主内容</a>
+
+<div class="ef-app">
+
+  <!-- ================= 顶栏 ================= -->
+  <header class="ef-topbar">
+    <div class="ef-topbar__signal"></div>
+    <div class="ef-topbar__bar">
+      <button class="ef-icon-btn ef-sidebar-toggle" data-sidebar-toggle
+              aria-expanded="true" aria-controls="ef-sidebar" aria-label="切换侧栏">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+      <a class="ef-topbar__brand" href="home.html">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 1l6 7-6 7-6-7z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        档案库 <span class="ef-eyebrow">BETA</span>
+      </a>
+      <div class="ef-topbar__search">
+        <div class="ef-searchbar">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+          <input type="search" data-search-input placeholder="搜索条目、分类…" aria-label="搜索条目与分类">
+          <kbd class="ef-kbd">/</kbd>
+        </div>
+      </div>
+      <div class="ef-topbar__actions">
+        <button class="ef-icon-btn" data-theme-toggle aria-label="切换主题">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 010 12z" fill="currentColor"/></svg>
+        </button>
+        <!-- TODO(Task 11): 指向尚未创建的 login.html，暂时指向已存在的页面 -->
+        <a class="ef-btn ef-btn--sm" href="home.html">登录</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 侧栏 =================
+       尚未创建的页面（Task 10–12）暂时指向已存在的页面，链接上留 TODO 注释标明真实目标；
+       Task 13 验收前需逐条改回真实文件名。 -->
+  <aside class="ef-sidebar" id="ef-sidebar">
+    <nav class="ef-sidebar__section" aria-label="浏览">
+      <div class="ef-sidebar__section-title">浏览</div>
+      <a class="ef-sidebar__item" href="home.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13V7l6-4 6 4v6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span class="ef-label-pair"><b>首页</b><i>Home</i></span>
+      </a>
+      <!-- TODO(Task 10): 改为 index-page.html -->
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="2.5" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="9" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>分类索引</b><i>Index</i></span>
+      </a>
+      <!-- TODO(Task 10): 改为 changes.html -->
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3.2l2 1.4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>最近更改</b><i>Recent</i></span>
+      </a>
+    </nav>
+    <nav class="ef-sidebar__section" aria-label="内容分类">
+      <div class="ef-sidebar__section-title">内容分类</div>
+      <a class="ef-sidebar__item" href="list.html" aria-current="page">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>条目列表</b><i>Listing</i></span>
+      </a>
+      <!-- TODO(Task 11): 改为 search.html -->
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5l3 3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>搜索</b><i>Search</i></span>
+      </a>
+      <!-- TODO(Task 12): 改为 dashboard.html -->
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 13.5V2.5M2.5 13.5h11" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 11l3-4 2.5 2 3-4.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>仪表盘</b><i>Dashboard</i></span>
+      </a>
+      <!-- TODO(Task 11): 改为 settings.html -->
+      <a class="ef-sidebar__item" href="home.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        <span class="ef-label-pair"><b>设置</b><i>Settings</i></span>
+      </a>
+    </nav>
+    <div class="ef-sidebar__footer">
+      <button class="ef-btn ef-btn--sm" data-sidebar-toggle
+              aria-expanded="true" aria-controls="ef-sidebar" style="width:100%">收起侧栏</button>
+    </div>
+  </aside>
+
+  <!-- ================= 主内容 ================= -->
+  <main class="ef-main" id="ef-main">
+    <div class="ef-content ef-stack">
+
+      <!-- ---------- 页面标题区 ---------- -->
+      <div class="ef-page-header">
+        <nav aria-label="面包屑">
+          <ol class="ef-breadcrumb">
+            <li><a href="home.html">首页</a></li>
+            <li><a href="list.html">条目列表</a></li>
+            <li aria-current="page">条目名称一</li>
+          </ol>
+        </nav>
+        <div class="ef-page-header__row">
+          <div class="ef-page-header__main">
+            <span class="ef-eyebrow">// Item Detail</span>
+            <h1 class="ef-page-header__title ef-boot-title">条目名称一</h1>
+            <div class="ef-page-header__meta">
+              <span>最近编辑：2026/9/24 11:35</span>
+              <span>编辑：示例编辑者</span>
+              <span>摘要：更新条目档案</span>
+            </div>
+          </div>
+          <div class="ef-page-header__actions">
+            <button class="ef-btn ef-btn--sm">复制链接</button>
+            <button class="ef-btn ef-btn--sm">长截图</button>
+            <button class="ef-btn ef-btn--sm">阅读</button>
+            <button class="ef-btn ef-btn--sm">关注</button>
+            <button class="ef-btn ef-btn--sm">详细</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 图片查看器 + 信息面板 ---------- -->
+      <section class="ef-detail-cols">
+
+        <div class="ef-viewer ef-detail-viewer">
+          <div class="ef-viewer__toolbar">
+            <button class="ef-icon-btn" aria-label="缩小">−</button>
+            <span class="ef-viewer__zoom">100%</span>
+            <button class="ef-icon-btn" aria-label="放大">+</button>
+            <span class="ef-spacer"></span>
+            <button class="ef-icon-btn" aria-label="旋转">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 11-1.6-3.7M13 2v3.5H9.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+            <button class="ef-icon-btn" aria-label="全屏">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 6V2.5H6M10 2.5h3.5V6M13.5 10v3.5H10M6 13.5H2.5V10" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+          </div>
+          <div class="ef-viewer__stage">
+            <div class="ef-industrial-shell ef-corner-frame--all" style="width:70%;aspect-ratio:4/3" role="img" aria-label="条目主图占位：工业底纹与四角括号"></div>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-3)">
+            <div class="ef-row"><span class="ef-badge ef-badge--accent">ITEM</span></div>
+            <h2 style="margin:0;font-size:var(--ef-text-3xl);overflow-wrap:anywhere">条目名称一</h2>
+            <span class="ef-eyebrow">// Item One</span>
+            <div class="ef-row">
+              <span class="ef-badge ef-badge--tier" data-tier="3">分级 3</span>
+              <span class="ef-badge ef-badge--tier" data-tier="4">分级 4</span>
+              <span class="ef-badge ef-badge--tier" data-tier="5">分级 5</span>
+            </div>
+            <hr class="ef-divider" style="margin:0">
+            <dl class="ef-info-grid">
+              <dt class="ef-info-grid__key">编号</dt><dd class="ef-info-grid__value ef-mono">EX-0001</dd>
+              <dt class="ef-info-grid__key">类别</dt><dd class="ef-info-grid__value">类别一</dd>
+              <dt class="ef-info-grid__key">等级</dt><dd class="ef-info-grid__value">分级 4 · 精英</dd>
+              <dt class="ef-info-grid__key">属性</dt><dd class="ef-info-grid__value">属性甲</dd>
+              <dt class="ef-info-grid__key">状态</dt><dd class="ef-info-grid__value">已归档</dd>
+              <dt class="ef-info-grid__key">更新时间</dt><dd class="ef-info-grid__value ef-mono">2026/9/24 11:35</dd>
+            </dl>
+            <hr class="ef-divider" style="margin:0">
+            <p class="ef-muted" style="margin:0;font-size:var(--ef-text-sm)">
+              简介段落占位：本条目用于演示详情页的信息面板组合——分级徽标、键值网格与说明文字自上而下排列。
+              全部名称与数据均为虚构，不含任何真实产品信息。
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 选项卡数据表 ---------- -->
+      <section class="ef-panel">
+        <div class="ef-panel__header">
+          <span class="ef-panel__title">数据表</span>
+          <span class="ef-spacer"></span>
+          <span class="ef-badge ef-mono">2 个选项卡</span>
+        </div>
+        <div class="ef-panel__body">
+          <div data-tabs>
+            <div class="ef-tabs__list" role="tablist" aria-label="条目数据">
+              <button class="ef-tabs__tab" role="tab" id="detailTab1" aria-controls="detailPanel1" aria-selected="true">基础信息</button>
+              <button class="ef-tabs__tab" role="tab" id="detailTab2" aria-controls="detailPanel2" aria-selected="false" tabindex="-1">进阶信息</button>
+            </div>
+
+            <div class="ef-tabs__panel" role="tabpanel" id="detailPanel1" aria-labelledby="detailTab1" tabindex="0">
+              <div class="ef-table-wrap">
+                <table class="ef-table">
+                  <caption class="ef-sr-only">基础信息表：字段、取值与说明</caption>
+                  <thead>
+                    <tr><th scope="col">字段</th><th scope="col">取值</th><th scope="col">说明</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>编号</td><td class="ef-mono">EX-0001</td><td>唯一标识，等宽显示</td></tr>
+                    <tr><td>类别</td><td>类别一</td><td>所属内容分类</td></tr>
+                    <tr><td data-tier="4">等级</td><td><span class="ef-badge ef-badge--tier">分级 4</span></td><td>分级色由 data-tier 驱动</td></tr>
+                    <tr><td>属性</td><td>属性甲</td><td>主属性</td></tr>
+                    <tr><td>状态</td><td><span class="ef-badge ef-badge--success">已归档</span></td><td>归档后仍可检索</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="ef-tabs__panel" role="tabpanel" id="detailPanel2" aria-labelledby="detailTab2" tabindex="0" hidden>
+              <div class="ef-table-wrap">
+                <table class="ef-table">
+                  <caption class="ef-sr-only">进阶信息表：字段、取值与说明</caption>
+                  <thead>
+                    <tr><th scope="col">字段</th><th scope="col">取值</th><th scope="col">说明</th></tr>
+                  </thead>
+                  <tbody>
+                    <tr><td>来源</td><td>示例来源</td><td>数据出处</td></tr>
+                    <tr><td>版本</td><td class="ef-mono">v3</td><td>最近一次结构变更</td></tr>
+                    <tr><td>关联条目</td><td><a href="list.html">条目名称二</a></td><td>同分类下的相关条目</td></tr>
+                    <tr><td>复核</td><td><span class="ef-badge ef-badge--info">待复核</span></td><td>由编辑者提交复核</td></tr>
+                    <tr><td>备注</td><td>—</td><td>暂无</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- 数据来源说明 ---------- -->
+      <div class="ef-callout ef-callout--info">
+        <div>
+          <span class="ef-callout__title">数据来源</span>
+          本页全部字段取自示例数据集，仅用于演示详情页的信息层级与组件组合。数值与名称均为虚构占位，
+          不代表任何真实产品数据。
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= 页脚 ================= -->
+  <footer class="ef-footer">
+    <div class="ef-footer__inner">
+      <div class="ef-row ef-row--between" style="align-items:flex-start">
+        <div class="ef-stack" style="gap:var(--ef-space-2)">
+          <span class="ef-label-pair"><b>档案库</b><i>Archive demo</i></span>
+          <span class="ef-hint">零构建 · 无 npm 依赖 · 全部资源相对路径，可直接双击打开</span>
+        </div>
+        <div class="ef-signal-bars">
+          <i></i><i></i><i></i><i></i><i></i><i class="is-active"></i><i></i><i></i>
+        </div>
+      </div>
+      <ul class="ef-footer__links">
+        <!-- TODO(Task 10): 以下四条改为 article.html -->
+        <li><a href="detail.html">关于本站</a></li>
+        <li><a href="detail.html">隐私政策</a></li>
+        <li><a href="detail.html">使用条款</a></li>
+        <li><a href="detail.html">联系我们</a></li>
+      </ul>
+      <p class="ef-footer__legal">示例内容，仅用于设计系统演示。所有名称与数据均为虚构。</p>
+    </div>
+  </footer>
+
+  <!-- 遮罩必须是 .ef-app 的子元素：显示规则是后代选择器 .ef-app.is-open .ef-scrim，
+       且不能带 hidden 属性，否则抽屉打开时遮罩永远不显示。 -->
+  <div class="ef-scrim" aria-hidden="true"></div>
+</div>
+
+<script src="../js/theme.js"></script>
+<script src="../js/ui.js"></script>
+</body>
+</html>
