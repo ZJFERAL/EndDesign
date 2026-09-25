@@ -1733,6 +1733,12 @@ git commit -m "feat(endfield): 实现 13 种标志性视觉手法原子类"
   border-top: 1px solid var(--ef-border);
 }
 
+/* 侧栏折叠按钮：它承载 aria-expanded / aria-controls 契约，样式由 .ef-icon-btn 提供。
+   这里只做一个可定位的钩子，避免它沦为无定义的「死类」。 */
+.ef-sidebar-toggle {
+  flex: none;
+}
+
 /* ---------- 主内容区 ---------- */
 .ef-main {
   grid-area: main;

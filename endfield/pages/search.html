@@ -10,30 +10,7 @@
 <link rel="stylesheet" href="../css/layout.css">
 <link rel="stylesheet" href="../css/components.css">
 <style>
-  /* 本页组合样式：新闻区两栏与 Hero 统计块的断点行为无法用内联样式表达。 */
 
-  .ef-home-news {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    gap: var(--ef-space-4);
-  }
-
-  /* 统计块必须允许收缩并在窄屏换行：写成 flex:none 时它不肯收缩，
-     375px 下三个数字的宽度和会顶出横向滚动条。 */
-  .ef-home-hero-stats {
-    flex: 1 1 auto;
-    min-width: 0;
-    gap: var(--ef-space-8);
-    justify-content: flex-end;
-  }
-
-  @media (max-width: 900px) {
-    .ef-home-news { grid-template-columns: minmax(0, 1fr); }
-  }
-
-  @media (max-width: 720px) {
-    .ef-home-hero-stats { gap: var(--ef-space-5); justify-content: flex-start; }
-  }
 
 
   /* 搜索结果双栏：窄屏时筛选侧栏移到结果上方（DOM 顺序即已是筛选在前）。 */
@@ -47,6 +24,9 @@
   @media (max-width: 900px) {
     .ef-search-cols { grid-template-columns: minmax(0, 1fr); }
   }
+
+  /* 筛选面板在窄屏改为整行显示，不再与结果并排。 */
+  .ef-search-filters { min-width: 0; }
 
   /* 命中词高亮：用 background-color 而非简写，避免重置 background-image。 */
   mark {

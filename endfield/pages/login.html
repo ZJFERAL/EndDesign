@@ -9,32 +9,6 @@
 <link rel="stylesheet" href="../css/utilities.css">
 <link rel="stylesheet" href="../css/layout.css">
 <link rel="stylesheet" href="../css/components.css">
-<style>
-  /* 本页组合样式：新闻区两栏与 Hero 统计块的断点行为无法用内联样式表达。 */
-
-  .ef-home-news {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    gap: var(--ef-space-4);
-  }
-
-  /* 统计块必须允许收缩并在窄屏换行：写成 flex:none 时它不肯收缩，
-     375px 下三个数字的宽度和会顶出横向滚动条。 */
-  .ef-home-hero-stats {
-    flex: 1 1 auto;
-    min-width: 0;
-    gap: var(--ef-space-8);
-    justify-content: flex-end;
-  }
-
-  @media (max-width: 900px) {
-    .ef-home-news { grid-template-columns: minmax(0, 1fr); }
-  }
-
-  @media (max-width: 720px) {
-    .ef-home-hero-stats { gap: var(--ef-space-5); justify-content: flex-start; }
-  }
-</style>
 <script>
   (function () {
     try {
