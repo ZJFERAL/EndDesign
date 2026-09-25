@@ -628,6 +628,10 @@ console.log(`已同步令牌：${source} → ${target}`);
 
   a {
     color: inherit;
+    /* preflight 把 a 的 text-decoration 设成 inherit，会连 UA 的下划线一起去掉；
+       css/base.css 只调下划线的颜色与偏移、依赖下划线本身存在，故必须显式恢复，
+       否则 React 层的裸 <a>（如 TimelineTitle）没有下划线，与 HTML 层不一致。 */
+    text-decoration-line: underline;
     text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
     text-underline-offset: 3px;
   }
@@ -640,13 +644,23 @@ console.log(`已同步令牌：${source} → ${target}`);
   ol {
     margin: 0 0 var(--ef-space-4);
     padding-left: 1.25em;
+    /* preflight 设了 ol,ul,menu { list-style: none }，抹掉 UA 的符号；
+       css/base.css 不设 list-style、依赖 UA 默认（ul 为 disc、ol 为 decimal），
+       故用 revert 归还各元素各自的 UA 默认值，而不是硬编码成同一个值。 */
+    list-style: revert;
   }
 
   /* img/video 的 max-width 与 height 由 preflight 提供，但 svg 不在其中，
-     故整条照搬以保证三个元素一致。 */
+     故整条照搬以保证三个元素一致。
+     另需归还 display：preflight 把 img/svg/video 等替换元素设成 display: block，
+     而 css/base.css 依赖它们默认为行内级（其 vertical-align: middle 只在行内级
+     盒子上生效，被 block 化后即为死声明）。实测 300px 宽容器内「文字 + 24px 图片
+     + 文字」的段落高度：HTML 层 25.67px、React 层 72px（图片被单独拆到一行）。
+     用 revert 而非 inline —— 归还各元素各自的 UA 默认显示类型。 */
   img,
   svg,
   video {
+    display: revert;
     max-width: 100%;
     height: auto;
     vertical-align: middle;
