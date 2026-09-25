@@ -4225,6 +4225,9 @@ git commit -m "feat(endfield): 实现结构组件样式（面板/卡片/表格/�
 
     if (scrim) {
       scrim.addEventListener('click', function () {
+        // 宽屏下 .ef-scrim 是 display:none，真实点击到不了它；
+        // 但合成事件仍会触发，会把可见的侧栏错误标记为 aria-hidden。
+        if (!isNarrow()) return;
         app.classList.remove('is-open');
         // 与点击/Esc 分支保持完全一致：只改 aria-expanded 会漏掉
         // sidebar 的 aria-hidden，抽屉视觉上关了但仍被读屏认为可交互。
