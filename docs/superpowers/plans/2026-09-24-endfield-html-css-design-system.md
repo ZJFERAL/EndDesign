@@ -2002,7 +2002,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   padding: 0.55rem 1rem;
   border: 1px solid var(--ef-btn-border);
   border-radius: var(--ef-radius);
-  background: var(--ef-btn-bg);
+  background-color: var(--ef-btn-bg);
   color: var(--ef-btn-fg);
   font-family: var(--ef-font-sans);
   font-size: var(--ef-text-sm);
@@ -2019,7 +2019,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
 
 .ef-btn:hover {
   border-color: var(--ef-border-strong);
-  background: color-mix(in srgb, var(--ef-btn-bg) 88%, var(--ef-ink) 12%);
+  background-color: color-mix(in srgb, var(--ef-btn-bg) 88%, var(--ef-ink) 12%);
 }
 
 .ef-btn:active {
@@ -2048,7 +2048,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
 }
 
 .ef-btn--primary:hover {
-  background: var(--ef-accent-strong);
+  background-color: var(--ef-accent-strong);
   border-color: var(--ef-accent-strong);
 }
 
@@ -2060,7 +2060,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
 }
 
 .ef-btn--secondary:hover {
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
 }
 
 /* 幽灵按钮 */
@@ -2071,7 +2071,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
 }
 
 .ef-btn--ghost:hover {
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   border-color: transparent;
   color: var(--ef-ink);
 }
@@ -2084,7 +2084,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
 }
 
 .ef-btn--danger:hover {
-  background: color-mix(in srgb, var(--ef-danger) 82%, #000000);
+  background-color: color-mix(in srgb, var(--ef-danger) 82%, #000000);
   border-color: color-mix(in srgb, var(--ef-danger) 82%, #000000);
 }
 
@@ -2132,7 +2132,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   height: 32px;
   padding: 0;
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink-muted);
   cursor: pointer;
   --ef-chamfer-size: var(--ef-chamfer-sm);
@@ -2150,7 +2150,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
 }
 
 .ef-icon-btn:hover {
-  background: var(--ef-accent);
+  background-color: var(--ef-accent);
   color: var(--ef-accent-fg);
 }
 
@@ -2196,7 +2196,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
   color: var(--ef-ink);
   font-family: var(--ef-font-sans);
   font-size: var(--ef-text-sm);
@@ -2221,7 +2221,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
 .ef-select:focus {
   outline: none;
   border-color: var(--ef-accent-ink);
-  background: var(--ef-surface);
+  background-color: var(--ef-surface);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--ef-accent) 30%, transparent);
 }
 
@@ -2287,7 +2287,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   height: 1rem;
   margin: 0;
   border: 1px solid var(--ef-border-strong);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
   cursor: pointer;
   transition:
     background-color var(--ef-duration-fast) var(--ef-ease-out),
@@ -2332,7 +2332,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   height: 6px;
   margin: 4px auto;
   border-radius: 50%;
-  background: var(--ef-accent-fg);
+  background-color: var(--ef-accent-fg);
 }
 
 /* 开关 */
@@ -2354,7 +2354,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   margin: 0;
   border: 1px solid var(--ef-border-strong);
   border-radius: var(--ef-radius-pill);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
   cursor: pointer;
   transition:
     background-color var(--ef-duration-base) var(--ef-ease-out),
@@ -2369,7 +2369,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   width: calc(1.25rem - 6px);
   height: calc(1.25rem - 6px);
   border-radius: 50%;
-  background: var(--ef-ink-subtle);
+  background-color: var(--ef-ink-subtle);
   transition:
     transform var(--ef-duration-base) var(--ef-ease-out-quint),
     background-color var(--ef-duration-base) var(--ef-ease-out);
@@ -2377,12 +2377,12 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
 
 .ef-switch input:checked {
   border-color: var(--ef-accent-strong);
-  background: var(--ef-accent);
+  background-color: var(--ef-accent);
 }
 
 .ef-switch input:checked::after {
   transform: translateX(1rem);
-  background: var(--ef-accent-fg);
+  background-color: var(--ef-accent-fg);
 }
 ```
 
@@ -2402,7 +2402,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   padding: 0.1em 0.5em;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink-muted);
   font-family: var(--ef-font-mono);
   font-size: 0.6875rem;
@@ -2413,18 +2413,18 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
 
 /* tint 填充用原色；其中文字与描边必须用 *-ink —— 原色在自身 12% tint 上
    亮色主题仅 1.92–4.01:1，全部低于 4.5:1。 */
-.ef-badge--info    { border-color: var(--ef-info-ink);    color: var(--ef-info-ink);    background: color-mix(in srgb, var(--ef-info) 12%, transparent); }
-.ef-badge--success { border-color: var(--ef-success-ink); color: var(--ef-success-ink); background: color-mix(in srgb, var(--ef-success) 12%, transparent); }
-.ef-badge--warn    { border-color: var(--ef-warn-ink);    color: var(--ef-warn-ink);    background: color-mix(in srgb, var(--ef-warn) 12%, transparent); }
-.ef-badge--danger  { border-color: var(--ef-danger-ink);  color: var(--ef-danger-ink);  background: color-mix(in srgb, var(--ef-danger) 12%, transparent); }
-.ef-badge--accent  { border-color: var(--ef-accent-strong); color: var(--ef-accent-fg); background: var(--ef-accent); }
+.ef-badge--info    { border-color: var(--ef-info-ink);    color: var(--ef-info-ink);    background-color: color-mix(in srgb, var(--ef-info) 12%, transparent); }
+.ef-badge--success { border-color: var(--ef-success-ink); color: var(--ef-success-ink); background-color: color-mix(in srgb, var(--ef-success) 12%, transparent); }
+.ef-badge--warn    { border-color: var(--ef-warn-ink);    color: var(--ef-warn-ink);    background-color: color-mix(in srgb, var(--ef-warn) 12%, transparent); }
+.ef-badge--danger  { border-color: var(--ef-danger-ink);  color: var(--ef-danger-ink);  background-color: color-mix(in srgb, var(--ef-danger) 12%, transparent); }
+.ef-badge--accent  { border-color: var(--ef-accent-strong); color: var(--ef-accent-fg); background-color: var(--ef-accent); }
 
 /* 分级徽标：色由 data-tier 决定 */
 .ef-badge--tier {
   /* 文字与描边用分级 ink 色，tint 填充用分级原色（见 [data-tier] 的映射） */
   border-color: var(--ef-tier-ink, var(--ef-border));
   color: var(--ef-tier-ink, var(--ef-ink-muted));
-  background: color-mix(in srgb, var(--ef-tier-color, transparent) 14%, transparent);
+  background-color: color-mix(in srgb, var(--ef-tier-color, transparent) 14%, transparent);
 }
 
 /* ---------- 标签（可选中，用于筛选行） ---------- */
@@ -2442,7 +2442,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   padding: 0.3rem 0.7rem;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius-pill);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink-muted);
   font-size: var(--ef-text-sm);
   line-height: 1.3;
@@ -2483,7 +2483,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   height: 1px;
   margin: var(--ef-space-4) 0;
   border: 0;
-  background: var(--ef-border);
+  background-color: var(--ef-border);
 }
 
 .ef-divider--labeled {
@@ -2491,7 +2491,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   align-items: center;
   gap: var(--ef-space-3);
   height: auto;
-  background: none;
+  background-color:  none;
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-xs);
   letter-spacing: var(--ef-tracking-caps);
@@ -2504,7 +2504,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   content: "";
   flex: 1 1 auto;
   height: 1px;
-  background: var(--ef-border);
+  background-color: var(--ef-border);
 }
 
 /* ---------- 键盘提示 ---------- */
@@ -2516,7 +2516,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   border: 1px solid var(--ef-border);
   border-bottom-width: 2px;
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-surface-raised);
+  background-color: var(--ef-surface-raised);
   color: var(--ef-ink-muted);
   font-family: var(--ef-font-mono);
   font-size: 0.6875rem;
@@ -2534,7 +2534,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   width: 36px;
   height: 36px;
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink-muted);
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-sm);
@@ -2576,7 +2576,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   display: block;
   height: 1em;
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   background-image: linear-gradient(
     90deg,
     transparent,
@@ -2600,12 +2600,12 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   overflow: hidden;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
 }
 
 .ef-progress__bar {
   height: 100%;
-  background: var(--ef-accent);
+  background-color: var(--ef-accent);
   transition: width var(--ef-duration-slow) var(--ef-ease-out-quint);
 }
 
@@ -2623,7 +2623,7 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   transform: translateX(-50%);
   padding: 0.3rem 0.55rem;
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-tooltip);
+  background-color: var(--ef-tooltip);
   color: var(--ef-tooltip-fg);
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-xs);
@@ -2731,7 +2731,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   gap: var(--ef-space-3);
   padding: var(--ef-space-3) var(--ef-space-4);
   border-bottom: 1px solid var(--ef-border);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
 }
 
 .ef-panel__title {
@@ -2750,7 +2750,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   gap: var(--ef-space-2);
   padding: var(--ef-space-3) var(--ef-space-4);
   border-top: 1px solid var(--ef-border);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
 }
 
 /* ---------- 区块头 ---------- */
@@ -2797,7 +2797,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   flex: none;
   width: 3px;
   height: 1.1em;
-  background: var(--ef-accent-ink);
+  background-color: var(--ef-accent-ink);
 }
 
 .ef-section-header__actions {
@@ -2844,13 +2844,13 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   display: flex;
   flex-direction: column;
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface-raised);
+  background-color: var(--ef-surface-raised);
   overflow: hidden;
 }
 
 .ef-card__media {
   aspect-ratio: 16 / 9;
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   overflow: hidden;
 }
 
@@ -2886,7 +2886,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   flex-direction: column;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius-0);
-  background: var(--ef-surface-raised);
+  background-color: var(--ef-surface-raised);
   color: inherit;
   text-decoration: none;
   overflow: hidden;
@@ -2903,7 +2903,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 .ef-item-card__media {
   position: relative;
   aspect-ratio: 1 / 1;
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   overflow: hidden;
 }
 
@@ -2989,7 +2989,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   gap: var(--ef-space-3);
   padding: var(--ef-space-4);
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface-raised);
+  background-color: var(--ef-surface-raised);
 }
 
 .ef-stat-card__icon {
@@ -2999,7 +2999,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   flex: none;
   width: 40px;
   height: 40px;
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-accent-ink);
   --ef-chamfer-size: var(--ef-chamfer-sm);
   clip-path: polygon(
@@ -3079,7 +3079,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   border: 1px solid var(--ef-border);
   /* 3px 边框属图形，需 >=3:1：原色做边框亮色主题下 success 仅 2.00:1，故用 ink */
   border-left: 3px solid var(--ef-callout-ink, var(--ef-callout-color));
-  background: color-mix(in srgb, var(--ef-callout-color) 7%, var(--ef-surface));
+  background-color: color-mix(in srgb, var(--ef-callout-color) 7%, var(--ef-surface));
   font-size: var(--ef-text-sm);
 }
 
@@ -3103,7 +3103,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   position: relative;
   margin: 0 0 var(--ef-space-4);
   border: 1px solid var(--ef-border);
-  background: var(--ef-code-bg);
+  background-color: var(--ef-code-bg);
   color: var(--ef-code-fg);
 }
 
@@ -3125,7 +3125,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   margin: 0;
   border: 0;
   border-radius: 0;
-  background: none;
+  background-color:  none;
 }
 ```
 
@@ -3144,7 +3144,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 .ef-table thead th {
   padding: var(--ef-space-2) var(--ef-space-3);
   border-bottom: 1px solid var(--ef-border);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-xs);
   font-weight: var(--ef-weight-medium);
@@ -3166,7 +3166,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 }
 
 .ef-table tbody tr:hover {
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
 }
 
 .ef-table__sort {
@@ -3175,7 +3175,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   gap: 0.3em;
   padding: 0;
   border: 0;
-  background: none;
+  background-color:  none;
   color: inherit;
   font: inherit;
   letter-spacing: inherit;
@@ -3217,7 +3217,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   top: 6px;
   bottom: 6px;
   width: 1px;
-  background: var(--ef-border);
+  background-color: var(--ef-border);
 }
 
 .ef-timeline__item {
@@ -3232,7 +3232,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   top: 5px;
   width: 9px;
   height: 9px;
-  background: var(--ef-border-strong);
+  background-color: var(--ef-border-strong);
   --ef-chamfer-size: 3px;
   clip-path: polygon(
     0 0,
@@ -3245,7 +3245,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 }
 
 .ef-timeline__item--accent::before {
-  background: var(--ef-accent-ink);
+  background-color: var(--ef-accent-ink);
 }
 
 .ef-timeline__time {
@@ -3305,7 +3305,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 }
 
 .ef-accordion > details > summary:hover {
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
 }
 
 .ef-accordion__body {
@@ -3326,7 +3326,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   padding: var(--ef-space-2) var(--ef-space-4);
   border: 0;
   border-bottom: 2px solid transparent;
-  background: none;
+  background-color:  none;
   color: var(--ef-ink-muted);
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-xs);
@@ -3375,7 +3375,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   min-width: 12rem;
   padding: var(--ef-space-1);
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface-raised);
+  background-color: var(--ef-surface-raised);
   box-shadow: 0 6px 20px rgb(0 0 0 / 25%);
 }
 
@@ -3390,7 +3390,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   width: 100%;
   padding: var(--ef-space-2) var(--ef-space-3);
   border: 0;
-  background: none;
+  background-color:  none;
   color: var(--ef-ink-muted);
   font-size: var(--ef-text-sm);
   text-align: left;
@@ -3400,14 +3400,14 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 
 .ef-dropdown__item:hover,
 .ef-dropdown__item:focus-visible {
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink);
 }
 
 .ef-dropdown__sep {
   height: 1px;
   margin: var(--ef-space-1) 0;
-  background: var(--ef-border);
+  background-color: var(--ef-border);
 }
 
 /* ---------- 模态 ---------- */
@@ -3428,7 +3428,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 .ef-modal__scrim {
   position: absolute;
   inset: 0;
-  background: rgb(0 0 0 / 60%);
+  background-color: rgb(0 0 0 / 60%);
 }
 
 .ef-modal__panel {
@@ -3439,7 +3439,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   display: flex;
   flex-direction: column;
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface-raised);
+  background-color: var(--ef-surface-raised);
   animation: ef-corner-in 0.25s var(--ef-ease-out-quint) both;
 }
 
@@ -3449,7 +3449,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   gap: var(--ef-space-3);
   padding: var(--ef-space-3) var(--ef-space-4);
   border-bottom: 1px solid var(--ef-border);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
 }
 
 .ef-modal__title {
@@ -3485,7 +3485,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   display: flex;
   flex-direction: column;
   border-left: 1px solid var(--ef-border);
-  background: var(--ef-surface-raised);
+  background-color: var(--ef-surface-raised);
   animation: ef-drawer-in 0.25s var(--ef-ease-out-quint) both;
 }
 
@@ -3522,7 +3522,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   border: 1px solid var(--ef-border);
   /* 3px 边框属图形，需 >=3:1：原色做边框亮色主题下 success 仅 2.12:1，故用 ink */
   border-left: 3px solid var(--ef-toast-ink, var(--ef-toast-color));
-  background: var(--ef-surface-raised);
+  background-color: var(--ef-surface-raised);
   font-size: var(--ef-text-sm);
   box-shadow: 0 6px 20px rgb(0 0 0 / 25%);
   pointer-events: auto;
@@ -3550,7 +3550,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   height: 2rem;
   padding: 0 0.5rem;
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface-raised);
+  background-color: var(--ef-surface-raised);
   color: var(--ef-ink-muted);
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-sm);
@@ -3565,7 +3565,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 
 .ef-pagination__link[aria-current="page"] {
   border-color: var(--ef-accent-strong);
-  background: var(--ef-accent);
+  background-color: var(--ef-accent);
   color: var(--ef-accent-fg);
   font-weight: var(--ef-weight-semibold);
 }
@@ -3665,7 +3665,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   padding: 0.5rem 2.5rem 0.5rem 2.2rem;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
   color: var(--ef-ink);
   font-size: var(--ef-text-sm);
 }
@@ -3673,7 +3673,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 .ef-searchbar > input:focus {
   outline: none;
   border-color: var(--ef-accent-ink);
-  background: var(--ef-surface);
+  background-color: var(--ef-surface);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--ef-accent) 30%, transparent);
 }
 
@@ -3757,7 +3757,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   display: flex;
   flex-direction: column;
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
 }
 
 .ef-viewer__toolbar {
@@ -3766,7 +3766,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   gap: var(--ef-space-1);
   padding: var(--ef-space-2);
   border-bottom: 1px solid var(--ef-border);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
 }
 
 .ef-viewer__zoom {
@@ -3805,14 +3805,14 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   gap: 3px;
   padding: var(--ef-space-3);
   border: 1px solid var(--ef-border);
-  background: var(--ef-heatmap-bg);
+  background-color: var(--ef-heatmap-bg);
   overflow-x: auto;
 }
 
 .ef-heatmap > span {
   width: 11px;
   height: 11px;
-  background: var(--ef-heatmap-empty);
+  background-color: var(--ef-heatmap-empty);
 }
 
 /* 强度由 --ef-heat 控制 0–4 */
@@ -3893,7 +3893,7 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   content: "";
   width: 10px;
   height: 10px;
-  background: var(--ef-legend-color, var(--ef-accent-ink));
+  background-color: var(--ef-legend-color, var(--ef-accent-ink));
 }
 
 /* ---------- 页面标题区 ---------- */
