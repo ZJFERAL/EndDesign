@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>页面不存在 · 档案库</title>
+<meta name="description" content="404 错误页模板：居中布局、徽标与返回操作。">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/utilities.css">
+<link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/components.css">
+<style>
+  /* 本页组合样式：新闻区两栏与 Hero 统计块的断点行为无法用内联样式表达。 */
+
+  .ef-home-news {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    gap: var(--ef-space-4);
+  }
+
+  /* 统计块必须允许收缩并在窄屏换行：写成 flex:none 时它不肯收缩，
+     375px 下三个数字的宽度和会顶出横向滚动条。 */
+  .ef-home-hero-stats {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: var(--ef-space-8);
+    justify-content: flex-end;
+  }
+
+  @media (max-width: 900px) {
+    .ef-home-news { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  @media (max-width: 720px) {
+    .ef-home-hero-stats { gap: var(--ef-space-5); justify-content: flex-start; }
+  }
+</style>
+<script>
+  (function () {
+    try {
+      var v = localStorage.getItem('ef-theme');
+      if (v === 'light' || v === 'dark') {
+        document.documentElement.setAttribute('data-theme', v);
+        document.documentElement.style.colorScheme = v;
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="ef-skip-link" href="#ef-main">跳到主内容</a>
+
+<!-- 本页刻意不使用侧栏：错误页是独立的居中单栏场景 -->
+<div class="ef-topbar">
+  <div class="ef-topbar__signal"></div>
+  <div class="ef-topbar__bar">
+    <a class="ef-topbar__brand" href="home.html">
+      <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 1l6 7-6 7-6-7z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      档案库
+    </a>
+    <div class="ef-spacer"></div>
+    <button class="ef-icon-btn" data-theme-toggle aria-label="切换主题">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 010 12z" fill="currentColor"/></svg>
+    </button>
+  </div>
+</div>
+
+<main id="ef-main" class="ef-industrial-shell"
+      style="min-height:calc(100vh - var(--ef-header-bar-h) - var(--ef-header-signal-h));
+             display:flex;align-items:center;justify-content:center;padding:var(--ef-space-6)">
+  <div style="text-align:center;max-width:32rem">
+    <span class="ef-badge ef-badge--warn">404</span>
+    <h1 style="margin:var(--ef-space-4) 0 0;font-size:var(--ef-text-5xl);overflow-wrap:anywhere">页面不存在</h1>
+    <p class="ef-muted" style="margin:var(--ef-space-3) 0 0">这个页面暂时找不到。可能链接已失效，或页面已被移动。</p>
+    <div class="ef-row" style="justify-content:center;margin-top:var(--ef-space-6)">
+      <a class="ef-btn ef-btn--primary" href="home.html">返回首页</a>
+      <a class="ef-btn" href="search.html">搜索条目</a>
+    </div>
+    <div class="ef-signal-bars" style="justify-content:center;margin-top:var(--ef-space-8)">
+      <i></i><i></i><i></i><i class="is-active"></i><i></i><i></i><i></i>
+    </div>
+  </div>
+</main>
+
+<script src="../js/theme.js"></script>
+</body>
+</html>
