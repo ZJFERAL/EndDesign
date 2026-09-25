@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>文章标题示例 · 档案库</title>
+<meta name="description" content="工业军事科幻 HUD 设计系统示例文章页：面包屑、页面标题区、正文小节、数据表、代码块、折叠面板、提示框与右侧目录。">
+<link rel="stylesheet" href="../css/base.css">
+<link rel="stylesheet" href="../css/utilities.css">
+<link rel="stylesheet" href="../css/layout.css">
+<link rel="stylesheet" href="../css/components.css">
+<style>
+  /* 本页组合样式：双栏与目录在窄屏的重排无法用内联样式表达，
+     内联样式不会被媒体查询覆盖。 */
+  .ef-article-cols {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    gap: var(--ef-space-8);
+    align-items: start;
+  }
+
+  /* 窄屏：目录移到正文上方（brief 允许「移到正文上方或隐藏」）。
+     用 order 而不是 display:none，保留 IntersectionObserver 的章节高亮；
+     同时必须解除 sticky —— 单列下 sticky 会让目录整篇滚动时钉在顶部占掉视口。 */
+  @media (max-width: 900px) {
+    .ef-article-cols { grid-template-columns: minmax(0, 1fr); }
+    .ef-article-cols > .ef-toc { order: -1; position: static; }
+  }
+
+  /* .ef-h2-title 是 display:inline —— box-decoration-break: clone 只在行内盒
+     被拆成多行片段时才逐行重绘下划线；而行内盒的垂直 margin 无效，
+     所以小节间距必须由包裹的 <section> 与其段落的 margin 提供，
+     不能靠给标题加 margin（那样在行内盒上会被忽略）。 */
+  .ef-article__section { margin-bottom: var(--ef-space-8); }
+  .ef-article__section > p { margin-top: var(--ef-space-3); }
+  .ef-article__section > h3 { margin-top: var(--ef-space-6); }
+
+  /* 目录锚点跳转后标题不应被 sticky 顶栏盖住 */
+  .ef-article h2,
+  .ef-article h3 {
+    scroll-margin-top: calc(var(--ef-header-bar-h) + var(--ef-header-signal-h) + var(--ef-space-4));
+  }
+</style>
+<script>
+  (function () {
+    try {
+      var v = localStorage.getItem('ef-theme');
+      if (v === 'light' || v === 'dark') {
+        document.documentElement.setAttribute('data-theme', v);
+        document.documentElement.style.colorScheme = v;
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="ef-skip-link" href="#ef-main">跳到主内容</a>
+
+<div class="ef-app">
+
+  <!-- ================= 顶栏 ================= -->
+  <header class="ef-topbar">
+    <div class="ef-topbar__signal"></div>
+    <div class="ef-topbar__bar">
+      <button class="ef-icon-btn ef-sidebar-toggle" data-sidebar-toggle
+              aria-expanded="true" aria-controls="ef-sidebar" aria-label="切换侧栏">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+      <a class="ef-topbar__brand" href="home.html">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 1l6 7-6 7-6-7z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        档案库 <span class="ef-eyebrow">BETA</span>
+      </a>
+      <div class="ef-topbar__search">
+        <div class="ef-searchbar">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+          <input type="search" data-search-input placeholder="搜索条目、分类…" aria-label="搜索条目与分类">
+          <kbd class="ef-kbd">/</kbd>
+        </div>
+      </div>
+      <div class="ef-topbar__actions">
+        <button class="ef-icon-btn" data-theme-toggle aria-label="切换主题">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 010 12z" fill="currentColor"/></svg>
+        </button>
+        <!-- TODO(Task 11): 指向尚未创建的 login.html，暂时指向已存在的页面 -->
+        <a class="ef-btn ef-btn--sm" href="home.html">登录</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 侧栏 =================
+       尚未创建的页面（Task 11–12）暂时指向已存在的页面，链接上留 TODO 注释标明真实目标；
+       Task 13 验收前需逐条改回真实文件名。
+       文章页不属于侧栏任一分类，故本页不加 aria-current。 -->
+  <aside class="ef-sidebar" id="ef-sidebar">
+    <nav class="ef-sidebar__section" aria-label="浏览">
+      <div class="ef-sidebar__section-title">浏览</div>
+      <a class="ef-sidebar__item" href="home.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13V7l6-4 6 4v6" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span class="ef-label-pair"><b>首页</b><i>Home</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="index-page.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="2.5" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="2.5" y="9" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><rect x="9" y="9" width="4.5" height="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>分类索引</b><i>Index</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="changes.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 5v3.2l2 1.4" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>最近更改</b><i>Recent</i></span>
+      </a>
+    </nav>
+    <nav class="ef-sidebar__section" aria-label="内容分类">
+      <div class="ef-sidebar__section-title">内容分类</div>
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>条目列表</b><i>Listing</i></span>
+      </a>
+      <!-- TODO(Task 11): 改为 search.html -->
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5l3 3" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>搜索</b><i>Search</i></span>
+      </a>
+      <!-- TODO(Task 12): 改为 dashboard.html -->
+      <a class="ef-sidebar__item" href="list.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 13.5V2.5M2.5 13.5h11" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M4.5 11l3-4 2.5 2 3-4.5" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span class="ef-label-pair"><b>仪表盘</b><i>Dashboard</i></span>
+      </a>
+      <!-- TODO(Task 11): 改为 settings.html -->
+      <a class="ef-sidebar__item" href="home.html">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+        <span class="ef-label-pair"><b>设置</b><i>Settings</i></span>
+      </a>
+    </nav>
+    <div class="ef-sidebar__footer">
+      <!-- 不要在这里再放一个侧栏折叠按钮：ui.js 只更新被点击的那个按钮的
+           aria-expanded，两个折叠按钮会各自持有一份状态，用遮罩或 Esc 关闭后
+           另一个仍停留在 true。侧栏折叠只由顶栏那一个按钮负责，此处放静态文字。 -->
+      <p class="ef-subtle ef-mono" style="margin:0;font-size:var(--ef-text-xs)">v1.0 · 零构建静态站</p>
+    </div>
+  </aside>
+
+  <!-- ================= 主内容 ================= -->
+  <main class="ef-main" id="ef-main">
+    <div class="ef-content ef-stack">
+
+      <!-- ---------- 页面标题区 ---------- -->
+      <div class="ef-page-header">
+        <nav aria-label="面包屑">
+          <ol class="ef-breadcrumb">
+            <li><a href="home.html">首页</a></li>
+            <li><a href="index-page.html">分类索引</a></li>
+            <li aria-current="page">文章标题示例</li>
+          </ol>
+        </nav>
+        <div class="ef-page-header__row">
+          <div class="ef-page-header__main">
+            <span class="ef-eyebrow">// Article</span>
+            <h1 class="ef-page-header__title ef-boot-title">文章标题示例</h1>
+            <div class="ef-page-header__meta">
+              <span>最近编辑：2026/9/24 11:35</span>
+              <span>编辑：示例编辑者</span>
+            </div>
+          </div>
+          <div class="ef-page-header__actions">
+            <button class="ef-btn ef-btn--sm">复制链接</button>
+            <button class="ef-btn ef-btn--sm">编辑</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ---------- 正文 + 目录 ---------- -->
+      <div class="ef-article-cols">
+
+        <article class="ef-article">
+          <div class="ef-callout ef-callout--info">
+            <div>
+              <span class="ef-callout__title">提示</span>
+              本页演示文章排版：小节标题、数据表、代码块、折叠面板与脚注自上而下排列。
+              文中全部名称、编号与数值均为虚构占位，不含任何真实产品信息。
+            </div>
+          </div>
+
+          <section class="ef-article__section">
+            <h2 class="ef-h2-title" id="sec-overview">概述</h2>
+            <p>
+              本条目示例用于演示文章页的排版层级：二级标题下的段落、三级标题、数据表与代码块
+              依次排布，读者可借助右侧目录快速跳转到任意小节。
+            </p>
+            <p>
+              宽屏下正文与目录各占一列，正文列宽为内容区减去 16rem 的目录列；窄屏下目录移到正文
+              上方，正文恢复单列，表格则在自身容器内横向滚动，不会撑破页面。
+            </p>
+            <h3 id="sec-scope">收录范围</h3>
+            <p>
+              本页仅覆盖占位示例，不含任何真实条目、真实数值或可识别的产品名称；所有示例编号
+              形如「EX-0001」，仅用于演示等宽字体的排布效果。
+            </p>
+          </section>
+
+          <section class="ef-article__section">
+            <h2 class="ef-h2-title" id="sec-fields">字段说明</h2>
+            <p>
+              下表列出示例条目的四个核心字段及其取值说明，用于演示表格在正文中的排布，
+              以及在窄屏下的横向滚动兜底。
+            </p>
+            <div class="ef-table-wrap">
+              <table class="ef-table">
+                <caption class="ef-sr-only">字段说明表：字段、取值与说明</caption>
+                <thead>
+                  <tr><th scope="col">字段</th><th scope="col">取值</th><th scope="col">说明</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>编号</td><td class="ef-mono">EX-0001</td><td>唯一标识，等宽显示</td></tr>
+                  <tr><td>类别</td><td>类别一</td><td>所属内容分类</td></tr>
+                  <!-- data-tier 必须与分级徽标同格：自定义属性只沿 DOM 向下继承，
+                       放在隔壁 <td> 上徽标读不到 --ef-tier-color/--ef-tier-ink，
+                       会退化成灰底灰字。 -->
+                  <tr><td>分级</td><td data-tier="4"><span class="ef-badge ef-badge--tier">分级 4</span></td><td>分级色由 data-tier 驱动</td></tr>
+                  <tr><td>状态</td><td><span class="ef-badge ef-badge--success">已归档</span></td><td>归档后仍可检索</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>
+              字段名一律使用等宽字体显示；取值较长时按容器宽度换行，不会撑破正文列。
+              表格外层始终包一层横向滚动容器，列数增加时也不会影响页面宽度。
+            </p>
+            <h3 id="sec-values">取值约定</h3>
+            <p>
+              同一字段在不同条目中的取值格式保持一致：编号固定为两段式，类别取自分类索引，
+              分级为 1–6 的整数，状态只允许「已归档」「待复核」「草稿」三种。
+            </p>
+          </section>
+
+          <section class="ef-article__section">
+            <h2 class="ef-h2-title" id="sec-usage">使用方式</h2>
+            <p>
+              复制下方片段并替换选择器即可复用本节结构；片段中的类名与设计系统保持一致，
+              不需要新增任何构建步骤或依赖。
+            </p>
+            <div class="ef-code">
+              <div class="ef-code__head">
+                <span>示例：叠加手法类的正确写法</span>
+                <span class="ef-row" style="gap:var(--ef-space-2)">
+                  <span class="ef-badge ef-mono">HTML</span>
+                  <button class="ef-btn ef-btn--sm">复制</button>
+                </span>
+              </div>
+              <pre><code>&lt;!-- 底色用 background-color，底纹交给手法类 --&gt;
+&lt;div class="ef-panel ef-industrial-shell ef-corner-frame--all"&gt;…&lt;/div&gt;
+
+&lt;!-- 不要写 background 简写：它会重置 background-image，
+     把同一元素上手法类设置的网格、扫描线一并清掉 --&gt;</code></pre>
+            </div>
+            <p>
+              折叠面板用于收纳次要说明：第一项默认展开，其余按需展开，脚本缺席时全部内容
+              依然可读。
+            </p>
+            <div class="ef-accordion">
+              <details open>
+                <summary>标题为什么写成行内盒？</summary>
+                <div class="ef-accordion__body">
+                  渐变下划线由 <code>box-decoration-break: clone</code> 逐行重绘，
+                  只有行内盒被拆成多个行片段时才会生效；标题一旦变成块级盒，
+                  下划线就只会画在最后一行下方。
+                </div>
+              </details>
+              <details>
+                <summary>表格在窄屏怎么处理？</summary>
+                <div class="ef-accordion__body">
+                  表格外层包一个 <code>.ef-table-wrap</code>，它在窄屏横向滚动；
+                  正文列使用 <code>minmax(0, 1fr)</code> 允许收缩，因此表格不会顶破页面。
+                </div>
+              </details>
+              <details>
+                <summary>目录高亮由谁驱动？</summary>
+                <div class="ef-accordion__body">
+                  由 <code>EFUI</code> 的 IntersectionObserver 驱动：滚动到某个小节时，
+                  目录中对应的链接获得 <code>is-active</code>。每个标题的 <code>id</code>
+                  必须与目录里的 <code>href</code> 一一对应。
+                </div>
+              </details>
+            </div>
+          </section>
+
+          <div class="ef-callout ef-callout--warn">
+            <div>
+              <span class="ef-callout__title">注意</span>
+              本节的编号、分级与状态均为占位数据。替换为真实数据前，请先确认字段格式与
+              文字对比度要求，不要手写颜色值。
+            </div>
+          </div>
+
+          <div class="ef-divider--labeled">脚注</div>
+          <ol>
+            <li>示例数据集中所有条目名称、编号与数值均为虚构。</li>
+            <li>分级色取自设计系统令牌，文字与描边使用对应的 ink 变体以保证对比度。</li>
+            <li>本页不依赖任何构建步骤，全部资源使用相对路径。</li>
+          </ol>
+        </article>
+
+        <nav class="ef-toc" aria-label="本页目录">
+          <p class="ef-toc__title">本页目录</p>
+          <ul class="ef-toc__list">
+            <li><a href="#sec-overview">概述</a></li>
+            <li><a href="#sec-scope" class="ef-toc__sub">收录范围</a></li>
+            <li><a href="#sec-fields">字段说明</a></li>
+            <li><a href="#sec-values" class="ef-toc__sub">取值约定</a></li>
+            <li><a href="#sec-usage">使用方式</a></li>
+          </ul>
+        </nav>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ================= 页脚 ================= -->
+  <footer class="ef-footer">
+    <div class="ef-footer__inner">
+      <div class="ef-row ef-row--between" style="align-items:flex-start">
+        <div class="ef-stack" style="gap:var(--ef-space-2)">
+          <span class="ef-label-pair"><b>档案库</b><i>Archive demo</i></span>
+          <span class="ef-hint">零构建 · 无 npm 依赖 · 全部资源相对路径，可直接双击打开</span>
+        </div>
+        <div class="ef-signal-bars">
+          <i></i><i></i><i></i><i></i><i></i><i class="is-active"></i><i></i><i></i>
+        </div>
+      </div>
+      <ul class="ef-footer__links">
+        <li><a href="article.html">关于本站</a></li>
+        <li><a href="article.html">隐私政策</a></li>
+        <li><a href="article.html">使用条款</a></li>
+        <li><a href="article.html">联系我们</a></li>
+      </ul>
+      <p class="ef-footer__legal">示例内容，仅用于设计系统演示。所有名称与数据均为虚构。</p>
+    </div>
+  </footer>
+
+  <!-- 遮罩必须是 .ef-app 的子元素：显示规则是后代选择器 .ef-app.is-open .ef-scrim，
+       且不能带 hidden 属性，否则抽屉打开时遮罩永远不显示。 -->
+  <div class="ef-scrim" aria-hidden="true"></div>
+</div>
+
+<script src="../js/theme.js"></script>
+<script src="../js/ui.js"></script>
+</body>
+</html>
