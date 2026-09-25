@@ -2491,7 +2491,8 @@ git commit -m "feat(endfield): 实现顶栏/侧栏/内容区/页脚布局骨架�
   align-items: center;
   gap: var(--ef-space-3);
   height: auto;
-  background-color:  none;
+  background-color: transparent;
+  background-image: none;
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-xs);
   letter-spacing: var(--ef-tracking-caps);
@@ -3125,7 +3126,8 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   margin: 0;
   border: 0;
   border-radius: 0;
-  background-color:  none;
+  background-color: transparent;
+  background-image: none;
 }
 ```
 
@@ -3175,7 +3177,8 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   gap: 0.3em;
   padding: 0;
   border: 0;
-  background-color:  none;
+  background-color: transparent;
+  background-image: none;
   color: inherit;
   font: inherit;
   letter-spacing: inherit;
@@ -3326,7 +3329,8 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   padding: var(--ef-space-2) var(--ef-space-4);
   border: 0;
   border-bottom: 2px solid transparent;
-  background-color:  none;
+  background-color: transparent;
+  background-image: none;
   color: var(--ef-ink-muted);
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-xs);
@@ -3390,7 +3394,8 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
   width: 100%;
   padding: var(--ef-space-2) var(--ef-space-3);
   border: 0;
-  background-color:  none;
+  background-color: transparent;
+  background-image: none;
   color: var(--ef-ink-muted);
   font-size: var(--ef-text-sm);
   text-align: left;
