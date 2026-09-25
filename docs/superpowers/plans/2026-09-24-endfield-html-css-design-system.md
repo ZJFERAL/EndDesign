@@ -284,6 +284,8 @@ dist/
   --ef-heading-rule: #adadad;
   --ef-heatmap-bg: #f4f5f7;
   --ef-heatmap-empty: #e7e9ec;
+  /* 热力图递增色：亮色下用深黄才能拉开亮度差（见 .ef-heatmap 注释） */
+  --ef-heat-ramp: #8c5b00;
 
   /* ---------- 浮层与代码 ---------- */
   --ef-tooltip: #18181b;
@@ -341,6 +343,7 @@ dist/
     --ef-heading-rule: #6c6c6c;
     --ef-heatmap-bg: #202020;
     --ef-heatmap-empty: #2c2c2c;
+    --ef-heat-ramp: #d8bf00;
 
     --ef-tooltip: #f4f4f5;
     --ef-tooltip-fg: #18181b;
@@ -392,6 +395,7 @@ html[data-theme="dark"] {
   --ef-heading-rule: #6c6c6c;
   --ef-heatmap-bg: #202020;
   --ef-heatmap-empty: #2c2c2c;
+  --ef-heat-ramp: #d8bf00;
 
   --ef-tooltip: #f4f4f5;
   --ef-tooltip-fg: #18181b;
@@ -916,6 +920,11 @@ th,
     --ef-tier-4-ink: #4e3f82;
     --ef-tier-5-ink: #6a4500;
     --ef-tier-6-ink: #83281e;
+    /* 热力图若不钉，暗色主题打印会输出深色块（.ef-heatmap 是这两个令牌的
+       首个消费者，原 print 块未覆盖它们） */
+    --ef-heatmap-bg: #ffffff;
+    --ef-heatmap-empty: #e7e9ec;
+    --ef-heat-ramp: #6b4500;
     --ef-grid-line: transparent;
     --ef-scanline: transparent;
     --ef-weave-line: transparent;
@@ -3821,10 +3830,14 @@ git commit -m "feat(endfield): 实现原子组件样式（按钮/表单/徽标/�
 }
 
 /* 强度由 --ef-heat 控制 0–4 */
-.ef-heatmap > span[data-level="1"] { background: color-mix(in srgb, var(--ef-accent) 30%, var(--ef-heatmap-empty)); }
-.ef-heatmap > span[data-level="2"] { background: color-mix(in srgb, var(--ef-accent) 55%, var(--ef-heatmap-empty)); }
-.ef-heatmap > span[data-level="3"] { background: color-mix(in srgb, var(--ef-accent) 78%, var(--ef-heatmap-empty)); }
-.ef-heatmap > span[data-level="4"] { background: var(--ef-accent); }
+/* 用 --ef-heat-ramp 而非 --ef-accent 做递增色：亮色主题的 accent 是亮黄
+   (#f2cc00)，混入浅灰底后各级亮度只差 1.04–1.10:1，肉眼分不出深浅；
+   改用 accent-ink 家族的深黄后各级拉开到 1.27–1.94:1。暗色主题的
+   accent 本身够亮，直接复用即可。 */
+.ef-heatmap > span[data-level="1"] { background-color: color-mix(in srgb, var(--ef-heat-ramp) 18%, var(--ef-heatmap-empty)); }
+.ef-heatmap > span[data-level="2"] { background-color: color-mix(in srgb, var(--ef-heat-ramp) 38%, var(--ef-heatmap-empty)); }
+.ef-heatmap > span[data-level="3"] { background-color: color-mix(in srgb, var(--ef-heat-ramp) 62%, var(--ef-heatmap-empty)); }
+.ef-heatmap > span[data-level="4"] { background-color: var(--ef-heat-ramp); }
 
 /* ---------- 图表（纯 SVG，无第三方库） ---------- */
 .ef-chart {
