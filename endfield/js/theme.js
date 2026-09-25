@@ -76,11 +76,17 @@
   // 首帧前应用，避免主题闪烁
   apply(read());
 
-  document.addEventListener('DOMContentLoaded', function () {
-    document.addEventListener('click', function (e) {
-      var btn = e.target.closest('[data-theme-toggle]');
-      if (btn) EFTheme.toggle();
-    });
-    syncButtons(read());
+  // 监听器立即注册，不放进 DOMContentLoaded —— 事件委托不依赖 DOM 就绪，
+  // 若脚本在 DOMContentLoaded 之后才注入，放进回调会导致点击切换永久失效
+  // （ui.js 用 readyState 判断处理了同一问题，两个文件需保持一致）。
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-theme-toggle]');
+    if (btn) EFTheme.toggle();
   });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { syncButtons(read()); });
+  } else {
+    syncButtons(read());
+  }
 })();
