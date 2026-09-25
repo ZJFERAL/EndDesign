@@ -386,6 +386,95 @@
   h5 { font-size: var(--ef-text-lg); }
   h6 { font-size: var(--ef-text-base); }
 
+  /* 以下元素重置逐条对齐 css/base.css:62-147。Tailwind preflight 不能替代：
+     它在 p 的底边距、a 的下划线、ul/ol 缩进、code/pre 外观、hr、table 宽度上
+     都与本设计系统不一致（见各条注释）。 */
+
+  p {
+    margin: 0 0 var(--ef-space-4);
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+    text-underline-offset: 3px;
+  }
+
+  a:hover {
+    text-decoration-color: currentColor;
+  }
+
+  ul,
+  ol {
+    margin: 0 0 var(--ef-space-4);
+    padding-left: 1.25em;
+  }
+
+  /* img/video 的 max-width 与 height 由 preflight 提供，但 svg 不在其中，
+     故整条照搬以保证三个元素一致。 */
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
+    vertical-align: middle;
+  }
+
+  /* preflight 给的是 1em，本系统要求 0.9em，故必须覆写。 */
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--ef-font-mono);
+    font-size: 0.9em;
+  }
+
+  code {
+    padding: 0.1em 0.35em;
+    border: 1px solid var(--ef-border);
+    border-radius: var(--ef-radius-sm);
+    /* 用 background-color 而非简写：简写会重置 background-image，
+       抹掉可能叠加在同一元素上的手法类底纹。 */
+    background-color: var(--ef-code-bg);
+    color: var(--ef-code-fg);
+    /* 行内代码常含无空格的长标识符；不换行会把窄屏页面撑出横向滚动条
+       （实测 375px 下 scrollWidth 429 vs clientWidth 360）。 */
+    overflow-wrap: anywhere;
+  }
+
+  pre {
+    margin: 0 0 var(--ef-space-4);
+    padding: var(--ef-space-4);
+    overflow-x: auto;
+    border: 1px solid var(--ef-border);
+    border-radius: var(--ef-radius);
+    background: var(--ef-code-bg);
+    color: var(--ef-code-fg);
+    line-height: var(--ef-leading-relaxed);
+  }
+
+  pre code {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+  }
+
+  /* preflight 只给了 height/color/border-top-width，缺本系统的外边距与描边，
+     不补齐会让 Divider 这类组件与浏览器默认样式互相打架。 */
+  hr {
+    margin: var(--ef-space-6) 0;
+    border: 0;
+    border-top: 1px solid var(--ef-border);
+  }
+
+  /* preflight 有 border-collapse，但没有 width: 100%。 */
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
   :focus-visible {
     outline: 2px solid var(--ef-info);
     outline-offset: 2px;
