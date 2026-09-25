@@ -1,0 +1,2109 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>设计系统总览 · 令牌与组件索引</title>
+<meta name="description" content="工业军事科幻 HUD 风格设计系统的可视化索引：令牌色板、排版尺度、全部组件示例、动效演示与实时调色。">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/utilities.css">
+<link rel="stylesheet" href="css/layout.css">
+<link rel="stylesheet" href="css/components.css">
+<script>
+  (function () {
+    try {
+      var v = localStorage.getItem('ef-theme');
+      if (v === 'light' || v === 'dark') {
+        document.documentElement.setAttribute('data-theme', v);
+        document.documentElement.style.colorScheme = v;
+      }
+    } catch (e) {}
+  })();
+</script>
+</head>
+<body>
+<a class="ef-skip-link" href="#ef-main">跳到主内容</a>
+
+<div class="ef-app">
+
+  <!-- ================= 顶栏 ================= -->
+  <header class="ef-topbar">
+    <div class="ef-topbar__signal"></div>
+    <div class="ef-topbar__bar">
+      <button class="ef-icon-btn" data-sidebar-toggle aria-expanded="true" aria-controls="ef-sidebar" aria-label="切换侧栏">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+      <a class="ef-topbar__brand" href="index.html">
+        <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 1l6 7-6 7-6-7z" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        设计系统 <span class="ef-eyebrow">总览</span>
+      </a>
+      <div class="ef-topbar__search">
+        <div class="ef-searchbar">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+          <input type="search" data-search-input placeholder="搜索令牌、组件…" aria-label="搜索令牌与组件">
+          <kbd class="ef-kbd">/</kbd>
+        </div>
+      </div>
+      <div class="ef-topbar__actions">
+        <button class="ef-icon-btn" data-theme-toggle aria-label="切换主题">
+          <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 2a6 6 0 010 12z" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 侧栏：本页章节锚点 ================= -->
+  <aside class="ef-sidebar" id="ef-sidebar">
+    <nav class="ef-sidebar__section" aria-label="基础">
+      <div class="ef-sidebar__section-title">基础</div>
+      <a class="ef-sidebar__item" href="#tokens">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="5" height="5" fill="currentColor"/><rect x="9" y="2" width="5" height="5" fill="currentColor"/><rect x="2" y="9" width="5" height="5" fill="currentColor"/><rect x="9" y="9" width="5" height="5" fill="currentColor"/></svg>
+        <span class="ef-label-pair"><b>令牌色板</b><i>Tokens</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#tiers">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13V8M8 13V3M13 13V6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        <span class="ef-label-pair"><b>分级色</b><i>Tiers</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#type">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3h10M8 3v10M5.5 13h5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+        <span class="ef-label-pair"><b>排版尺度</b><i>Type</i></span>
+      </a>
+    </nav>
+
+    <nav class="ef-sidebar__section" aria-label="组件">
+      <div class="ef-sidebar__section-title">组件</div>
+      <a class="ef-sidebar__item" href="#buttons">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="5.5" width="11" height="5" rx="1" fill="none" stroke="currentColor"/></svg>
+        <span class="ef-label-pair"><b>按钮</b><i>Buttons</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#forms">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="4" fill="none" stroke="currentColor"/><path d="M2.5 11.5h11" fill="none" stroke="currentColor"/></svg>
+        <span class="ef-label-pair"><b>表单</b><i>Forms</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#badges">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6 6-6 6-6-6z" fill="none" stroke="currentColor"/></svg>
+        <span class="ef-label-pair"><b>徽标与标签</b><i>Badges</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#cards">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" fill="none" stroke="currentColor"/><path d="M2.5 6.5h11" fill="none" stroke="currentColor"/></svg>
+        <span class="ef-label-pair"><b>卡片</b><i>Cards</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#panels">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="3.5" width="11" height="9" fill="none" stroke="currentColor"/><path d="M2.5 6.5h11" fill="none" stroke="currentColor"/></svg>
+        <span class="ef-label-pair"><b>面板与区块头</b><i>Panels</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#tables">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h11M2.5 8h11M2.5 11.5h11M6.5 2.5v11" fill="none" stroke="currentColor"/></svg>
+        <span class="ef-label-pair"><b>表格</b><i>Tables</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#timeline">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="5.5" fill="none" stroke="currentColor"/><path d="M8 5v3.2l2 1.4" fill="none" stroke="currentColor"/></svg>
+        <span class="ef-label-pair"><b>时间线</b><i>Timeline</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#disclosure">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+        <span class="ef-label-pair"><b>折叠与选项卡</b><i>Disclosure</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#overlays">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2.5" y="2.5" width="11" height="11" fill="none" stroke="currentColor" stroke-dasharray="2 2"/></svg>
+        <span class="ef-label-pair"><b>模态与 Toast</b><i>Overlays</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#pagination">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="3.5" cy="8" r="1.2" fill="currentColor"/><circle cx="8" cy="8" r="1.2" fill="currentColor"/><circle cx="12.5" cy="8" r="1.2" fill="currentColor"/></svg>
+        <span class="ef-label-pair"><b>分页与面包屑</b><i>Paging</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#infogrid">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 4h4M3 8h4M3 12h4M9 4h4M9 8h4M9 12h4" fill="none" stroke="currentColor"/></svg>
+        <span class="ef-label-pair"><b>信息网格</b><i>Info grid</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#charts">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 13.5V2.5M2.5 13.5h11" fill="none" stroke="currentColor"/><path d="M4 11l3-4 3 2 3-5" fill="none" stroke="currentColor"/></svg>
+        <span class="ef-label-pair"><b>图表</b><i>Charts</i></span>
+      </a>
+    </nav>
+
+    <nav class="ef-sidebar__section" aria-label="演示">
+      <div class="ef-sidebar__section-title">演示</div>
+      <a class="ef-sidebar__item" href="#motion">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l8 5-8 5z" fill="currentColor"/></svg>
+        <span class="ef-label-pair"><b>动效演示</b><i>Motion</i></span>
+      </a>
+      <a class="ef-sidebar__item" href="#tuning">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 5h11M2.5 11h11" fill="none" stroke="currentColor"/><circle cx="6" cy="5" r="1.7" fill="currentColor"/><circle cx="10" cy="11" r="1.7" fill="currentColor"/></svg>
+        <span class="ef-label-pair"><b>实时调色</b><i>Tuning</i></span>
+      </a>
+    </nav>
+
+    <div class="ef-sidebar__footer">
+      <p class="ef-subtle ef-mono" style="margin:0;font-size:var(--ef-text-xs)">v1.0 · 零构建静态站</p>
+    </div>
+  </aside>
+
+  <!-- ================= 主内容 ================= -->
+  <main class="ef-main" id="ef-main">
+    <div class="ef-content ef-stack">
+
+      <div class="ef-page-header">
+        <nav aria-label="面包屑">
+          <ol class="ef-breadcrumb">
+            <li><a href="#tokens">设计系统</a></li>
+            <li>总览</li>
+          </ol>
+        </nav>
+        <div class="ef-page-header__row">
+          <div class="ef-page-header__main">
+            <span class="ef-eyebrow">// Design System Index</span>
+            <h1 class="ef-page-header__title ef-boot-title">工业 HUD 设计系统</h1>
+            <div class="ef-page-header__meta">
+              <span>零构建 · 纯静态</span>
+              <span>令牌 142 个</span>
+              <span>13 种视觉手法</span>
+              <span>双主题</span>
+            </div>
+          </div>
+          <div class="ef-page-header__actions">
+            <a class="ef-btn ef-btn--primary" href="#tuning">实时调色</a>
+            <a class="ef-btn" href="#charts">查看图表</a>
+          </div>
+        </div>
+      </div>
+
+      <p class="ef-muted" style="max-width:52rem">
+        本页是这套设计系统的可视化索引：左侧色板给出浅色与深色两套取值，随后逐节展示全部组件与动效。
+        所有内容为中性占位文案；页面只消费 <code>css/</code> 下的样式与 <code>js/</code> 下的脚本，无构建步骤、无第三方依赖。
+      </p>
+
+      <!-- ================= 1. 令牌色板 ================= -->
+      <section id="tokens" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Tokens</span>
+            <h2 class="ef-section-header__title">令牌色板</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge">浅 / 深 并排</span>
+          </div>
+        </div>
+
+        <p class="ef-muted" style="max-width:52rem">
+          两列分别取自 <code>tokens.css</code> 的 <code>:root</code> 与暗色块，与本页当前主题无关，便于对照。
+          半透明值（<code>rgb()</code> 与带 alpha 的十六进制）的色块显示为叠在各自表面色上的合成结果，文字仍标出原始声明。
+        </p>
+
+        <div class="ef-panel">
+          <div class="ef-panel__header">
+            <span class="ef-panel__title">表面与文字</span>
+            <span class="ef-spacer"></span>
+            <span class="ef-badge ef-mono">5 + 4</span>
+          </div>
+          <div class="ef-table-wrap">
+            <table class="ef-table">
+              <thead>
+                <tr><th scope="col">令牌</th><th scope="col">浅色</th><th scope="col">深色</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>--ef-surface-sunken</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#ebebeb"></span><code>#ebebeb</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#121212"></span><code>#121212</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-surface</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#ffffff"></span><code>#ffffff</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#181818"></span><code>#181818</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-surface-muted</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#f5f5f5"></span><code>#f5f5f5</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#1f1f1f"></span><code>#1f1f1f</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-surface-raised</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#ffffff"></span><code>#ffffff</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#232323"></span><code>#232323</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-surface-inverse</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#000000"></span><code>#000000</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#f8fafc"></span><code>#f8fafc</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-ink</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#000000"></span><code>#000000</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#eeeeee"></span><code>#eeeeee</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-ink-muted</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#3a3a3a"></span><code>#3a3a3a</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#a8b0b7"></span><code>#a8b0b7</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-ink-subtle</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#606060"></span><code>#606060</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#bababa"></span><code>rgb(255 255 255 / 70%)</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-ink-inverse</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#ffffff"></span><code>#ffffff</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#111827"></span><code>#111827</code></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__header">
+            <span class="ef-panel__title">描边与装饰</span>
+            <span class="ef-spacer"></span>
+            <span class="ef-badge ef-mono">12</span>
+          </div>
+          <div class="ef-table-wrap">
+            <table class="ef-table">
+              <thead>
+                <tr><th scope="col">令牌</th><th scope="col">浅色</th><th scope="col">深色</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>--ef-border</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#bcbcbc"></span><code>#bcbcbc</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#2b3136"></span><code>#2b3136</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-border-strong</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#808080"></span><code>#808080</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#41484f"></span><code>#41484f</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-grid-line</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#e0e0e0"></span><code>#e0e0e0</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#252525"></span><code>#ffffff0e</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-scanline</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#f2f2f2"></span><code>rgb(0 0 0 / 5%)</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#242424"></span><code>rgb(255 255 255 / 5%)</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-weave-line</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#f2f2f2"></span><code>rgb(0 0 0 / 5%)</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#1e1e1e"></span><code>rgb(255 255 255 / 2.5%)</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-heading-bracket</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#797979"></span><code>#797979</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#8c8c8c"></span><code>#8c8c8c</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-heading-bar</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#c2c2c2"></span><code>#c2c2c2</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#5c5c5c"></span><code>#5c5c5c</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-heading-bar-fade</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#f6f6f6"></span><code>#c2c2c226</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#222222"></span><code>#5c5c5c26</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-heading-rule</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#adadad"></span><code>#adadad</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#6c6c6c"></span><code>#6c6c6c</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-heatmap-bg</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#f4f5f7"></span><code>#f4f5f7</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#202020"></span><code>#202020</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-heatmap-empty</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#e7e9ec"></span><code>#e7e9ec</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#2c2c2c"></span><code>#2c2c2c</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-heat-ramp</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#8c5b00"></span><code>#8c5b00</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#d8bf00"></span><code>#d8bf00</code></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header">
+              <span class="ef-panel__title">主色（五件套 + 前景）</span>
+            </div>
+            <div class="ef-table-wrap">
+              <table class="ef-table">
+                <thead>
+                  <tr><th scope="col">令牌</th><th scope="col">浅色</th><th scope="col">深色</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>--ef-accent</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#f2cc00"></span><code>#f2cc00</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#d8bf00"></span><code>#d8bf00</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-accent-strong</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#d9ad00"></span><code>#d9ad00</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#b99b00"></span><code>#b99b00</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-accent-soft</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#fff1a6"></span><code>#fff1a6</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#272302"></span><code>#272302</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-accent-glow</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#ffd84a"></span><code>#ffd84a</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#ecd548"></span><code>#ecd548</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-accent-fg</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#111827"></span><code>#111827</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#111827"></span><code>#111827</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-accent-ink</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#8a6d00"></span><code>#8a6d00</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#d8bf00"></span><code>#d8bf00</code></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-3)">
+              <p class="ef-muted" style="margin:0">
+                主色分两层：原色用于<strong>填充</strong>，<code>*-ink</code> 用于<strong>文字与细图形</strong>。
+                亮色主题下 <code>#f2cc00</code> 在白底仅 1.57:1，做文字不达标，因此分叉出更深的 <code>#8a6d00</code>。
+              </p>
+              <div class="ef-row">
+                <span class="ef-badge ef-badge--accent">填充：accent + accent-fg</span>
+                <span class="ef-mono" style="color:var(--ef-accent-ink);font-size:var(--ef-text-sm)">文字：--ef-accent-ink</span>
+                <span style="flex:none;width:28px;height:3px;background-color:var(--ef-accent-ink)"></span>
+                <span style="flex:none;width:28px;height:3px;background-color:var(--ef-accent)"></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header">
+              <span class="ef-panel__title">语义色与信号色</span>
+            </div>
+            <div class="ef-table-wrap">
+              <table class="ef-table">
+                <thead>
+                  <tr><th scope="col">令牌</th><th scope="col">浅色</th><th scope="col">深色</th></tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>--ef-info</code> / <code>--ef-info-ink</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#248dff"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#1960ae"></span><code>#248dff / #1960ae</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#248dff"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#419cff"></span><code>#248dff / #419cff</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-success</code> / <code>--ef-success-ink</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#00c7bd"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#006e69"></span><code>#00c7bd / #006e69</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#00c7bd"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#00c7bd"></span><code>#00c7bd / #00c7bd</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-warn</code> / <code>--ef-warn-ink</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#d97706"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#914f04"></span><code>#d97706 / #914f04</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#d97706"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#dd851f"></span><code>#d97706 / #dd851f</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-danger</code> / <code>--ef-danger-ink</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#dc2626"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#b31f1f"></span><code>#dc2626 / #b31f1f</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#dc2626"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#e76d6d"></span><code>#dc2626 / #e76d6d</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-system</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#00c7bd"></span><code>#00c7bd</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#00c7bd"></span><code>#00c7bd</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-signal-yellow</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#fffa00"></span><code>#fffa00</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#fffa00"></span><code>#fffa00</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-signal-cyan</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#00ffa2"></span><code>#00ffa2</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#00ffa2"></span><code>#00ffa2</code></span></td>
+                  </tr>
+                  <tr>
+                    <td><code>--ef-signal-magenta</code></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#ff00f0"></span><code>#ff00f0</code></span></td>
+                    <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#ff00f0"></span><code>#ff00f0</code></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-2)">
+              <p class="ef-muted" style="margin:0">
+                语义色与信号色与主题无关，只有 <code>*-ink</code> 会在暗色主题下分叉；上表两列同值即为「两主题相同」。
+              </p>
+              <div class="ef-row">
+                <span class="ef-badge ef-badge--info">信息</span>
+                <span class="ef-badge ef-badge--success">成功</span>
+                <span class="ef-badge ef-badge--warn">警告</span>
+                <span class="ef-badge ef-badge--danger">危险</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__header">
+            <span class="ef-panel__title">浮层与代码</span>
+            <span class="ef-spacer"></span>
+            <span class="ef-badge ef-mono">4</span>
+          </div>
+          <div class="ef-table-wrap">
+            <table class="ef-table">
+              <thead>
+                <tr><th scope="col">令牌</th><th scope="col">浅色</th><th scope="col">深色</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>--ef-tooltip</code> / <code>--ef-tooltip-fg</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#18181b"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#fafafa"></span><code>#18181b / #fafafa</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#f4f4f5"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#18181b"></span><code>#f4f4f5 / #18181b</code></span></td>
+                </tr>
+                <tr>
+                  <td><code>--ef-code-bg</code> / <code>--ef-code-fg</code></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#f5f5f5"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#111827"></span><code>#f5f5f5 / #111827</code></span></td>
+                  <td><span class="ef-row" style="gap:var(--ef-space-2)"><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#101013"></span><span style="flex:none;width:18px;height:18px;border:1px solid var(--ef-border-strong);background-color:#e6e8eb"></span><code>#101013 / #e6e8eb</code></span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 1b. 形状 / 动效 / 层级 ================= -->
+      <section id="shapes" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Shape · Motion · Layers</span>
+            <h2 class="ef-section-header__title">非色彩令牌</h2>
+          </div>
+        </div>
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">形状与尺寸</span></div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-4)">
+              <div class="ef-row">
+                <span style="width:56px;height:32px;background-color:var(--ef-surface-muted);border:1px solid var(--ef-border);border-radius:var(--ef-radius-0)"></span>
+                <span class="ef-mono ef-subtle">--ef-radius-0 = 0px</span>
+              </div>
+              <div class="ef-row">
+                <span style="width:56px;height:32px;background-color:var(--ef-surface-muted);border:1px solid var(--ef-border);border-radius:var(--ef-radius-sm)"></span>
+                <span class="ef-mono ef-subtle">--ef-radius-sm = 2px</span>
+              </div>
+              <div class="ef-row">
+                <span style="width:56px;height:32px;background-color:var(--ef-surface-muted);border:1px solid var(--ef-border);border-radius:var(--ef-radius)"></span>
+                <span class="ef-mono ef-subtle">--ef-radius = 4px</span>
+              </div>
+              <div class="ef-row">
+                <span style="width:56px;height:32px;background-color:var(--ef-surface-muted);border:1px solid var(--ef-border);border-radius:var(--ef-radius-pill)"></span>
+                <span class="ef-mono ef-subtle">--ef-radius-pill = 6px</span>
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-row">
+                <span class="ef-chamfer" style="width:64px;height:32px;background-color:var(--ef-accent)"></span>
+                <span class="ef-mono ef-subtle">--ef-chamfer = 9px</span>
+              </div>
+              <div class="ef-row">
+                <span class="ef-chamfer-sm" style="width:64px;height:32px;background-color:var(--ef-accent)"></span>
+                <span class="ef-mono ef-subtle">--ef-chamfer-sm = 6px</span>
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-row">
+                <span class="ef-mono ef-subtle">--ef-grid-size = 24px · --ef-header-bar-h = 56px · --ef-header-signal-h = 3px · --ef-sidebar-w = 214px / --ef-sidebar-w-collapsed = 56px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">缓动、时长与层级</span></div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-3)">
+              <div class="ef-info-grid">
+                <p class="ef-info-grid__key">--ef-ease-out</p><p class="ef-info-grid__value ef-mono">cubic-bezier(0, 0, 0.2, 1)</p>
+                <p class="ef-info-grid__key">--ef-ease-out-quart</p><p class="ef-info-grid__value ef-mono">cubic-bezier(0.25, 1, 0.5, 1)</p>
+                <p class="ef-info-grid__key">--ef-ease-out-quint</p><p class="ef-info-grid__value ef-mono">cubic-bezier(0.22, 1, 0.36, 1)</p>
+                <p class="ef-info-grid__key">--ef-ease-out-expo</p><p class="ef-info-grid__value ef-mono">cubic-bezier(0.16, 1, 0.3, 1)</p>
+                <p class="ef-info-grid__key">--ef-ease-in-out</p><p class="ef-info-grid__value ef-mono">cubic-bezier(0.4, 0, 0.2, 1)</p>
+                <p class="ef-info-grid__key">--ef-duration-fast</p><p class="ef-info-grid__value ef-mono">0.15s</p>
+                <p class="ef-info-grid__key">--ef-duration-base</p><p class="ef-info-grid__value ef-mono">0.25s</p>
+                <p class="ef-info-grid__key">--ef-duration-slow</p><p class="ef-info-grid__value ef-mono">0.4s</p>
+                <p class="ef-info-grid__key">--ef-z-rail … --ef-z-tooltip</p><p class="ef-info-grid__value ef-mono">20 / 30 / 40 / 40 / 50 / 60 / 70 / 80</p>
+              </div>
+              <p class="ef-hint" style="margin:0">
+                层级顺序固定为 rail → floating → header/scrim → overlay → menu → lightbox → tooltip，新组件只能复用这八档，不新增数值。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 2. 分级色 ================= -->
+      <section id="tiers" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Tiers</span>
+            <h2 class="ef-section-header__title">分级色</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge">data-tier="1"…"6"</span>
+          </div>
+        </div>
+
+        <p class="ef-muted" style="max-width:52rem">
+          六个分级色通过 <code>data-tier</code> 属性驱动，同时写出 <code>--ef-tier-color</code>（填充）与
+          <code>--ef-tier-ink</code>（文字、描边）两个局部变量。分级条固定高度 3px，末段叠了三条信号色刻度。
+        </p>
+
+        <div class="ef-panel">
+          <div class="ef-panel__header">
+            <span class="ef-panel__title">分级条与徽标</span>
+          </div>
+          <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-4)">
+            <div data-tier="1">
+              <div class="ef-row ef-row--between" style="gap:var(--ef-space-3)">
+                <span class="ef-badge ef-badge--tier">分级 1 · <span class="ef-mono">#94a0aa</span></span>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">ink #5b6268 / 暗色 #96a2ab</span>
+              </div>
+              <div class="ef-tier-strip" style="margin-top:var(--ef-space-2)"></div>
+            </div>
+            <div data-tier="2">
+              <div class="ef-row ef-row--between" style="gap:var(--ef-space-3)">
+                <span class="ef-badge ef-badge--tier">分级 2 · <span class="ef-mono">#68b457</span></span>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">ink #3e6b34 / 暗色 #68b457</span>
+              </div>
+              <div class="ef-tier-strip" style="margin-top:var(--ef-space-2)"></div>
+            </div>
+            <div data-tier="3">
+              <div class="ef-row ef-row--between" style="gap:var(--ef-space-3)">
+                <span class="ef-badge ef-badge--tier">分级 3 · <span class="ef-mono">#009dd1</span></span>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">ink #006688 / 暗色 #1da8d6</span>
+              </div>
+              <div class="ef-tier-strip" style="margin-top:var(--ef-space-2)"></div>
+            </div>
+            <div data-tier="4">
+              <div class="ef-row ef-row--between" style="gap:var(--ef-space-3)">
+                <span class="ef-badge ef-badge--tier">分级 4 · <span class="ef-mono">#9a7dff</span></span>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">ink #6451a6 / 暗色 #a68cff</span>
+              </div>
+              <div class="ef-tier-strip" style="margin-top:var(--ef-space-2)"></div>
+            </div>
+            <div data-tier="5">
+              <div class="ef-row ef-row--between" style="gap:var(--ef-space-3)">
+                <span class="ef-badge ef-badge--tier">分级 5 · <span class="ef-mono">#ed9a00</span></span>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">ink #875700 / 暗色 #ed9a00</span>
+              </div>
+              <div class="ef-tier-strip" style="margin-top:var(--ef-space-2)"></div>
+            </div>
+            <div data-tier="6">
+              <div class="ef-row ef-row--between" style="gap:var(--ef-space-3)">
+                <span class="ef-badge ef-badge--tier">分级 6 · <span class="ef-mono">#ff503c</span></span>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">ink #a83528 / 暗色 #ff6a58</span>
+              </div>
+              <div class="ef-tier-strip" style="margin-top:var(--ef-space-2)"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--stats">
+          <div class="ef-stat" data-tier="1">
+            <span class="ef-stat__value" style="color:var(--ef-tier-ink)">01</span>
+            <span class="ef-stat__label">标准</span>
+            <span class="ef-stat__sub">Tier one</span>
+          </div>
+          <div class="ef-stat" data-tier="2">
+            <span class="ef-stat__value" style="color:var(--ef-tier-ink)">02</span>
+            <span class="ef-stat__label">改良</span>
+            <span class="ef-stat__sub">Tier two</span>
+          </div>
+          <div class="ef-stat" data-tier="3">
+            <span class="ef-stat__value" style="color:var(--ef-tier-ink)">03</span>
+            <span class="ef-stat__label">稀有</span>
+            <span class="ef-stat__sub">Tier three</span>
+          </div>
+          <div class="ef-stat" data-tier="4">
+            <span class="ef-stat__value" style="color:var(--ef-tier-ink)">04</span>
+            <span class="ef-stat__label">精英</span>
+            <span class="ef-stat__sub">Tier four</span>
+          </div>
+          <div class="ef-stat" data-tier="5">
+            <span class="ef-stat__value" style="color:var(--ef-tier-ink)">05</span>
+            <span class="ef-stat__label">尖端</span>
+            <span class="ef-stat__sub">Tier five</span>
+          </div>
+          <div class="ef-stat" data-tier="6">
+            <span class="ef-stat__value" style="color:var(--ef-tier-ink)">06</span>
+            <span class="ef-stat__label">试验</span>
+            <span class="ef-stat__sub">Tier six</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 3. 排版尺度 ================= -->
+      <section id="type" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Typography</span>
+            <h2 class="ef-section-header__title">排版尺度</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">--ef-text-xs … --ef-text-6xl</span>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__header"><span class="ef-panel__title">字号阶梯</span></div>
+          <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-3)">
+            <div class="ef-row ef-row--between" style="align-items:baseline">
+              <span style="font-size:var(--ef-text-6xl);line-height:var(--ef-text-6xl--lh);font-weight:var(--ef-weight-bold)">Aa 3.75rem</span>
+              <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">--ef-text-6xl</span>
+            </div>
+            <div class="ef-row ef-row--between" style="align-items:baseline">
+              <span style="font-size:var(--ef-text-5xl);line-height:var(--ef-text-5xl--lh);font-weight:var(--ef-weight-bold)">Aa 3rem</span>
+              <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">--ef-text-5xl</span>
+            </div>
+            <div class="ef-row ef-row--between" style="align-items:baseline">
+              <span style="font-size:var(--ef-text-4xl);line-height:var(--ef-text-4xl--lh);font-weight:var(--ef-weight-bold)">Aa 2.25rem</span>
+              <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">--ef-text-4xl</span>
+            </div>
+            <div class="ef-row ef-row--between" style="align-items:baseline">
+              <span style="font-size:var(--ef-text-3xl);line-height:var(--ef-text-3xl--lh);font-weight:var(--ef-weight-bold)">Aa 1.875rem</span>
+              <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">--ef-text-3xl</span>
+            </div>
+            <div class="ef-row ef-row--between" style="align-items:baseline">
+              <span style="font-size:var(--ef-text-2xl);line-height:var(--ef-text-2xl--lh);font-weight:var(--ef-weight-semibold)">Aa 1.5rem</span>
+              <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">--ef-text-2xl</span>
+            </div>
+            <div class="ef-row ef-row--between" style="align-items:baseline">
+              <span style="font-size:var(--ef-text-xl);line-height:var(--ef-text-xl--lh);font-weight:var(--ef-weight-semibold)">Aa 1.25rem</span>
+              <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">--ef-text-xl</span>
+            </div>
+            <div class="ef-row ef-row--between" style="align-items:baseline">
+              <span style="font-size:var(--ef-text-lg);line-height:var(--ef-text-lg--lh)">Aa 1.125rem</span>
+              <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">--ef-text-lg</span>
+            </div>
+            <div class="ef-row ef-row--between" style="align-items:baseline">
+              <span style="font-size:var(--ef-text-base);line-height:var(--ef-text-base--lh)">Aa 1rem</span>
+              <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">--ef-text-base</span>
+            </div>
+            <div class="ef-row ef-row--between" style="align-items:baseline">
+              <span style="font-size:var(--ef-text-sm);line-height:var(--ef-text-sm--lh)">Aa 0.875rem</span>
+              <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">--ef-text-sm</span>
+            </div>
+            <div class="ef-row ef-row--between" style="align-items:baseline">
+              <span style="font-size:var(--ef-text-xs);line-height:var(--ef-text-xs--lh)">Aa 0.75rem</span>
+              <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">--ef-text-xs</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">标题样式</span></div>
+            <div class="ef-panel__body ef-stack">
+              <h1 style="font-size:var(--ef-text-4xl)">一级标题 Heading 1</h1>
+              <h2><span class="ef-h2-title">二级标题 Heading 2</span></h2>
+              <h3>三级标题 Heading 3</h3>
+              <h4 class="ef-bar-title">竖条标题 Bar title</h4>
+              <p class="ef-slash ef-mono" style="margin:0">双斜杠前缀标签</p>
+              <p class="ef-bracket" style="margin:0">方括号包裹标签</p>
+              <span class="ef-eyebrow">Eyebrow · 等宽大写小字</span>
+              <div class="ef-label-pair"><b>中英双行标签</b><i>Label pair</i></div>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">字重、字距与正文</span></div>
+            <div class="ef-panel__body ef-stack">
+              <p style="margin:0;font-weight:var(--ef-weight-normal)">常规字重 400 · 用于正文与说明。</p>
+              <p style="margin:0;font-weight:var(--ef-weight-medium)">中等字重 500 · 用于按钮与导航项。</p>
+              <p style="margin:0;font-weight:var(--ef-weight-semibold)">半粗字重 600 · 用于卡片标题。</p>
+              <p style="margin:0;font-weight:var(--ef-weight-bold)">粗字重 700 · 用于页面标题。</p>
+              <p style="margin:0;letter-spacing:var(--ef-tracking-caps);text-transform:uppercase" class="ef-mono">Tracking caps 0.12em</p>
+              <p style="margin:0;letter-spacing:var(--ef-tracking-caps-xl);text-transform:uppercase" class="ef-mono">Tracking caps xl 0.2em</p>
+              <hr class="ef-divider">
+              <p style="margin:0">
+                正文行高 <code>--ef-leading-normal</code> 1.5，长段落采用 <code>text-wrap: pretty</code> 避免尾行孤字。
+                等宽字体用于标签、编号、时间戳与代码，拉丁大写标签统一加 <code>0.12em</code> 字距。
+              </p>
+              <p class="ef-hint" style="margin:0">这是 <code>--ef-ink-subtle</code> 的提示文字，用于补充说明。</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 4. 按钮 ================= -->
+      <section id="buttons" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Buttons</span>
+            <h2 class="ef-section-header__title">按钮</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">.ef-btn · .ef-icon-btn</span>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">变体</span></div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-4)">
+              <div class="ef-row">
+                <button class="ef-btn ef-btn--primary">主按钮</button>
+                <button class="ef-btn ef-btn--secondary">次按钮</button>
+                <button class="ef-btn ef-btn--ghost">幽灵按钮</button>
+                <button class="ef-btn ef-btn--danger">危险按钮</button>
+                <button class="ef-btn">默认按钮</button>
+              </div>
+              <div class="ef-row">
+                <button class="ef-btn ef-btn--primary" disabled>禁用</button>
+                <button class="ef-btn" aria-disabled="true">aria-disabled</button>
+                <button class="ef-btn ef-btn--primary is-loading">载入中</button>
+                <button class="ef-btn ef-btn--secondary"><span class="ef-spinner"></span>处理中</button>
+              </div>
+              <div class="ef-row">
+                <button class="ef-btn ef-btn--sm">小号</button>
+                <button class="ef-btn">默认</button>
+                <button class="ef-btn ef-btn--lg">大号</button>
+              </div>
+              <div class="ef-row">
+                <button class="ef-btn ef-btn--primary">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v12M2 8h12" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+                  带图标
+                </button>
+                <button class="ef-btn ef-btn--secondary">
+                  下载
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2v8m0 0l-3-3m3 3l3-3M3 13h10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                </button>
+                <span class="ef-tooltip">
+                  <button class="ef-btn ef-btn--ghost">悬停看提示</button>
+                  <span class="ef-tooltip__bubble">等宽提示气泡</span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">图标按钮与原子类</span></div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-4)">
+              <div class="ef-row">
+                <button class="ef-icon-btn" aria-label="添加">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+                </button>
+                <button class="ef-icon-btn" aria-label="刷新">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 11-1.6-3.7M13 2v3.5H9.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                </button>
+                <button class="ef-icon-btn" aria-label="设置">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M8 1.5v2M8 12.5v2M1.5 8h2M12.5 8h2M3.4 3.4l1.4 1.4M11.2 11.2l1.4 1.4M12.6 3.4l-1.4 1.4M4.8 11.2l-1.4 1.4" fill="none" stroke="currentColor" stroke-width="1.4"/></svg>
+                </button>
+                <span class="ef-divider" style="width:1px;height:24px;margin:0"></span>
+                <button class="ef-btn ef-btn--sm ef-chamfer">切角按钮</button>
+                <button class="ef-btn ef-btn--sm ef-corner-frame">四角括号</button>
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-row">
+                <span class="ef-kbd">Ctrl</span><span class="ef-kbd">K</span>
+                <span class="ef-hint">键盘提示 .ef-kbd</span>
+              </div>
+              <div class="ef-row" style="gap:var(--ef-space-4)">
+                <span class="ef-avatar">AB</span>
+                <span class="ef-avatar ef-avatar--sm">CD</span>
+                <span class="ef-avatar ef-avatar--lg">EF</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-progress" role="progressbar" aria-valuenow="64" aria-valuemin="0" aria-valuemax="100" aria-label="进度 64%">
+                  <div class="ef-progress__bar" style="width:64%"></div>
+                </div>
+                <div class="ef-progress" role="progressbar" aria-valuenow="38" aria-valuemin="0" aria-valuemax="100" aria-label="进度 38%">
+                  <div class="ef-progress__bar ef-hatch" style="width:38%;color:var(--ef-accent-fg)"></div>
+                </div>
+                <div class="ef-stack" style="gap:var(--ef-space-2)">
+                  <span class="ef-skeleton" style="width:80%"></span>
+                  <span class="ef-skeleton" style="width:56%"></span>
+                </div>
+              </div>
+              <div class="ef-row">
+                <span class="ef-spinner"></span>
+                <span class="ef-hint">载入指示 .ef-spinner</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 5. 表单 ================= -->
+      <section id="forms" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Forms</span>
+            <h2 class="ef-section-header__title">表单</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">input · select · check · radio · switch</span>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">输入控件</span></div>
+            <div class="ef-panel__body">
+              <div class="ef-field">
+                <label class="ef-label" for="demoText">名称</label>
+                <input class="ef-input" id="demoText" type="text" placeholder="输入名称…">
+                <span class="ef-hint">占位符用 --ef-ink-subtle，聚焦时描边转为主色 ink。</span>
+              </div>
+              <div class="ef-field">
+                <label class="ef-label" for="demoGroup">带图标的输入</label>
+                <div class="ef-input-group">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                  <input class="ef-input" id="demoGroup" type="search" placeholder="搜索…">
+                  <kbd class="ef-kbd">/</kbd>
+                </div>
+              </div>
+              <div class="ef-field">
+                <label class="ef-label" for="demoSelect">下拉选择</label>
+                <select class="ef-select" id="demoSelect">
+                  <option>选项一</option>
+                  <option>选项二</option>
+                  <option>选项三</option>
+                </select>
+              </div>
+              <div class="ef-field">
+                <label class="ef-label" for="demoArea">多行文本</label>
+                <textarea class="ef-textarea" id="demoArea" placeholder="输入说明…"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">选择控件</span></div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-4)">
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <label class="ef-check"><input type="checkbox" checked> 已选中的复选</label>
+                <label class="ef-check"><input type="checkbox"> 未选中的复选</label>
+                <label class="ef-check"><input type="checkbox" disabled> 禁用的复选</label>
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <label class="ef-radio"><input type="radio" name="demoRadio" checked> 单选 A</label>
+                <label class="ef-radio"><input type="radio" name="demoRadio"> 单选 B</label>
+                <label class="ef-radio"><input type="radio" name="demoRadio"> 单选 C</label>
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <label class="ef-switch"><input type="checkbox" checked> 开关：开</label>
+                <label class="ef-switch"><input type="checkbox"> 开关：关</label>
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <span class="ef-label">搜索栏组件</span>
+                <div class="ef-searchbar">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M11 11l4 4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                  <input type="search" placeholder="筛选条目…" aria-label="筛选条目">
+                  <kbd class="ef-kbd">/</kbd>
+                </div>
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <span class="ef-label">筛选行</span>
+                <div class="ef-filter-row">
+                  <span class="ef-filter-row__label">类别</span>
+                  <div class="ef-filter-row__options">
+                    <button class="ef-chip" aria-pressed="true">全部</button>
+                    <button class="ef-chip" aria-pressed="false">甲类</button>
+                    <button class="ef-chip" aria-pressed="false">乙类</button>
+                    <button class="ef-chip" aria-pressed="false">丙类</button>
+                  </div>
+                </div>
+                <div class="ef-filter-row">
+                  <span class="ef-filter-row__label">状态</span>
+                  <div class="ef-filter-row__options">
+                    <button class="ef-chip" aria-pressed="false">启用</button>
+                    <button class="ef-chip" aria-pressed="false">停用</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 6. 徽标与标签 ================= -->
+      <section id="badges" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Badges &amp; Chips</span>
+            <h2 class="ef-section-header__title">徽标与标签</h2>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">徽标</span></div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-4)">
+              <div class="ef-row">
+                <span class="ef-badge">默认</span>
+                <span class="ef-badge ef-badge--accent">主色</span>
+                <span class="ef-badge ef-badge--info">信息</span>
+                <span class="ef-badge ef-badge--success">成功</span>
+                <span class="ef-badge ef-badge--warn">警告</span>
+                <span class="ef-badge ef-badge--danger">危险</span>
+              </div>
+              <div class="ef-row">
+                <span class="ef-badge ef-badge--info">
+                  <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 5v4M8 11h.01" stroke="currentColor" stroke-width="1.6"/></svg>
+                  带图标
+                </span>
+                <span class="ef-badge ef-badge--success">
+                  <svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M3 8.5l3.2 3.2L13 5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+                  已校验
+                </span>
+                <span class="ef-badge ef-mono">0.6875rem</span>
+              </div>
+              <p class="ef-hint" style="margin:0">
+                徽标的描边与文字取 <code>*-ink</code>，填充取原色 12% tint；原色直接做文字在亮色主题下最低仅 1.92:1。
+              </p>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">标签（可选中）</span></div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-4)">
+              <div class="ef-chip-group">
+                <button class="ef-chip is-active" aria-pressed="true">激活态</button>
+                <button class="ef-chip" aria-pressed="false">默认</button>
+                <button class="ef-chip" aria-pressed="false">带图标
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 3v10M3 8h10" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>
+                </button>
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <span class="ef-label">分隔线</span>
+                <hr class="ef-divider" style="margin:0">
+                <div class="ef-divider--labeled">分组标签</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 7. 卡片 ================= -->
+      <section id="cards" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Cards</span>
+            <h2 class="ef-section-header__title">卡片</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">.ef-card · .ef-item-card · .ef-stat-card</span>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--stats">
+          <div class="ef-stat-card ef-entry-glow">
+            <span class="ef-stat-card__icon">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 13V7l6-4 6 4v6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+            </span>
+            <span class="ef-stat-card__text">
+              <span class="ef-stat-card__value">1 248</span>
+              <span class="ef-stat-card__label">条目总数</span>
+            </span>
+          </div>
+          <div class="ef-stat-card">
+            <span class="ef-stat-card__icon">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 13V8M8 13V3M13 13V6" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+            </span>
+            <span class="ef-stat-card__text">
+              <span class="ef-stat-card__value">+86</span>
+              <span class="ef-stat-card__label">本周新增</span>
+            </span>
+          </div>
+          <div class="ef-stat-card">
+            <span class="ef-stat-card__icon">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 4.5v3.8l2.4 1.6" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+            </span>
+            <span class="ef-stat-card__text">
+              <span class="ef-stat-card__value">32</span>
+              <span class="ef-stat-card__label">待复核</span>
+            </span>
+          </div>
+          <div class="ef-stat-card">
+            <span class="ef-stat-card__icon">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6 6-6 6-6-6z" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+            </span>
+            <span class="ef-stat-card__text">
+              <span class="ef-stat-card__value">99.2%</span>
+              <span class="ef-stat-card__label">数据完整度</span>
+            </span>
+          </div>
+        </div>
+
+        <div class="ef-grid" style="grid-template-columns:repeat(auto-fill,minmax(240px,1fr))">
+          <article class="ef-card">
+            <div class="ef-card__media ef-industrial-shell" role="img" aria-label="占位图：网格底纹"></div>
+            <div class="ef-card__body">
+              <h3 class="ef-card__title">普通卡片</h3>
+              <p class="ef-muted" style="margin:0;font-size:var(--ef-text-sm)">媒体区用 16:9 比例，正文区为纵向堆叠，标题可任意换行。</p>
+              <span class="ef-card__meta">更新于 09-24 · 版本 3</span>
+              <div class="ef-row" style="margin-top:var(--ef-space-2)">
+                <span class="ef-badge ef-badge--info">信息</span>
+                <span class="ef-badge">默认</span>
+              </div>
+            </div>
+          </article>
+
+          <a class="ef-item-card" href="#cards" data-tier="3">
+            <span class="ef-item-card__media ef-grid-backdrop" data-index="007" role="img" aria-label="占位图：网格底纹"></span>
+            <span class="ef-item-card__body">
+              <span class="ef-item-card__text">
+                <span class="ef-item-card__name">条目卡（数据卡）</span>
+                <span class="ef-item-card__sub">Item card · 1:1</span>
+              </span>
+              <span class="ef-item-card__icons">
+                <span aria-label="分级 3">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 2l6 6-6 6-6-6z" fill="currentColor"/></svg>
+                </span>
+                <span aria-label="已锁定">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3.5" y="7" width="9" height="6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                </span>
+              </span>
+            </span>
+            <span class="ef-tier-strip"></span>
+          </a>
+
+          <div class="ef-card ef-corner-frame--all">
+            <div class="ef-card__body">
+              <h3 class="ef-card__title">叠加手法类的卡片</h3>
+              <p class="ef-muted" style="margin:0;font-size:var(--ef-text-sm)">
+                与 <code>.ef-corner-frame--all</code> 叠加：角括号画在伪元素上，不占用元素自身的 background-image，因此可与网格、扫描线共存。
+              </p>
+            </div>
+          </div>
+
+          <div class="ef-panel ef-scanline" style="padding:var(--ef-space-4)">
+            <h3 style="margin:0 0 var(--ef-space-2);font-size:var(--ef-text-base)">叠加扫描线</h3>
+            <p class="ef-muted" style="margin:0;font-size:var(--ef-text-sm)">扫描线用 repeating-linear-gradient 每 4px 一条，透明度 5%。</p>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__header"><span class="ef-panel__title">空状态</span></div>
+          <div class="ef-panel__body">
+            <div class="ef-empty">
+              <span class="ef-empty__icon">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2.5 4.5h11v7h-11z" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M2.5 9.5h3l1 1.5h3l1-1.5h3" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>
+              </span>
+              <h3 class="ef-empty__title">暂无数据</h3>
+              <p class="ef-muted" style="margin:0">调整筛选条件，或新建一条记录。</p>
+              <button class="ef-btn ef-btn--primary">新建记录</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 8. 面板与区块头 ================= -->
+      <section id="panels" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Panels &amp; Headers</span>
+            <h2 class="ef-section-header__title">面板与区块头</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">.ef-panel · .ef-section-header</span>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header">
+              <span class="ef-panel__title">带页脚的面板</span>
+              <span class="ef-spacer"></span>
+              <span class="ef-badge">HEADER</span>
+            </div>
+            <div class="ef-panel__body">
+              <p style="margin:0">面板由 header / body / footer 三段构成，描边 1px，底色为 <code>--ef-surface</code>。</p>
+            </div>
+            <div class="ef-panel__footer">
+              <button class="ef-btn ef-btn--primary ef-btn--sm">确认</button>
+              <button class="ef-btn ef-btn--sm">取消</button>
+              <span class="ef-spacer"></span>
+              <span class="ef-hint">FOOTER</span>
+            </div>
+          </div>
+
+          <div class="ef-panel ef-industrial-shell ef-corner-frame--all">
+            <div class="ef-panel__header"><span class="ef-panel__title">工业底 + 四角括号</span></div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-3)">
+              <p style="margin:0">两种手法类同时叠加：角括号在伪元素上，网格与主色辉光在 <code>background-image</code> 上，互不覆盖。</p>
+              <div class="ef-row">
+                <span class="ef-badge ef-badge--accent">叠加正常</span>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">.ef-industrial-shell + .ef-corner-frame--all</span>
+              </div>
+              <div class="ef-signal-bars">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i class="is-active"></i><i></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__body ef-stack">
+            <div class="ef-section-header" style="margin-bottom:0">
+              <div class="ef-section-header__main">
+                <span class="ef-section-header__eyebrow">Section header</span>
+                <h3 class="ef-section-header__title">区块头</h3>
+              </div>
+              <div class="ef-section-header__actions">
+                <button class="ef-btn ef-btn--sm">次操作</button>
+                <button class="ef-btn ef-btn--primary ef-btn--sm">主操作</button>
+              </div>
+            </div>
+            <div class="ef-row" style="gap:var(--ef-space-8)">
+              <div class="ef-stat">
+                <span class="ef-stat__value">128</span>
+                <span class="ef-stat__label">统计块</span>
+                <span class="ef-stat__sub">Stat</span>
+              </div>
+              <div class="ef-stat">
+                <span class="ef-stat__value">64%</span>
+                <span class="ef-stat__label">完成度</span>
+                <span class="ef-stat__sub">Progress</span>
+              </div>
+              <div class="ef-stat">
+                <span class="ef-stat__value">07</span>
+                <span class="ef-stat__label">未读</span>
+                <span class="ef-stat__sub">Unread</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ef-stack">
+          <div class="ef-callout">
+            <div>
+              <span class="ef-callout__title">信息提示</span>
+              默认提示块用 info 语义色，左侧 3px 边框取 <code>--ef-info-ink</code>，底色为原色 7% tint。
+            </div>
+          </div>
+          <div class="ef-callout ef-callout--success">
+            <div>
+              <span class="ef-callout__title">成功提示</span>
+              校验通过，未发现结构问题。
+            </div>
+          </div>
+          <div class="ef-callout ef-callout--warn">
+            <div>
+              <span class="ef-callout__title">警告提示</span>
+              该条目的分级色在打印时会被钉成深色，请勿依赖颜色区分。
+            </div>
+          </div>
+          <div class="ef-callout ef-callout--danger">
+            <div>
+              <span class="ef-callout__title">危险提示</span>
+              删除操作不可撤销。
+            </div>
+          </div>
+        </div>
+
+        <div class="ef-code">
+          <div class="ef-code__head">
+            <span>示例：叠加手法类的正确写法</span>
+            <span class="ef-badge ef-mono">HTML</span>
+          </div>
+          <pre><code>&lt;!-- 底色用 background-color，底纹交给手法类 --&gt;
+&lt;div class="ef-panel ef-industrial-shell ef-corner-frame--all"&gt;…&lt;/div&gt;
+
+&lt;!-- 不要写 background 简写：它会重置 background-image，
+     把同一元素上手法类设置的网格/扫描线一并清掉 --&gt;</code></pre>
+        </div>
+      </section>
+
+      <!-- ================= 9. 表格 ================= -->
+      <section id="tables" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Tables</span>
+            <h2 class="ef-section-header__title">表格</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">.ef-table · .ef-table__sort</span>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__header">
+            <span class="ef-panel__title">数据表</span>
+            <span class="ef-spacer"></span>
+            <span class="ef-badge ef-badge--success">已同步</span>
+          </div>
+          <div class="ef-table-wrap">
+            <table class="ef-table">
+              <caption class="ef-sr-only">示例数据表：名称、分级、状态与更新时间</caption>
+              <thead>
+                <tr>
+                  <th scope="col">名称</th>
+                  <th scope="col"><button class="ef-table__sort" aria-sort="ascending">分级</button></th>
+                  <th scope="col"><button class="ef-table__sort">数量</button></th>
+                  <th scope="col">状态</th>
+                  <th scope="col">更新时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>示例条目甲</td>
+                  <td data-tier="2"><span class="ef-badge ef-badge--tier">分级 2</span></td>
+                  <td class="ef-mono">128</td>
+                  <td><span class="ef-badge ef-badge--success">启用</span></td>
+                  <td class="ef-mono ef-subtle">09-24 08:12</td>
+                </tr>
+                <tr>
+                  <td>示例条目乙</td>
+                  <td data-tier="3"><span class="ef-badge ef-badge--tier">分级 3</span></td>
+                  <td class="ef-mono">64</td>
+                  <td><span class="ef-badge ef-badge--info">待复核</span></td>
+                  <td class="ef-mono ef-subtle">09-23 17:40</td>
+                </tr>
+                <tr>
+                  <td>示例条目丙</td>
+                  <td data-tier="5"><span class="ef-badge ef-badge--tier">分级 5</span></td>
+                  <td class="ef-mono">12</td>
+                  <td><span class="ef-badge ef-badge--warn">受限</span></td>
+                  <td class="ef-mono ef-subtle">09-21 11:05</td>
+                </tr>
+                <tr>
+                  <td>示例条目丁</td>
+                  <td data-tier="6"><span class="ef-badge ef-badge--tier">分级 6</span></td>
+                  <td class="ef-mono">3</td>
+                  <td><span class="ef-badge ef-badge--danger">停用</span></td>
+                  <td class="ef-mono ef-subtle">09-18 22:31</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ef-panel__footer">
+            <span class="ef-hint">共 4 条 · 表头用 <code>--ef-surface-sunken</code>，行悬停用 <code>--ef-surface-muted</code></span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 10. 时间线 ================= -->
+      <section id="timeline" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Timeline</span>
+            <h2 class="ef-section-header__title">时间线</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">.ef-timeline</span>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__body">
+            <ol class="ef-timeline">
+              <li class="ef-timeline__item ef-timeline__item--accent">
+                <span class="ef-timeline__time">09-25 10:02</span>
+                <div class="ef-timeline__body">
+                  <span class="ef-timeline__title">发布设计系统总览页</span>
+                  <p class="ef-muted" style="margin:0">新增令牌色板、全部组件示例与实时调色控件。</p>
+                </div>
+              </li>
+              <li class="ef-timeline__item">
+                <span class="ef-timeline__time">09-24 18:30</span>
+                <div class="ef-timeline__body">
+                  <span class="ef-timeline__title">补齐结构组件样式</span>
+                  <p class="ef-muted" style="margin:0">面板、卡片、表格、模态、图表共 24 类。</p>
+                </div>
+              </li>
+              <li class="ef-timeline__item">
+                <span class="ef-timeline__time">09-23 15:14</span>
+                <div class="ef-timeline__body">
+                  <span class="ef-timeline__title">修正 background 简写</span>
+                  <p class="ef-muted" style="margin:0">26 处简写会重置 <code>background-image</code>，改为长写属性。</p>
+                </div>
+              </li>
+              <li class="ef-timeline__item">
+                <span class="ef-timeline__time">09-22 09:00</span>
+                <div class="ef-timeline__body">
+                  <span class="ef-timeline__title">建立令牌与主题架构</span>
+                  <p class="ef-muted" style="margin:0">142 个 <code>--ef-*</code> 令牌，明暗双主题。</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 11. 折叠与选项卡 ================= -->
+      <section id="disclosure" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Disclosure</span>
+            <h2 class="ef-section-header__title">折叠与选项卡</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">details · [data-tabs]</span>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">折叠面板（无 JS 可用）</span></div>
+            <div class="ef-panel__body">
+              <div class="ef-accordion">
+                <details open>
+                  <summary>令牌为什么分原色与 ink 两层？</summary>
+                  <div class="ef-accordion__body">
+                    主色 <code>#f2cc00</code> 在白底上对比度仅 1.57:1，作为填充色醒目，作为文字则不可读。
+                    因此分叉出更深的 <code>--ef-accent-ink</code>（<code>#8a6d00</code>，白底 4.92:1）专供文字与细图形。
+                  </div>
+                </details>
+                <details>
+                  <summary>为什么不使用 background 简写？</summary>
+                  <div class="ef-accordion__body">
+                    简写会把 <code>background-image</code> 重置为 <code>none</code>，从而静默抹掉同一元素上由手法类设置的网格、扫描线或角括号。
+                    统一使用 <code>background-color</code> 等长写属性。
+                  </div>
+                </details>
+                <details>
+                  <summary>清空继承背景时该怎么写？</summary>
+                  <div class="ef-accordion__body">
+                    <code>background-color: none</code> 是无效值，浏览器会在解析阶段丢弃。
+                    正确写法是 <code>background-color: transparent</code> 加 <code>background-image: none</code>。
+                  </div>
+                </details>
+              </div>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">选项卡</span></div>
+            <div class="ef-panel__body">
+              <div data-tabs>
+                <div class="ef-tabs__list" role="tablist" aria-label="示例选项卡">
+                  <button class="ef-tabs__tab" role="tab" id="demoTab1" aria-controls="demoPanel1" aria-selected="true">概览</button>
+                  <button class="ef-tabs__tab" role="tab" id="demoTab2" aria-controls="demoPanel2" aria-selected="false">规格</button>
+                  <button class="ef-tabs__tab" role="tab" id="demoTab3" aria-controls="demoPanel3" aria-selected="false">变更</button>
+                </div>
+                <div class="ef-tabs__panel" role="tabpanel" id="demoPanel1" aria-labelledby="demoTab1" tabindex="0">
+                  <p style="margin:0">激活态用 2px 主色下划线，并叠一层 22% 主色斜纹。方向键左右可切换选项卡。</p>
+                </div>
+                <div class="ef-tabs__panel" role="tabpanel" id="demoPanel2" aria-labelledby="demoTab2" tabindex="0" hidden>
+                  <p style="margin:0">选项卡面板在无 JS 时全部可见（<code>[hidden]</code> 才隐藏），保证内容不被脚本吞掉。</p>
+                </div>
+                <div class="ef-tabs__panel" role="tabpanel" id="demoPanel3" aria-labelledby="demoTab3" tabindex="0" hidden>
+                  <p style="margin:0">最近变更：令牌 142 个，视觉手法 13 种，组件 37 类。</p>
+                </div>
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-row">
+                <span class="ef-label">下拉菜单</span>
+                <div class="ef-dropdown">
+                  <button class="ef-btn ef-btn--secondary ef-btn--sm" data-dropdown-toggle="demoMenu">操作 ▾</button>
+                  <div class="ef-dropdown__menu" id="demoMenu" hidden>
+                    <a class="ef-dropdown__item" href="#buttons">查看按钮</a>
+                    <a class="ef-dropdown__item" href="#forms">查看表单</a>
+                    <div class="ef-dropdown__sep"></div>
+                    <button class="ef-dropdown__item" type="button">危险操作</button>
+                  </div>
+                </div>
+                <span class="ef-hint">点击外部或按 Esc 关闭</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 12. 模态与 Toast ================= -->
+      <section id="overlays" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Overlays</span>
+            <h2 class="ef-section-header__title">模态与 Toast</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">.ef-modal · .ef-drawer · .ef-toast</span>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-4)">
+            <div class="ef-row">
+              <button class="ef-btn ef-btn--primary" data-modal-open="demoModal">打开模态</button>
+              <button class="ef-btn ef-btn--secondary" data-modal-open="demoDrawer">打开抽屉</button>
+              <button class="ef-btn ef-btn--secondary" data-modal-open="demoConfirm">确认对话框</button>
+            </div>
+            <hr class="ef-divider">
+            <div class="ef-row">
+              <span class="ef-label">Toast</span>
+              <button class="ef-btn ef-btn--sm" data-demo-toast="默认通知">默认</button>
+              <button class="ef-btn ef-btn--sm" data-demo-toast="操作成功" data-demo-toast-variant="success">成功</button>
+              <button class="ef-btn ef-btn--sm" data-demo-toast="注意：该操作会覆盖现有数据" data-demo-toast-variant="warn">警告</button>
+              <button class="ef-btn ef-btn--sm" data-demo-toast="请求失败，请稍后重试" data-demo-toast-variant="danger">危险</button>
+              <span class="ef-hint">右上角堆叠，4 秒后自动消失</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 模态：必须是 .ef-app 的直接子元素之外也可，但位置固定于视口 -->
+        <div class="ef-modal" id="demoModal" hidden role="dialog" aria-modal="true" aria-labelledby="demoModalTitle">
+          <div class="ef-modal__scrim" data-modal-close></div>
+          <div class="ef-modal__panel ef-corner-frame--all" tabindex="-1">
+            <div class="ef-modal__header">
+              <h3 class="ef-modal__title" id="demoModalTitle">示例模态</h3>
+              <button class="ef-icon-btn" data-modal-close aria-label="关闭">
+                <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+              </button>
+            </div>
+            <div class="ef-modal__body">
+              <p>打开时焦点移入面板，<code>Tab</code> 在面板内循环，按 <code>Esc</code> 或点击遮罩关闭并归还焦点。</p>
+              <div class="ef-field" style="margin-bottom:0">
+                <label class="ef-label" for="modalField">示例字段</label>
+                <input class="ef-input" id="modalField" type="text" placeholder="可聚焦元素参与焦点陷阱">
+              </div>
+            </div>
+            <div class="ef-modal__footer">
+              <button class="ef-btn" data-modal-close>取消</button>
+              <button class="ef-btn ef-btn--primary" data-modal-close>确认</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ef-modal" id="demoConfirm" hidden role="dialog" aria-modal="true" aria-labelledby="demoConfirmTitle">
+          <div class="ef-modal__scrim" data-modal-close></div>
+          <div class="ef-modal__panel" style="max-width:24rem" tabindex="-1">
+            <div class="ef-modal__header">
+              <h3 class="ef-modal__title" id="demoConfirmTitle">确认删除</h3>
+            </div>
+            <div class="ef-modal__body">
+              <p style="margin:0">删除后无法恢复，确定继续吗？</p>
+            </div>
+            <div class="ef-modal__footer">
+              <button class="ef-btn" data-modal-close>取消</button>
+              <button class="ef-btn ef-btn--danger" data-modal-close>删除</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="ef-drawer" id="demoDrawer" hidden role="dialog" aria-modal="true" aria-labelledby="demoDrawerTitle">
+          <div class="ef-modal__header">
+            <h3 class="ef-modal__title" id="demoDrawerTitle">示例抽屉</h3>
+            <span class="ef-spacer"></span>
+            <button class="ef-icon-btn" data-modal-close aria-label="关闭">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M4 4l8 8M12 4l-8 8" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
+            </button>
+          </div>
+          <div class="ef-modal__body">
+            <p>抽屉从右侧滑入，宽度为 <code>min(24rem, 92vw)</code>，层级取 <code>--ef-z-overlay</code>。</p>
+            <div class="ef-stack" style="gap:var(--ef-space-2)">
+              <label class="ef-switch"><input type="checkbox" checked> 启用通知</label>
+              <label class="ef-switch"><input type="checkbox"> 自动同步</label>
+            </div>
+          </div>
+          <div class="ef-modal__footer">
+            <button class="ef-btn ef-btn--primary" data-modal-close>完成</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 13. 分页与面包屑 ================= -->
+      <section id="pagination" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Paging</span>
+            <h2 class="ef-section-header__title">分页与面包屑</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">.ef-pagination · .ef-breadcrumb</span>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">分页</span></div>
+            <div class="ef-panel__body">
+              <nav aria-label="分页">
+                <div class="ef-pagination" style="margin-top:0">
+                  <a class="ef-pagination__link" href="#pagination" aria-disabled="true">‹</a>
+                  <a class="ef-pagination__link" href="#pagination" aria-current="page">1</a>
+                  <a class="ef-pagination__link" href="#pagination">2</a>
+                  <a class="ef-pagination__link" href="#pagination">3</a>
+                  <span class="ef-pagination__link" aria-hidden="true">…</span>
+                  <a class="ef-pagination__link" href="#pagination">12</a>
+                  <a class="ef-pagination__link" href="#pagination">›</a>
+                </div>
+              </nav>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">面包屑</span></div>
+            <div class="ef-panel__body">
+              <nav aria-label="面包屑示例">
+                <ol class="ef-breadcrumb">
+                  <li><a href="#tokens">设计系统</a></li>
+                  <li><a href="#cards">组件</a></li>
+                  <li><a href="#pagination">分页与面包屑</a></li>
+                  <li aria-current="page">当前页</li>
+                </ol>
+              </nav>
+              <hr class="ef-divider">
+              <nav aria-label="面包屑单层示例">
+                <ol class="ef-breadcrumb" style="margin-bottom:0">
+                  <li><a href="#tokens">根</a></li>
+                  <li aria-current="page">末级</li>
+                </ol>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 14. 信息网格 ================= -->
+      <section id="infogrid" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Info grid</span>
+            <h2 class="ef-section-header__title">信息网格</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">.ef-info-grid</span>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">详情信息面板</span></div>
+            <div class="ef-panel__body">
+              <dl class="ef-info-grid">
+                <dt class="ef-info-grid__key">编号</dt><dd class="ef-info-grid__value">EX-0007</dd>
+                <dt class="ef-info-grid__key">分级</dt><dd class="ef-info-grid__value">分级 3 · 稀有</dd>
+                <dt class="ef-info-grid__key">类别</dt><dd class="ef-info-grid__value">结构件</dd>
+                <dt class="ef-info-grid__key">状态</dt><dd class="ef-info-grid__value">已归档</dd>
+                <dt class="ef-info-grid__key">更新时间</dt><dd class="ef-info-grid__value ef-mono">09-25 10:02</dd>
+                <dt class="ef-info-grid__key">说明</dt><dd class="ef-info-grid__value">两列网格，键为等宽小字，值为半粗字重，长值可任意换行。</dd>
+              </dl>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">目录（TOC）</span></div>
+            <div class="ef-panel__body">
+              <nav class="ef-toc" aria-label="目录示例">
+                <p class="ef-toc__title">本页章节</p>
+                <ul class="ef-toc__list">
+                  <li><a href="#tokens" class="is-active">令牌色板</a></li>
+                  <li><a href="#tiers">分级色</a></li>
+                  <li><a href="#type">排版尺度</a></li>
+                  <li><a href="#buttons" class="ef-toc__sub">按钮</a></li>
+                  <li><a href="#forms" class="ef-toc__sub">表单</a></li>
+                </ul>
+              </nav>
+              <p class="ef-hint" style="margin:var(--ef-space-3) 0 0">
+                滚动时由 <code>EFUI</code> 的 IntersectionObserver 高亮当前章节；此处为静态示意。
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__header"><span class="ef-panel__title">图片查看器与热力图</span></div>
+          <div class="ef-panel__body ef-grid ef-grid--panels" style="gap:var(--ef-space-4)">
+            <div class="ef-viewer">
+              <div class="ef-viewer__toolbar">
+                <button class="ef-icon-btn" aria-label="缩小">−</button>
+                <span class="ef-viewer__zoom">100%</span>
+                <button class="ef-icon-btn" aria-label="放大">+</button>
+                <span class="ef-spacer"></span>
+                <button class="ef-icon-btn" aria-label="旋转">
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 11-1.6-3.7M13 2v3.5H9.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+                </button>
+              </div>
+              <div class="ef-viewer__stage">
+                <div class="ef-industrial-shell ef-corner-frame--all" style="width:70%;aspect-ratio:4/3" role="img" aria-label="占位图：工业底纹与角括号"></div>
+              </div>
+            </div>
+
+            <div class="ef-stack" style="gap:var(--ef-space-3)">
+              <span class="ef-label">活动热力图</span>
+              <div class="ef-heatmap" role="img" aria-label="示例活动热力图，共 4 周">
+                <span data-level="0"></span><span data-level="1"></span><span data-level="2"></span><span data-level="3"></span><span data-level="4"></span><span data-level="2"></span><span data-level="0"></span>
+                <span data-level="1"></span><span data-level="3"></span><span data-level="4"></span><span data-level="4"></span><span data-level="2"></span><span data-level="1"></span><span data-level="0"></span>
+                <span data-level="0"></span><span data-level="2"></span><span data-level="3"></span><span data-level="4"></span><span data-level="3"></span><span data-level="2"></span><span data-level="1"></span>
+                <span data-level="2"></span><span data-level="1"></span><span data-level="0"></span><span data-level="3"></span><span data-level="4"></span><span data-level="1"></span><span data-level="0"></span>
+                <span data-level="1"></span><span data-level="0"></span><span data-level="2"></span><span data-level="2"></span><span data-level="3"></span><span data-level="4"></span><span data-level="2"></span>
+                <span data-level="3"></span><span data-level="4"></span><span data-level="1"></span><span data-level="0"></span><span data-level="1"></span><span data-level="2"></span><span data-level="3"></span>
+                <span data-level="0"></span><span data-level="1"></span><span data-level="2"></span><span data-level="3"></span><span data-level="4"></span><span data-level="0"></span><span data-level="1"></span>
+              </div>
+              <p class="ef-hint" style="margin:0">
+                递增色取 <code>--ef-heat-ramp</code> 而非主色：亮色主题下亮黄混入浅灰后各级亮度差不足 1.1:1，肉眼无法分辨。
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 15. 图表 ================= -->
+      <section id="charts" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Charts</span>
+            <h2 class="ef-section-header__title">图表</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">纯 SVG · 无第三方库</span>
+          </div>
+        </div>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">折线 + 面积</span></div>
+            <div class="ef-panel__body">
+              <svg class="ef-chart" viewBox="0 0 320 140" role="img" aria-label="示例折线图：近 8 期走势">
+                <line class="ef-chart__grid" x1="30" y1="20" x2="310" y2="20"></line>
+                <line class="ef-chart__grid" x1="30" y1="55" x2="310" y2="55"></line>
+                <line class="ef-chart__grid" x1="30" y1="90" x2="310" y2="90"></line>
+                <line class="ef-chart__grid" x1="30" y1="120" x2="310" y2="120"></line>
+                <path class="ef-chart__area" d="M30 96 L70 74 L110 84 L150 52 L190 60 L230 34 L270 44 L310 26 L310 120 L30 120 Z"></path>
+                <path class="ef-chart__line" d="M30 96 L70 74 L110 84 L150 52 L190 60 L230 34 L270 44 L310 26"></path>
+                <circle class="ef-chart__point" cx="230" cy="34" r="3.5"></circle>
+                <text class="ef-chart__axis-label" x="30" y="134">01</text>
+                <text class="ef-chart__axis-label" x="110" y="134">03</text>
+                <text class="ef-chart__axis-label" x="190" y="134">05</text>
+                <text class="ef-chart__axis-label" x="270" y="134">07</text>
+                <text class="ef-chart__axis-label" x="4" y="24">高</text>
+                <text class="ef-chart__axis-label" x="4" y="122">低</text>
+              </svg>
+              <div class="ef-chart-legend">
+                <span>本期</span>
+                <span style="--ef-legend-color:var(--ef-border-strong)">上期</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">柱状图</span></div>
+            <div class="ef-panel__body">
+              <svg class="ef-chart" viewBox="0 0 320 140" role="img" aria-label="示例柱状图：近 10 期分布">
+                <line class="ef-chart__grid" x1="20" y1="30" x2="310" y2="30"></line>
+                <line class="ef-chart__grid" x1="20" y1="75" x2="310" y2="75"></line>
+                <line class="ef-chart__grid" x1="20" y1="120" x2="310" y2="120"></line>
+                <rect class="ef-chart__bar" x="30" y="72" width="18" height="48"></rect>
+                <rect class="ef-chart__bar" x="58" y="54" width="18" height="66"></rect>
+                <rect class="ef-chart__bar" x="86" y="86" width="18" height="34"></rect>
+                <rect class="ef-chart__bar" x="114" y="40" width="18" height="80"></rect>
+                <rect class="ef-chart__bar" x="142" y="62" width="18" height="58"></rect>
+                <rect class="ef-chart__bar" x="170" y="28" width="18" height="92"></rect>
+                <rect class="ef-chart__bar" x="198" y="50" width="18" height="70"></rect>
+                <rect class="ef-chart__bar" x="226" y="78" width="18" height="42"></rect>
+                <rect class="ef-chart__bar" x="254" y="44" width="18" height="76"></rect>
+                <rect class="ef-chart__bar" x="282" y="66" width="18" height="54"></rect>
+                <text class="ef-chart__axis-label" x="20" y="134">A</text>
+                <text class="ef-chart__axis-label" x="160" y="134">E</text>
+                <text class="ef-chart__axis-label" x="290" y="134">J</text>
+              </svg>
+              <div class="ef-chart-legend">
+                <span>柱体填充取 <code>--ef-accent</code></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">环形进度</span></div>
+            <div class="ef-panel__body" style="display:flex;justify-content:center">
+              <svg class="ef-chart" viewBox="0 0 160 160" style="max-width:200px" role="img" aria-label="环形进度 72%">
+                <circle class="ef-chart__donut-track" cx="80" cy="80" r="60"></circle>
+                <circle class="ef-chart__donut-value" cx="80" cy="80" r="60"
+                        stroke-dasharray="271.4 377" transform="rotate(-90 80 80)"></circle>
+                <text x="80" y="76" text-anchor="middle" style="font-size:26px;font-weight:700;fill:var(--ef-ink)">72%</text>
+                <text class="ef-chart__axis-label" x="80" y="98" text-anchor="middle">完成度</text>
+              </svg>
+            </div>
+            <div class="ef-panel__footer">
+              <span class="ef-hint">环形值描边取 <code>--ef-accent-ink</code>（细图形），轨道取 <code>--ef-surface-muted</code></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 16. 动效演示 ================= -->
+      <section id="motion" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Motion</span>
+            <h2 class="ef-section-header__title">动效演示</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">7 组关键帧</span>
+          </div>
+        </div>
+
+        <p class="ef-muted" style="max-width:52rem">
+          点击「重播」给容器加回类名以重启动画。系统开启「降低动效偏好」时，全部动画会被压到 0.001ms 并停在终态，
+          <code>.ef-reveal</code> 直接可见，不会有元素留在不可见状态。
+        </p>
+
+        <div class="ef-panel">
+          <div class="ef-panel__header">
+            <span class="ef-panel__title">入场与循环</span>
+            <span class="ef-spacer"></span>
+            <button class="ef-btn ef-btn--sm" data-replay-motion>重播</button>
+          </div>
+          <div class="ef-panel__body" id="motionStage">
+            <div class="ef-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:var(--ef-space-5)">
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-boot-strip" style="height:22px;background-color:var(--ef-accent)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">.ef-boot-strip · boot-wipe</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <span class="ef-boot-title" style="font-size:var(--ef-text-xl);font-weight:var(--ef-weight-bold)">标题打印</span>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">.ef-boot-title · title-print</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-corner-in" style="height:34px;border:1px solid var(--ef-border);background-color:var(--ef-surface-muted)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">.ef-corner-in · corner-in</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-rise-in" style="height:34px;border:1px solid var(--ef-border);background-color:var(--ef-surface-muted)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">.ef-rise-in · rise-in</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <span class="ef-live ef-badge ef-badge--danger">● 实时</span>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">.ef-live · live-pulse</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-signal-bars">
+                  <i class="ef-bar-grow" style="--ef-i:0"></i><i class="ef-bar-grow" style="--ef-i:1"></i><i class="ef-bar-grow" style="--ef-i:2"></i><i class="ef-bar-grow" style="--ef-i:3"></i><i class="ef-bar-grow" style="--ef-i:4"></i><i class="ef-bar-grow is-active" style="--ef-i:5"></i>
+                </div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">.ef-bar-grow · bar-grow</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-reveal" style="height:34px;border:1px solid var(--ef-border);background-color:var(--ef-surface-muted)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">.ef-reveal · 滚动揭示</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ef-panel">
+          <div class="ef-panel__header"><span class="ef-panel__title">13 种视觉手法</span></div>
+          <div class="ef-panel__body">
+            <div class="ef-grid" style="grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:var(--ef-space-4)">
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-chamfer" style="height:44px;background-color:var(--ef-accent)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">1. .ef-chamfer</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-corner-frame--all" style="height:44px;background-color:var(--ef-surface-muted);border:1px solid var(--ef-border)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">2. .ef-corner-frame--all</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-grid-backdrop" style="height:44px;background-color:var(--ef-surface-muted);border:1px solid var(--ef-border)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">3. .ef-grid-backdrop</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-industrial-shell" style="height:44px;background-color:var(--ef-surface-muted);border:1px solid var(--ef-border)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">4. .ef-industrial-shell</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-scanline" style="height:44px;background-color:var(--ef-surface-muted);border:1px solid var(--ef-border)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">5. .ef-scanline</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-hatch" style="height:44px;background-color:var(--ef-surface-muted);border:1px solid var(--ef-border);color:var(--ef-accent-ink)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">6. .ef-hatch</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div style="height:44px;display:flex;align-items:center;border:1px solid var(--ef-border);padding:0 var(--ef-space-3)">
+                  <span class="ef-label-pair"><b>双行标签</b><i>Label pair</i></span>
+                </div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">7. .ef-label-pair</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div style="height:44px;display:flex;align-items:center;border:1px solid var(--ef-border);padding:0 var(--ef-space-3)">
+                  <span class="ef-bar-title" style="font-size:var(--ef-text-base)">竖条标题</span>
+                </div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">8. .ef-bar-title</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div style="height:44px;display:flex;align-items:center;border:1px solid var(--ef-border);padding:0 var(--ef-space-3)">
+                  <span class="ef-h2-title">渐变条标题</span>
+                </div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">9. .ef-h2-title</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div style="height:44px;display:flex;align-items:center;border:1px solid var(--ef-border);padding:0 var(--ef-space-3)">
+                  <span class="ef-signal-bars"><i></i><i></i><i></i><i class="is-active"></i><i></i><i></i></span>
+                </div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">10. .ef-signal-bars</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div class="ef-top-signal-strip" style="border:1px solid var(--ef-border)"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">11. .ef-top-signal-strip</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)" data-tier="4">
+                <div class="ef-tier-strip"></div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">12. .ef-tier-strip</span>
+              </div>
+              <div class="ef-stack" style="gap:var(--ef-space-2)">
+                <div style="height:44px;display:flex;align-items:center;border:1px solid var(--ef-border);padding:0 var(--ef-space-3)">
+                  <span class="ef-eyebrow">Eyebrow 小标签</span>
+                </div>
+                <span class="ef-mono ef-subtle" style="font-size:var(--ef-text-xs)">13. .ef-eyebrow / .ef-slash / .ef-bracket</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= 17. 实时调色 ================= -->
+      <section id="tuning" class="ef-stack" style="scroll-margin-top:calc(var(--ef-header-bar-h) + var(--ef-space-4))">
+        <div class="ef-section-header">
+          <div class="ef-section-header__main">
+            <span class="ef-section-header__eyebrow">Live tuning</span>
+            <h2 class="ef-section-header__title">实时调色</h2>
+          </div>
+          <div class="ef-section-header__actions">
+            <span class="ef-badge ef-mono">5 个宿主覆盖点</span>
+          </div>
+        </div>
+
+        <p class="ef-muted" style="max-width:52rem">
+          拖动滑块会实时写入 <code>--ef-user-accent</code> 及其派生值，整页的主色填充、竖条、图表、分级条与
+          <code>accent-ink</code> 文字同步变化。这就是 <code>brand.css</code> 换肤的运行时版本：只改这五个变量即可换主色。
+        </p>
+
+        <div class="ef-grid ef-grid--panels">
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">HSL 滑块</span></div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-4)">
+              <div class="ef-field" style="margin-bottom:0">
+                <label class="ef-label" for="tuneH">色相 H · <span class="ef-mono" id="tuneHOut">47</span></label>
+                <input id="tuneH" type="range" min="0" max="360" value="47" step="1" style="width:100%">
+              </div>
+              <div class="ef-field" style="margin-bottom:0">
+                <label class="ef-label" for="tuneS">饱和度 S · <span class="ef-mono" id="tuneSOut">100%</span></label>
+                <input id="tuneS" type="range" min="0" max="100" value="100" step="1" style="width:100%">
+              </div>
+              <div class="ef-field" style="margin-bottom:0">
+                <label class="ef-label" for="tuneL">亮度 L · <span class="ef-mono" id="tuneLOut">47%</span></label>
+                <input id="tuneL" type="range" min="0" max="100" value="47" step="1" style="width:100%">
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-row">
+                <button class="ef-btn ef-btn--sm" data-tune-preset="47 100 47">黄（默认）</button>
+                <button class="ef-btn ef-btn--sm" data-tune-preset="205 100 50">蓝</button>
+                <button class="ef-btn ef-btn--sm" data-tune-preset="160 100 38">青</button>
+                <button class="ef-btn ef-btn--sm" data-tune-preset="142 70 42">绿</button>
+                <button class="ef-btn ef-btn--sm" data-tune-preset="12 88 52">橙红</button>
+                <button class="ef-btn ef-btn--sm" data-tune-preset="272 84 62">紫</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ef-panel">
+            <div class="ef-panel__header"><span class="ef-panel__title">当前写入的变量</span></div>
+            <div class="ef-panel__body ef-stack" style="gap:var(--ef-space-3)">
+              <div class="ef-row">
+                <span class="ef-badge ef-mono" id="tuneOut">hsl(47 100% 47%)</span>
+                <span class="ef-hint">← --ef-user-accent</span>
+              </div>
+              <div class="ef-info-grid">
+                <p class="ef-info-grid__key">--ef-user-accent</p><p class="ef-info-grid__value ef-mono">基准色，用于填充</p>
+                <p class="ef-info-grid__key">--ef-user-accent-strong</p><p class="ef-info-grid__value ef-mono">亮度 − 10，用于悬停与描边</p>
+                <p class="ef-info-grid__key">--ef-user-accent-soft</p><p class="ef-info-grid__value ef-mono">亮度 + 34，用于浅底</p>
+                <p class="ef-info-grid__key">--ef-user-accent-glow</p><p class="ef-info-grid__value ef-mono">饱和度 + 8、亮度 + 8，用于辉光</p>
+                <p class="ef-info-grid__key">--ef-user-accent-ink</p><p class="ef-info-grid__value ef-mono">亮色：亮度 − 28；暗色：同主色</p>
+              </div>
+              <hr class="ef-divider">
+              <div class="ef-row">
+                <span style="width:48px;height:48px;background-color:var(--ef-accent);border:1px solid var(--ef-border-strong)"></span>
+                <span style="width:48px;height:48px;background-color:var(--ef-accent-strong);border:1px solid var(--ef-border-strong)"></span>
+                <span style="width:48px;height:48px;background-color:var(--ef-accent-soft);border:1px solid var(--ef-border-strong)"></span>
+                <span style="width:48px;height:48px;background-color:var(--ef-accent-glow);border:1px solid var(--ef-border-strong)"></span>
+                <span style="width:48px;height:48px;background-color:var(--ef-accent-ink);border:1px solid var(--ef-border-strong)"></span>
+              </div>
+              <p class="ef-hint" style="margin:0">
+                <code>accent-ink</code> 是主色作为文字/细图形时的替代色。亮色主题下主色对比度不足，需更深（亮度 − 28，白底 8.26:1）；
+                暗色主题下同一个深值在深底只剩 2.15:1，低于 3:1 底线，因此暗色沿用主色本身（10.06:1）。
+              </p>
+              <div class="ef-row">
+                <button class="ef-btn ef-btn--primary">主按钮</button>
+                <span class="ef-badge ef-badge--accent">主色徽标</span>
+                <span class="ef-mono" style="color:var(--ef-accent-ink);font-size:var(--ef-text-sm)">accent-ink 文字</span>
+                <span style="flex:none;width:40px;height:3px;background-color:var(--ef-accent-ink)"></span>
+              </div>
+              <button class="ef-btn ef-btn--sm" data-tune-reset>恢复默认主色</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ================= 页脚 ================= -->
+    <footer class="ef-footer">
+      <div class="ef-footer__inner">
+        <div class="ef-row ef-row--between" style="align-items:flex-start">
+          <div class="ef-stack" style="gap:var(--ef-space-2)">
+            <span class="ef-label-pair"><b>工业 HUD 设计系统</b><i>Zero-build design system</i></span>
+            <span class="ef-hint">零构建 · 无 npm 依赖 · 全部资源相对路径，可直接双击打开</span>
+          </div>
+          <div class="ef-signal-bars">
+            <i></i><i></i><i></i><i></i><i></i><i class="is-active"></i><i></i><i></i>
+          </div>
+        </div>
+        <ul class="ef-footer__links">
+          <li><a href="#tokens">令牌色板</a></li>
+          <li><a href="#type">排版尺度</a></li>
+          <li><a href="#buttons">按钮</a></li>
+          <li><a href="#forms">表单</a></li>
+          <li><a href="#charts">图表</a></li>
+          <li><a href="#motion">动效</a></li>
+          <li><a href="#tuning">实时调色</a></li>
+        </ul>
+        <p class="ef-footer__legal">
+          本页为设计系统的可视化索引，全部内容为中性占位文案，不含任何真实产品数据。
+          令牌定义以 <code>css/tokens.css</code> 为唯一真相源；换肤请覆盖 <code>--ef-user-accent*</code> 五个变量或引入 <code>css/brand.css</code>。
+        </p>
+      </div>
+    </footer>
+  </main>
+
+  <!-- 抽屉遮罩：必须是 .ef-app 的子元素，且不带 hidden 属性。
+       点击关闭由 ui.js 在 .ef-scrim 上直接挂的监听器处理，不要再加 data-sidebar-toggle，
+       否则同一次点击会被侧栏委托监听器再切换一次，等于关不上。 -->
+  <div class="ef-scrim" aria-hidden="true"></div>
+</div>
+
+<script src="js/theme.js"></script>
+<script src="js/ui.js"></script>
+<script>
+  /* ---------- 实时调色：写入五个宿主覆盖点 ---------- */
+  (function () {
+    var h = document.getElementById('tuneH');
+    var s = document.getElementById('tuneS');
+    var l = document.getElementById('tuneL');
+    if (!h || !s || !l) return;
+    var out = document.getElementById('tuneOut');
+    var hOut = document.getElementById('tuneHOut');
+    var sOut = document.getElementById('tuneSOut');
+    var lOut = document.getElementById('tuneLOut');
+
+    /* 主色作为文字/细图形时的 ink 值。
+       亮色主题：主色本身对比度不足，必须更深 —— 亮度降 28，白底 8.26:1。
+       暗色主题：同一个降 28 会让黄变暗，在 #181818 上只剩 2.15:1，低于 3:1 底线；
+       深底上主色本身就有 10.06:1，无需分叉（与 tokens.css 的暗色 --ef-accent-ink 取值一致）。
+       这也是 brand.css 在暗色块单独给 accent-ink 赋值的同一个原因。 */
+    function isDark() {
+      var attr = document.documentElement.getAttribute('data-theme');
+      if (attr === 'dark') return true;
+      if (attr === 'light') return false;
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+
+    function apply() {
+      var hue = Number(h.value);
+      var sat = Number(s.value);
+      var lig = Number(l.value);
+      var root = document.documentElement.style;
+      var base = 'hsl(' + hue + ' ' + sat + '% ' + lig + '%)';
+      var inkLig = isDark() ? lig : Math.max(0, lig - 28);
+      root.setProperty('--ef-user-accent', base);
+      root.setProperty('--ef-user-accent-strong', 'hsl(' + hue + ' ' + sat + '% ' + Math.max(0, lig - 10) + '%)');
+      root.setProperty('--ef-user-accent-soft', 'hsl(' + hue + ' ' + sat + '% ' + Math.min(100, lig + 34) + '%)');
+      root.setProperty('--ef-user-accent-glow', 'hsl(' + hue + ' ' + Math.min(100, sat + 8) + '% ' + Math.min(100, lig + 8) + '%)');
+      root.setProperty('--ef-user-accent-ink', 'hsl(' + hue + ' ' + sat + '% ' + inkLig + '%)');
+      if (out) out.textContent = base;
+      if (hOut) hOut.textContent = hue;
+      if (sOut) sOut.textContent = sat + '%';
+      if (lOut) lOut.textContent = lig + '%';
+    }
+
+    /* 主题切换后 ink 的取法要跟着变，否则切到暗色会沿用亮色的深值 */
+    if (window.EFTheme && window.EFTheme.onChange) {
+      window.EFTheme.onChange(apply);
+    }
+
+    function setAll(hue, sat, lig) {
+      h.value = hue;
+      s.value = sat;
+      l.value = lig;
+      apply();
+    }
+
+    [h, s, l].forEach(function (el) { el.addEventListener('input', apply); });
+
+    document.addEventListener('click', function (e) {
+      var preset = e.target.closest('[data-tune-preset]');
+      if (preset) {
+        var parts = preset.getAttribute('data-tune-preset').split(' ');
+        setAll(Number(parts[0]), Number(parts[1]), Number(parts[2]));
+        return;
+      }
+      if (e.target.closest('[data-tune-reset]')) {
+        var root = document.documentElement.style;
+        ['--ef-user-accent', '--ef-user-accent-strong', '--ef-user-accent-soft',
+          '--ef-user-accent-glow', '--ef-user-accent-ink'].forEach(function (name) {
+          root.removeProperty(name);
+        });
+        setAll(47, 100, 47);
+      }
+    });
+
+    apply();
+  })();
+
+  /* ---------- Toast 演示按钮 ---------- */
+  (function () {
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-demo-toast]');
+      if (!btn || !window.EFUI) return;
+      window.EFUI.toast(btn.getAttribute('data-demo-toast'), btn.getAttribute('data-demo-toast-variant') || '');
+    });
+  })();
+
+  /* ---------- 动效重播：移除类名后强制回流再加回 ---------- */
+  (function () {
+    var stage = document.getElementById('motionStage');
+    var btn = document.querySelector('[data-replay-motion]');
+    if (!stage || !btn) return;
+    var CLASSES = ['ef-boot-strip', 'ef-boot-title', 'ef-corner-in', 'ef-rise-in', 'ef-bar-grow'];
+    var selector = CLASSES.map(function (c) { return '.' + c; }).join(',');
+    var nodes = Array.prototype.slice.call(stage.querySelectorAll(selector));
+
+    /* 先记下每个节点原本的动画类，重播时按记录恢复 */
+    nodes.forEach(function (el) {
+      for (var i = 0; i < CLASSES.length; i++) {
+        if (el.classList.contains(CLASSES[i])) {
+          el.setAttribute('data-motion-class', CLASSES[i]);
+          break;
+        }
+      }
+    });
+
+    btn.addEventListener('click', function () {
+      nodes.forEach(function (el) {
+        CLASSES.forEach(function (c) { el.classList.remove(c); });
+      });
+      /* 强制同步回流，确保动画类重新加上时从头播放 */
+      void stage.offsetWidth;
+      nodes.forEach(function (el) {
+        var cls = el.getAttribute('data-motion-class');
+        if (cls) el.classList.add(cls);
+      });
+    });
+  })();
+</script>
+</body>
+</html>

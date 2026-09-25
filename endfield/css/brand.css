@@ -1,0 +1,45 @@
+/* ==========================================================================
+   品牌覆盖层（示例，默认不被任何页面引入）
+   引入方式：在任何页面的 <head> 中，于 tokens.css 之后加一行
+     <link rel="stylesheet" href="../css/brand.css">
+   改下面几个变量即可换肤，无需改动 tokens.css。
+   ========================================================================== */
+
+:root {
+  /* 主色五件套：改这五行即可换主色。
+     accent-ink 是主色作为文字/细图形时的替代色 —— 亮色主题下
+     主色本身对比度不足，必须给一个更深的同色相值。 */
+  --ef-user-accent: #f2cc00;
+  --ef-user-accent-strong: #d9ad00;
+  --ef-user-accent-soft: #fff1a6;
+  --ef-user-accent-glow: #ffd84a;
+  --ef-user-accent-ink: #8a6d00;
+
+  /* 字体：接入自有品牌字体 */
+  --ef-font-sans: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei",
+    "PingFang SC", sans-serif;
+  --ef-font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* 暗色主题需要单独给 accent-ink，因为深黄在深底上会看不清。
+   必须与 tokens.css 一样把「跟随系统」的分支包进媒体查询：
+   若只写 html:not([data-theme="light"])，系统浅色（默认路径，不写 data-theme）
+   也会匹配，浅色主题会拿到 #d8bf00 —— 白底仅 1.85:1，文字几乎看不清。 */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --ef-user-accent-ink: #d8bf00;
+  }
+}
+
+html[data-theme="dark"] {
+  --ef-user-accent-ink: #d8bf00;
+}
+
+/* 需要更彻底换肤时，直接覆盖语义令牌 */
+/*
+:root {
+  --ef-surface: #0d1117;
+  --ef-ink: #e6edf3;
+  --ef-accent: #3fb950;
+}
+*/

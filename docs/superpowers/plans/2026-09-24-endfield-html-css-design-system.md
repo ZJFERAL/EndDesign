@@ -4821,9 +4821,17 @@ Expected: 输出 `错误：未找到任何 HTML 页面。`，退出码 1。（�
   --ef-font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
-/* 暗色主题需要单独给 accent-ink，因为深黄在深底上会看不清 */
-html[data-theme="dark"],
-html:not([data-theme="light"]) {
+/* 暗色主题需要单独给 accent-ink，因为深黄在深底上会看不清。
+   必须与 tokens.css 一样把「跟随系统」的分支包进媒体查询：
+   若只写 html:not([data-theme="light"])，系统浅色（默认路径，不写 data-theme）
+   也会匹配，浅色主题会拿到 #d8bf00 —— 白底仅 1.85:1，文字几乎看不清。 */
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --ef-user-accent-ink: #d8bf00;
+  }
+}
+
+html[data-theme="dark"] {
   --ef-user-accent-ink: #d8bf00;
 }
 
