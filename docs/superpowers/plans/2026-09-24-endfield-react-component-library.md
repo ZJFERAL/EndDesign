@@ -4,7 +4,7 @@
 
 **Goal:** 在 `endfield/react/` 下建出与 HTML/CSS 层令牌同源的 React + TypeScript + Tailwind v4 组件库，含约 37 个组件与一个可运行的演示站。
 
-**Architecture:** 令牌单一来源是 `../css/tokens.css`，由 `sync:tokens` 脚本复制进 `src/styles/tokens.css`，再经 Tailwind v4 的 `@theme` 块映射为 `--color-*`，使 `bg-surface`、`text-ink-muted` 等工具类可用。组件用 Tailwind 工具类实现样式，仅对切角、角括号、斜纹等无法用工具类表达的效果定义 `@utility`。所有组件为函数组件 + `forwardRef`，零运行时依赖。
+**Architecture:** 令牌单一来源是 `../css/tokens.css`，由 `sync:tokens` 脚本复制进 `src/styles/tokens.css`，再经 Tailwind v4 的 `@theme` 块映射为 `--color-*`，使 `bg-surface`、`text-ink-muted` 等工具类可用。组件用 Tailwind 工具类实现样式，仅对切角、角括号、斜纹等无法用工具类表达的效果定义 `@utility`。按钮与表单控件用 `forwardRef` 暴露 ref，所有组件（含展示型容器）都透传 `className` 与其余原生属性，零运行时依赖。
 
 **Tech Stack:** Vite 6 + React 18 + TypeScript 5（`strict`）+ Tailwind CSS v4（`@tailwindcss/vite` 插件）。
 
@@ -17,8 +17,9 @@
 - 令牌唯一来源是 `../css/tokens.css`。禁止在 `react/` 下另写一份令牌定义；只能通过 `sync:tokens` 同步。
 - 不引入任何运行时依赖：不用 `classnames`、`clsx`、`tailwind-merge`、`react-router-dom`、任何图表库或图标库。
 - 图标一律内联 SVG 组件，放在 `src/components/icons.tsx`。
-- 所有组件必须 `forwardRef` 并透传 `className`；`className` 总是追加在内置类之后，让使用方可以覆盖。
-- 所有组件必须支持明暗两主题（依赖 `tokens.css`，不得硬编码颜色字面量）。
+- 所有**按钮与表单控件**（Button、IconButton、Input、Textarea、Select、SearchBar、Checkbox、Radio、Switch）必须 `forwardRef` 并透传 `className`。
+- 所有组件（含展示型容器）必须透传 `className` 与其余原生属性；`className` 总是追加在内置类之后，让使用方可以覆盖。展示型 / 容器型组件（面板、卡片、表格、导航、时间线、折叠面板、提示块、统计块等一切无用户输入状态的纯展示与布局组件）一律是普通函数组件，不套 `forwardRef` —— React 18 无 ref-as-prop，给它们套 `forwardRef` 只增加代码量而没有消费方。判断标准：需要暴露 DOM ref 给使用方操作的交互控件才用 `forwardRef`（见上一条），其余都是普通函数组件。
+- 所有组件必须支持明暗两主题（依赖 `tokens.css`，不得硬编码颜色字面量）。例外：Modal / Drawer 的遮罩层必须用固定的 `rgb(0 0 0 / 60%)`（与 css/components.css:1371 一致）—— 遮罩的职责是在明暗两主题下都压暗背景，不能随主题变化，故不用令牌。
 - `npx tsc --noEmit` 与 `npm run build` 必须都通过，且 `tsc` 在 `strict` 下零错误。
 - 演示站不引入路由库，用 `useState` 切换展示区。
 - 交互组件（Modal、Drawer、Dropdown、Tabs）必须键盘可达：`Esc` 关闭、焦点陷阱、`aria-*` 正确。
@@ -74,7 +75,9 @@
 - Produces:
   - `cx(...classes: Array<string | false | null | undefined>): string`
   - Tailwind 颜色工具类：`bg-surface`、`bg-surface-muted`、`bg-surface-raised`、`bg-surface-sunken`、`bg-surface-inverse`、`text-ink`、`text-ink-muted`、`text-ink-subtle`、`text-ink-inverse`、`border-border`、`border-border-strong`、`bg-accent`、`text-accent-ink`、`text-accent-fg`、`border-accent-ink`、`bg-accent-soft`、`bg-signal-yellow`、`bg-signal-cyan`、`bg-signal-magenta`、`bg-system`、`bg-success`、`bg-warn`、`bg-danger`、`bg-info`、`bg-tier-1`…`bg-tier-6`、`font-mono`、`font-display`
-  - Tailwind `@utility`：`chamfer`、`chamfer-sm`、`corner-frame`、`corner-frame-all`、`hatch`、`scanline`、`grid-backdrop`、`industrial-shell`、`tier-strip`、`top-signal-strip`
+  - Tailwind 颜色工具类（语义色与分级色的 ink 分叉、浮层与代码、胶囊圆角）：`border-info-ink`、`text-info-ink`、`border-success-ink`、`text-success-ink`、`border-warn-ink`、`text-warn-ink`、`border-danger-ink`、`text-danger-ink`、`text-tier-1-ink`…`text-tier-6-ink`、`bg-tooltip`、`text-tooltip-fg`、`bg-code-bg`、`text-code-fg`、`rounded-pill`
+  - Tailwind `@utility`：`chamfer`、`chamfer-sm`、`corner-frame`、`corner-frame-all`、`hatch`、`hatch-soft`、`hatch-accent`、`scanline`、`grid-backdrop`、`industrial-shell`、`tier-strip`、`top-signal-strip`、`skeleton-sweep`
+  - 属性映射与关键帧：`[data-tier="1"]`…`[data-tier="6"]`（同时产出 `--ef-tier-color` 与 `--ef-tier-ink`，对齐 css/utilities.css:286-291）；`ef-corner-in`、`ef-rise-in`、`ef-drawer-in`、`ef-drawer-in-left`、`ef-skeleton-sweep`
 
 - [ ] **Step 1: 确认前置令牌存在**
 
@@ -282,6 +285,27 @@ console.log(`已同步令牌：${source} → ${target}`);
   --color-tier-5: var(--ef-tier-5);
   --color-tier-6: var(--ef-tier-6);
 
+  /* 语义色 ink：tint 填充用原色，其中的文字与描边必须用 ink。
+     原色在自身 12% tint 上亮色主题仅 1.92–4.01:1，低于 4.5:1。 */
+  --color-info-ink: var(--ef-info-ink);
+  --color-success-ink: var(--ef-success-ink);
+  --color-warn-ink: var(--ef-warn-ink);
+  --color-danger-ink: var(--ef-danger-ink);
+
+  /* 分级色 ink */
+  --color-tier-1-ink: var(--ef-tier-1-ink);
+  --color-tier-2-ink: var(--ef-tier-2-ink);
+  --color-tier-3-ink: var(--ef-tier-3-ink);
+  --color-tier-4-ink: var(--ef-tier-4-ink);
+  --color-tier-5-ink: var(--ef-tier-5-ink);
+  --color-tier-6-ink: var(--ef-tier-6-ink);
+
+  /* 浮层与代码 */
+  --color-tooltip: var(--ef-tooltip);
+  --color-tooltip-fg: var(--ef-tooltip-fg);
+  --color-code-bg: var(--ef-code-bg);
+  --color-code-fg: var(--ef-code-fg);
+
   /* 字体 */
   --font-sans: var(--ef-font-sans);
   --font-mono: var(--ef-font-mono);
@@ -291,59 +315,113 @@ console.log(`已同步令牌：${source} → ${target}`);
   --radius-ef: var(--ef-radius);
   --radius-ef-sm: var(--ef-radius-sm);
   --radius-ef-lg: var(--ef-radius-lg);
+  --radius-pill: var(--ef-radius-pill);
+  --radius-ef-0: var(--ef-radius-0);
 }
 
 /* ==========================================================================
    无法用工具类表达的原子效果
    ========================================================================== */
 
-/* 切角矩形。注意 clip-path 会裁掉 border，需要描边时用 corner-frame。 */
+/* 切角矩形。注意 clip-path 会裁掉 border，需要描边时用 corner-frame。
+   尺寸回退写在 var() 里而非直接赋值，这样调用方可用
+   `[--ef-chamfer-size:3px]` 覆盖（见 Timeline 节点，components.css:1172）。 */
 @utility chamfer {
-  --ef-chamfer-size: var(--ef-chamfer);
   clip-path: polygon(
     0 0,
-    calc(100% - var(--ef-chamfer-size)) 0,
-    100% var(--ef-chamfer-size),
+    calc(100% - var(--ef-chamfer-size, var(--ef-chamfer))) 0,
+    100% var(--ef-chamfer-size, var(--ef-chamfer)),
     100% 100%,
-    var(--ef-chamfer-size) 100%,
-    0 calc(100% - var(--ef-chamfer-size))
+    var(--ef-chamfer-size, var(--ef-chamfer)) 100%,
+    0 calc(100% - var(--ef-chamfer-size, var(--ef-chamfer)))
   );
 }
 
 @utility chamfer-sm {
-  --ef-chamfer-size: var(--ef-chamfer-sm);
   clip-path: polygon(
     0 0,
-    calc(100% - var(--ef-chamfer-size)) 0,
-    100% var(--ef-chamfer-size),
+    calc(100% - var(--ef-chamfer-size, var(--ef-chamfer-sm))) 0,
+    100% var(--ef-chamfer-size, var(--ef-chamfer-sm)),
     100% 100%,
-    var(--ef-chamfer-size) 100%,
-    0 calc(100% - var(--ef-chamfer-size))
+    var(--ef-chamfer-size, var(--ef-chamfer-sm)) 100%,
+    0 calc(100% - var(--ef-chamfer-size, var(--ef-chamfer-sm)))
   );
 }
 
-/* 四角括号（完整四角） */
+/* 两角括号（左上 + 右下），画在伪元素上。对齐 css/utilities.css:34-60。 */
+@utility corner-frame {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--ef-heading-bracket);
+    border-right: 0;
+    border-bottom: 0;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--ef-heading-bracket);
+    border-left: 0;
+    border-top: 0;
+    pointer-events: none;
+  }
+}
+
+/* 四角括号（完整四角）。必须画在 ::before 上，不占用元素自身的
+   background-image，否则与 industrial-shell / grid-backdrop / hatch
+   叠在同一元素上时会互相清掉。对齐 css/utilities.css:65-105。 */
 @utility corner-frame-all {
-  background-image:
-    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
-    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
-    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
-    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
-    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
-    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
-    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
-    linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket));
-  background-repeat: no-repeat;
-  background-size:
-    14px 1px, 1px 14px,
-    14px 1px, 1px 14px,
-    14px 1px, 1px 14px,
-    14px 1px, 1px 14px;
-  background-position:
-    left top, left top,
-    right top, right top,
-    left bottom, left bottom,
-    right bottom, right bottom;
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* 同时挂上 corner-frame 时，用它来抵消那个 14×14 描边盒 */
+    width: auto;
+    height: auto;
+    border: 0;
+    background-image:
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket));
+    background-repeat: no-repeat;
+    /* 左上横 / 左上竖 / 右上横 / 右上竖 / 左下横 / 左下竖 / 右下横 / 右下竖 */
+    background-size:
+      14px 1px, 1px 14px,
+      14px 1px, 1px 14px,
+      14px 1px, 1px 14px,
+      14px 1px, 1px 14px;
+    background-position:
+      left top, left top,
+      right top, right top,
+      left bottom, left bottom,
+      right bottom, right bottom;
+  }
+
+  /* ::before 已改为角括号层，这里只需抑制 corner-frame 的右下角，
+     避免两个类同时使用时重复画角。对齐 css/utilities.css:101-105。 */
+  &::after {
+    display: none;
+  }
 }
 
 /* 斜纹，颜色继承 currentColor */
@@ -351,6 +429,24 @@ console.log(`已同步令牌：${source} → ${target}`);
   background-image: repeating-linear-gradient(
     -45deg,
     currentColor 0 1px,
+    transparent 1px 5px
+  );
+}
+
+/* 淡斜纹：Chip 激活态用。对齐 css/components.css:473-477。 */
+@utility hatch-soft {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgb(0 0 0 / 12%) 0 1px,
+    transparent 1px 5px
+  );
+}
+
+/* 主色斜纹：Tabs 激活态用。对齐 css/components.css:1287-1291。 */
+@utility hatch-accent {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--ef-accent) 22%, transparent) 0 1px,
     transparent 1px 5px
   );
 }
@@ -398,7 +494,8 @@ console.log(`已同步令牌：${source} → ${target}`);
   );
 }
 
-/* 分级条。等级色由 --ef-tier-color 提供，组件按 tier 设该变量。 */
+/* 分级条。等级色由祖先 [data-tier="N"] 提供的 --ef-tier-color 决定；
+   回退只写在 var() 里，不能在本元素上直接声明该变量，否则会遮蔽祖先的值。 */
 @utility tier-strip {
   height: 3px;
   background-image: linear-gradient(
@@ -410,18 +507,80 @@ console.log(`已同步令牌：${source} → ${target}`);
   );
 }
 
+/* 骨架屏扫光。对齐 css/components.css:585-603。 */
+@utility skeleton-sweep {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--ef-ink) 8%, transparent),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: ef-skeleton-sweep 1.4s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   分级色属性映射
+   与 css/utilities.css:286-291 等价：同时产出填充色与 ink 色。
+   组件通过 data-tier="N" 传递等级，不使用内联样式（规格 §5.12）。
+   ========================================================================== */
+
+[data-tier="1"] { --ef-tier-color: var(--ef-tier-1); --ef-tier-ink: var(--ef-tier-1-ink); }
+[data-tier="2"] { --ef-tier-color: var(--ef-tier-2); --ef-tier-ink: var(--ef-tier-2-ink); }
+[data-tier="3"] { --ef-tier-color: var(--ef-tier-3); --ef-tier-ink: var(--ef-tier-3-ink); }
+[data-tier="4"] { --ef-tier-color: var(--ef-tier-4); --ef-tier-ink: var(--ef-tier-4-ink); }
+[data-tier="5"] { --ef-tier-color: var(--ef-tier-5); --ef-tier-ink: var(--ef-tier-5-ink); }
+[data-tier="6"] { --ef-tier-color: var(--ef-tier-6); --ef-tier-ink: var(--ef-tier-6-ink); }
+
+/* ==========================================================================
+   关键帧
+   值锚定到 css/utilities.css:304/309 与 css/components.css:1432，改一处须同步。
+   ========================================================================== */
+
+@keyframes ef-corner-in {
+  from { opacity: 0; transform: scale(0.55); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes ef-rise-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* 右侧抽屉。CSS 层的 .ef-drawer 只有这一条（components.css:1429-1435）。 */
+@keyframes ef-drawer-in {
+  from { transform: translateX(100%); }
+  to   { transform: none; }
+}
+
+/* 左侧抽屉。CSS 层没有对应实现（.ef-drawer 只做右侧），此处为 React 层补充。 */
+@keyframes ef-drawer-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: none; }
+}
+
+/* 骨架屏扫光。对齐 css/components.css:600-603。 */
+@keyframes ef-skeleton-sweep {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
 /* ==========================================================================
    基础层
    ========================================================================== */
 
 @layer base {
   html {
+    -webkit-text-size-adjust: 100%;
     scrollbar-gutter: stable;
   }
 
   body {
     margin: 0;
+    min-height: 100vh;
     font-family: var(--ef-font-sans);
+    font-size: var(--ef-text-base);
+    line-height: var(--ef-text-base--lh);
     color: var(--ef-ink);
     background-color: var(--ef-surface);
     background-image:
@@ -435,8 +594,28 @@ console.log(`已同步令牌：${source} → ${target}`);
     background-size: auto, var(--ef-grid-size) var(--ef-grid-size),
       var(--ef-grid-size) var(--ef-grid-size);
     background-attachment: fixed;
-    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    font-family: var(--ef-font-display);
+    font-weight: var(--ef-weight-bold);
+    line-height: var(--ef-leading-tight);
+    text-wrap: balance;
+  }
+
+  h1 { font-size: var(--ef-text-4xl); }
+  h2 { font-size: var(--ef-text-3xl); }
+  h3 { font-size: var(--ef-text-2xl); }
+  h4 { font-size: var(--ef-text-xl); }
+  h5 { font-size: var(--ef-text-lg); }
+  h6 { font-size: var(--ef-text-base); }
 
   :focus-visible {
     outline: 2px solid var(--ef-info);
@@ -448,6 +627,27 @@ console.log(`已同步令牌：${source} → ${target}`);
     color: var(--ef-accent-fg);
   }
 
+  /* 跳到主内容。spec §9 要求每页首个可聚焦元素是它。 */
+  .ef-skip-link {
+    position: absolute;
+    left: var(--ef-space-4);
+    top: -100px;
+    z-index: 999;
+    padding: var(--ef-space-2) var(--ef-space-4);
+    border: 1px solid var(--ef-accent-ink);
+    border-radius: var(--ef-radius);
+    background: var(--ef-surface-raised);
+    color: var(--ef-ink);
+    font-family: var(--ef-font-mono);
+    font-size: var(--ef-text-sm);
+    text-decoration: none;
+    transition: top var(--ef-duration-fast) var(--ef-ease-out);
+  }
+
+  .ef-skip-link:focus {
+    top: var(--ef-space-4);
+  }
+
   /* 超长无断点文本必须能换行 */
   td,
   th {
@@ -455,6 +655,8 @@ console.log(`已同步令牌：${source} → ${target}`);
   }
 }
 
+/* reduced-motion：本层不产出 .ef-reveal 类，全部动画由上面的 * 规则统一停掉，
+   故无需额外的终态规则。 */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -462,6 +664,70 @@ console.log(`已同步令牌：${source} → ${target}`);
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   打印：强制白底黑字。逐字移植 css/base.css:188-246，改一处须同步。
+   ========================================================================== */
+@media print {
+  /* 必须包含 html:not([data-theme="light"])：默认（跟随系统）时不写 data-theme，
+     而 tokens.css 的暗色块正是 html:not([data-theme="light"])（优先级 0,1,1），
+     仅靠 :root（0,1,0）压不住它，会导致打印出来是深底深字。 */
+  :root,
+  html:not([data-theme="light"]),
+  html[data-theme="dark"],
+  html[data-theme="light"] {
+    --ef-surface-sunken: #ffffff;
+    --ef-surface: #ffffff;
+    --ef-surface-muted: #ffffff;
+    --ef-surface-raised: #ffffff;
+    --ef-surface-inverse: #000000;
+    --ef-ink: #000000;
+    --ef-ink-muted: #333333;
+    --ef-ink-subtle: #555555;
+    --ef-ink-inverse: #ffffff;
+    --ef-border: #999999;
+    --ef-border-strong: #666666;
+    --ef-accent: #e6e6e6;
+    --ef-accent-strong: #cccccc;
+    --ef-accent-soft: #f2f2f2;
+    --ef-accent-fg: #000000;
+    --ef-accent-glow: #e6e6e6;
+    /* 打印强制白底，暗色主题的 #d8bf00 在白底仅 1.85:1，必须钉成深灰 */
+    --ef-accent-ink: #555555;
+    /* 语义/分级 ink 的暗色值在白底上偏浅，打印统一钉深 */
+    --ef-info-ink: #1c4f8a;
+    --ef-success-ink: #00574f;
+    --ef-warn-ink: #6f3d02;
+    --ef-danger-ink: #8c1a1a;
+    --ef-tier-1-ink: #4a5055;
+    --ef-tier-2-ink: #2f5427;
+    --ef-tier-3-ink: #004f6a;
+    --ef-tier-4-ink: #4e3f82;
+    --ef-tier-5-ink: #6a4500;
+    --ef-tier-6-ink: #83281e;
+    /* 热力图若不钉，暗色主题打印会输出深色块（.ef-heatmap 是这三个令牌的
+       首个消费者，原 print 块未覆盖它们） */
+    --ef-heatmap-bg: #ffffff;
+    --ef-heatmap-empty: #e7e9ec;
+    --ef-heat-ramp: #6b4500;
+    --ef-grid-line: transparent;
+    --ef-scanline: transparent;
+    --ef-weave-line: transparent;
+    --ef-code-bg: #f5f5f5;
+    --ef-code-fg: #000000;
+  }
+
+  body {
+    background-image: none;
+  }
+
+  .ef-no-print,
+  .ef-sidebar,
+  .ef-topbar {
+    display: none !important;
   }
 }
 ```
@@ -613,7 +879,11 @@ git commit -m "feat(endfield-react): 搭建 Vite+TS+Tailwind 脚手架与令牌�
 - Test: 在 `src/main.tsx` 里临时渲染各组件，由 `tsc` 与浏览器核对
 
 **Interfaces:**
-- Consumes: `cx`（Task 1）
+- Consumes: Task 1 的
+  - `cx`（`src/lib/cx.ts`）
+  - Tailwind `@theme` 映射出的颜色与圆角工具类（`bg-surface-muted`、`text-ink-muted`、`border-border-strong`、`bg-accent`、`text-accent-fg`、`border-accent-ink`、`text-info-ink`…`text-danger-ink`、`bg-info/12`、`rounded-ef`、`rounded-ef-sm`、`rounded-pill` 等）
+  - `@utility` 集合：`chamfer`、`chamfer-sm`、`corner-frame`、`corner-frame-all`、`hatch`、`hatch-soft`、`hatch-accent`、`scanline`、`grid-backdrop`、`industrial-shell`、`top-signal-strip`、`tier-strip`、`skeleton-sweep`
+  - `[data-tier="1"]`…`[data-tier="6"]` 属性映射（产出 `--ef-tier-color` 与 `--ef-tier-ink`）
 - Produces:
   - `Icon` 组件族：`IconSearch`、`IconMenu`、`IconSettings`、`IconUser`、`IconClose`、`IconChevronDown`、`IconChevronRight`、`IconPlus`、`IconMinus`、`IconCheck`、`IconInfo`、`IconWarn`、`IconDanger`、`IconSuccess`、`IconGrid`、`IconList`、`IconClock`、`IconDownload`、`IconRotate`、`IconExpand`、`IconSun`、`IconMoon`、`IconMonitor`、`IconLock`、`IconBell`、`IconTrend`、`IconActivity`、`IconFile`。每个接受 `{ className?: string; size?: number }`
   - `ButtonProps`: `{ variant?: 'primary' | 'secondary' | 'ghost' | 'danger'; size?: 'sm' | 'md' | 'lg'; loading?: boolean; icon?: ReactNode; children?: ReactNode } & ButtonHTMLAttributes<HTMLButtonElement>`
@@ -829,15 +1099,19 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ReactNode;
 }
 
+/* 每个变体同时给出 --ef-btn-fg：载入态的旋转环读它取色，否则环会画成
+   按钮文字的继承色（对齐 css/components.css:135 的 color: var(--ef-btn-fg)）。 */
 const VARIANT: Record<ButtonVariant, string> = {
   primary:
-    'bg-accent text-accent-fg border-accent-strong font-semibold hover:bg-accent-strong hover:border-accent-strong',
+    'bg-accent text-accent-fg border-accent-strong font-semibold hover:bg-accent-strong hover:border-accent-strong [--ef-btn-fg:var(--ef-accent-fg)]',
   secondary:
-    'bg-transparent text-ink border-border-strong hover:bg-surface-muted',
+    'bg-transparent text-ink border-border-strong hover:bg-surface-muted [--ef-btn-fg:var(--ef-ink)]',
   ghost:
-    'bg-transparent text-ink-muted border-transparent hover:bg-surface-muted hover:text-ink',
+    'bg-transparent text-ink-muted border-transparent hover:bg-surface-muted hover:text-ink [--ef-btn-fg:var(--ef-ink-muted)]',
+  /* 危险按钮：hover 压暗而非变淡（对齐 css/components.css:97-105）。
+     前景硬编码 #ffffff 与层一致 —— 白字在 #dc2626 上对比度达标。 */
   danger:
-    'bg-danger text-white border-danger hover:bg-danger/85 hover:border-danger/85',
+    'bg-danger text-white border-danger hover:bg-[color-mix(in_srgb,var(--ef-danger)_82%,#000000)] hover:border-[color-mix(in_srgb,var(--ef-danger)_82%,#000000)] [--ef-btn-fg:#ffffff]',
 };
 
 const SIZE: Record<ButtonSize, string> = {
@@ -872,7 +1146,9 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
         <span
           aria-hidden="true"
           className="absolute inset-0 m-auto h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-          style={{ color: 'var(--ef-ink)' }}
+          /* 环色取按钮自身前景，与层一致（css/components.css:125-137）。
+             不能写成 var(--ef-ink)：那会在红色危险按钮上画出黑环。 */
+          style={{ color: 'var(--ef-btn-fg)' }}
         />
       ) : null}
     </button>
@@ -966,14 +1242,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
   { label, hint, className, id, ...rest },
   ref,
 ) {
-  if (!label && !hint) {
-    return <input ref={ref} id={id} className={cx(FIELD_BASE, className)} {...rest} />;
-  }
+  const auto = useId();
+  const fieldId = id ?? auto;
+  const control = (
+    <input ref={ref} id={fieldId} className={cx(FIELD_BASE, className)} {...rest} />
+  );
+  if (!label && !hint) return control;
   return (
-    <Field label={label} hint={hint} id={id}>
-      {(fieldId) => (
-        <input ref={ref} id={fieldId} className={cx(FIELD_BASE, className)} {...rest} />
-      )}
+    <Field label={label} hint={hint} id={fieldId}>
+      {() => control}
     </Field>
   );
 });
@@ -985,25 +1262,20 @@ export interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElemen
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
   function Textarea({ label, hint, className, id, ...rest }, ref) {
+    const auto = useId();
+    const fieldId = id ?? auto;
     const control = (
       <textarea
         ref={ref}
-        id={id}
+        id={fieldId}
         className={cx(FIELD_BASE, 'min-h-24 resize-y leading-normal', className)}
         {...rest}
       />
     );
     if (!label && !hint) return control;
     return (
-      <Field label={label} hint={hint} id={id}>
-        {(fieldId) => (
-          <textarea
-            ref={ref}
-            id={fieldId}
-            className={cx(FIELD_BASE, 'min-h-24 resize-y leading-normal', className)}
-            {...rest}
-          />
-        )}
+      <Field label={label} hint={hint} id={fieldId}>
+        {() => control}
       </Field>
     );
   },
@@ -1018,36 +1290,37 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
   { label, hint, className, id, children, ...rest },
   ref,
 ) {
+  const auto = useId();
+  const fieldId = id ?? auto;
   const selectClass = cx(FIELD_BASE, 'cursor-pointer pr-8 appearance-none', className);
+  /* CSS 层用内联 SVG 数据 URI 画下拉箭头（css/components.css:249）：
+     12×8 的折线，stroke-width 1.6，定位 right 0.75rem center。
+     数据 URI 读不到 CSS 变量，故层里把颜色写死成 #808080；
+     这里改用 --ef-border-strong —— 它在亮色主题下正是 #808080
+     （css/tokens.css:164），并随主题变化，属有意改进而非漂移。 */
   const arrow = (
     <span
       aria-hidden="true"
-      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-ink-subtle"
+      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2"
     >
-      ▾
+      <svg viewBox="0 0 12 8" width={12} height={8} fill="none" aria-hidden="true">
+        <path d="M1 1l5 5 5-5" stroke="var(--ef-border-strong)" strokeWidth={1.6} />
+      </svg>
+    </span>
+  );
+  const control = (
+    <span className="relative inline-flex w-full">
+      <select ref={ref} id={fieldId} className={selectClass} {...rest}>
+        {children}
+      </select>
+      {arrow}
     </span>
   );
 
-  if (!label && !hint) {
-    return (
-      <span className="relative inline-flex w-full">
-        <select ref={ref} id={id} className={selectClass} {...rest}>
-          {children}
-        </select>
-        {arrow}
-      </span>
-    );
-  }
+  if (!label && !hint) return control;
   return (
-    <Field label={label} hint={hint} id={id}>
-      {(fieldId) => (
-        <span className="relative inline-flex w-full">
-          <select ref={ref} id={fieldId} className={selectClass} {...rest}>
-            {children}
-          </select>
-          {arrow}
-        </span>
-      )}
+    <Field label={label} hint={hint} id={fieldId}>
+      {() => control}
     </Field>
   );
 });
@@ -1119,43 +1392,35 @@ export interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
 
 const VARIANT: Record<Exclude<BadgeVariant, 'tier'>, string> = {
   default: 'border-border bg-surface-muted text-ink-muted',
-  info: 'border-info text-info bg-info/12',
-  success: 'border-success text-success bg-success/12',
-  warn: 'border-warn text-warn bg-warn/12',
-  danger: 'border-danger text-danger bg-danger/12',
+  info: 'border-info-ink text-info-ink bg-info/12',
+  success: 'border-success-ink text-success-ink bg-success/12',
+  warn: 'border-warn-ink text-warn-ink bg-warn/12',
+  danger: 'border-danger-ink text-danger-ink bg-danger/12',
   accent: 'border-accent-strong bg-accent text-accent-fg',
 };
 
-/** 分级色变量名，用于把 tier 变成 --ef-tier-color。 */
-export const TIER_VAR: Record<Tier, string> = {
-  1: 'var(--ef-tier-1)',
-  2: 'var(--ef-tier-2)',
-  3: 'var(--ef-tier-3)',
-  4: 'var(--ef-tier-4)',
-  5: 'var(--ef-tier-5)',
-  6: 'var(--ef-tier-6)',
-};
-
-export function Badge({
-  variant = 'default',
-  tier,
-  className,
-  style,
-  children,
-  ...rest
-}: BadgeProps) {
-  const isTier = variant === 'tier' && tier !== undefined;
+/**
+ * 徽标。
+ * tint 填充用语义原色，其中的文字与描边必须用 *-ink —— 原色在自身 12% tint 上
+ * 亮色主题仅 1.92–4.01:1，低于 4.5:1（对齐 css/components.css:419-424）。
+ * 分级徽标同样分叉：文字与描边用 --ef-tier-ink，tint 填充用 --ef-tier-color
+ * （对齐 css/components.css:427-433）。
+ * 等级通过 data-tier 属性传递，由 tailwind.css 的 [data-tier="N"] 规则同时
+ * 产出 --ef-tier-color 与 --ef-tier-ink；不用内联样式（规格 §5.12）。
+ */
+export function Badge({ variant = 'default', tier, className, children, ...rest }: BadgeProps) {
+  const isTier = variant === 'tier';
   return (
     <span
+      {...(isTier && tier !== undefined ? { 'data-tier': String(tier) } : {})}
       className={cx(
         'inline-flex items-center gap-1 rounded-ef-sm border px-2 py-0.5',
         'font-mono text-[11px] leading-relaxed whitespace-nowrap tracking-wide',
         isTier
-          ? 'border-[var(--ef-tier-color)] text-[var(--ef-tier-color)] bg-[color-mix(in_srgb,var(--ef-tier-color)_14%,transparent)]'
-          : VARIANT[variant as Exclude<BadgeVariant, 'tier'>],
+          ? 'border-[var(--ef-tier-ink,var(--ef-border))] text-[var(--ef-tier-ink,var(--ef-ink-muted))] bg-[color-mix(in_srgb,var(--ef-tier-color,transparent)_14%,transparent)]'
+          : VARIANT[variant],
         className,
       )}
-      style={isTier ? { ...style, ['--ef-tier-color' as string]: TIER_VAR[tier] } : style}
       {...rest}
     >
       {children}
@@ -1184,10 +1449,14 @@ export function Chip({ active = false, className, children, ...rest }: ChipProps
       type="button"
       aria-pressed={active}
       className={cx(
-        'inline-flex items-center gap-1.5 rounded-[6px] border px-2.5 py-1',
+        // rounded-pill 映射自 --ef-radius-pill（对齐 css/components.css:449）。
+        'inline-flex items-center gap-1.5 rounded-pill border px-2.5 py-1',
         'text-sm leading-tight cursor-pointer transition-colors duration-150',
+        // 激活态斜纹用 hatch-soft 而非 hatch：hatch 取 currentColor，而此处文字是
+        // text-accent-fg（#111827），会画出近黑斜纹。层里是固定 rgb(0 0 0 / 12%)
+        // 5px 间距（css/components.css:473-477）。
         active
-          ? 'border-accent-strong bg-accent text-accent-fg font-semibold hatch'
+          ? 'border-accent-strong bg-accent text-accent-fg font-semibold hatch-soft'
           : 'border-border bg-surface-muted text-ink-muted hover:border-border-strong hover:text-ink',
         className,
       )}
@@ -1221,22 +1490,22 @@ export function ChipGroup({ label, className, children, ...rest }: ChipGroupProp
 创建 `endfield/react/src/components/Toggle.tsx`：
 
 ```tsx
-import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react';
+import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from 'react';
 import { cx } from '../lib/cx';
 
 interface ToggleShellProps {
-  id?: string;
+  htmlFor?: string;
   className?: string;
   children: ReactNode;
 }
 
-function ToggleShell({ id, className, children }: ToggleShellProps) {
+function ToggleShell({ htmlFor, className, children }: ToggleShellProps) {
   return (
     <label
+      htmlFor={htmlFor}
       className={cx('inline-flex cursor-pointer items-center gap-2 text-sm select-none', className)}
     >
       {children}
-      {id ? null : null}
     </label>
   );
 }
@@ -1246,21 +1515,25 @@ export interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement
 }
 
 export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Checkbox(
-  { label, className, ...rest },
+  { label, className, id, ...rest },
   ref,
 ) {
+  const auto = useId();
+  const controlId = id ?? auto;
   return (
-    <ToggleShell className={className}>
+    <ToggleShell htmlFor={controlId} className={className}>
       <input
         ref={ref}
+        id={controlId}
         type="checkbox"
         className={cx(
           'size-4 shrink-0 cursor-pointer appearance-none rounded-ef-sm',
           'border border-border-strong bg-surface-sunken',
           'checked:border-accent-strong checked:bg-accent',
-          'checked:bg-[repeating-linear-gradient(-45deg,rgb(0_0_0/18%)_0_1px,transparent_1px_4px)]',
-          'checked:bg-[image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2012%2012%27%3E%3Cpath%20d=%27M2%206.2l2.6%202.6L10%203.4%27%20fill=%27none%27%20stroke=%27%23111827%27%20stroke-width=%272%27/%3E%3C/svg%3E")]',
-          'checked:bg-no-repeat checked:bg-center checked:bg-[length:100%]',
+          // 斜纹与勾形是同一 background-image 的两层，避免其中一个静默覆盖另一个。
+          // 斜纹对齐 css/components.css:321-325，勾形对齐 :328-338。
+          'checked:bg-[image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2012%2012%27%3E%3Cpath%20d=%27M2%206.2l2.6%202.6L10%203.4%27%20fill=%27none%27%20stroke=%27%23111827%27%20stroke-width=%272%27/%3E%3C/svg%3E"),repeating-linear-gradient(-45deg,rgb(0_0_0/18%)_0_1px,transparent_1px_4px)]',
+          'checked:bg-[length:100%,auto] checked:bg-[position:center,0_0] checked:bg-no-repeat',
         )}
         {...rest}
       />
@@ -1274,19 +1547,24 @@ export interface RadioProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 
 }
 
 export const Radio = forwardRef<HTMLInputElement, RadioProps>(function Radio(
-  { label, className, ...rest },
+  { label, className, id, ...rest },
   ref,
 ) {
+  const auto = useId();
+  const controlId = id ?? auto;
   return (
-    <ToggleShell className={className}>
+    <ToggleShell htmlFor={controlId} className={className}>
       <input
         ref={ref}
+        id={controlId}
         type="radio"
         className={cx(
           'size-4 shrink-0 cursor-pointer appearance-none rounded-full',
           'border border-border-strong bg-surface-sunken',
           'checked:border-accent-strong checked:bg-accent',
-          'checked:shadow-[inset_0_0_0_3px_var(--ef-accent-fg)]',
+          // 选中圆点为 6px（对齐 css/components.css:341-348），用背景图而非
+          // inset shadow —— 后者画的是 3px 内环，与层里的小圆点不符。
+          'checked:bg-[image:radial-gradient(circle,var(--ef-accent-fg)_0_3px,transparent_3px)]',
         )}
         {...rest}
       />
@@ -1300,17 +1578,21 @@ export interface SwitchProps extends Omit<InputHTMLAttributes<HTMLInputElement>,
 }
 
 export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
-  { label, className, ...rest },
+  { label, className, id, ...rest },
   ref,
 ) {
+  const auto = useId();
+  const controlId = id ?? auto;
   return (
-    <ToggleShell className={className}>
+    <ToggleShell htmlFor={controlId} className={className}>
       <input
         ref={ref}
+        id={controlId}
         type="checkbox"
         role="switch"
         className={cx(
-          'relative h-5 w-9 shrink-0 cursor-pointer appearance-none rounded-[6px]',
+          // 胶囊圆角对齐 css/components.css:367 的 --ef-radius-pill。
+          'relative h-5 w-9 shrink-0 cursor-pointer appearance-none rounded-pill',
           'border border-border-strong bg-surface-sunken',
           'transition-colors duration-250',
           'after:absolute after:left-0.5 after:top-0.5 after:size-3.5 after:rounded-full',
@@ -1329,6 +1611,8 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
 - [ ] **Step 6: 写反馈与杂项组件**
 
 创建 `endfield/react/src/components/Feedback.tsx`：
+
+> `Skeleton` 用到的 `skeleton-sweep` `@utility` 与 `ef-skeleton-sweep` 关键帧**已在 Task 1 Step 5 声明在 `src/styles/tailwind.css`**，此处只需确认它们存在，**不要在本任务里重复声明**。
 
 ```tsx
 import type { HTMLAttributes, ReactNode } from 'react';
@@ -1357,7 +1641,8 @@ export function Skeleton({ width, height, className, style, ...rest }: SkeletonP
     <div
       aria-hidden="true"
       className={cx(
-        'block animate-pulse rounded-ef-sm bg-surface-muted',
+        // 用扫光而非 Tailwind 的透明度脉冲：对齐 css/components.css:585-603 与 spec §6.1。
+        'block skeleton-sweep rounded-ef-sm bg-surface-muted',
         className,
       )}
       style={{ width, height, ...style }}
@@ -1388,6 +1673,9 @@ export function Progress({ value, label, className, ...rest }: ProgressProps) {
       {...rest}
     >
       <div
+        /* 进度条填充用 background-color 而非任何 background 简写，否则会重置
+           background-image，静默抹掉叠加上来的 hatch 斜纹（spec §6.1 要求
+           进度条「可叠加 hatch」；对齐 css/components.css:616-623）。 */
         className="h-full bg-accent transition-[width] duration-400"
         style={{ width: `${clamped}%` }}
       />
@@ -1552,7 +1840,7 @@ export type {
   SelectProps,
   SearchBarProps,
 } from './components/Input';
-export { Badge, TIER_VAR } from './components/Badge';
+export { Badge } from './components/Badge';
 export type { BadgeProps, BadgeVariant, Tier } from './components/Badge';
 export { Chip, ChipGroup } from './components/Chip';
 export type { ChipProps, ChipGroupProps } from './components/Chip';
@@ -1705,7 +1993,7 @@ git commit -m "feat(endfield-react): 加入图标与原子组件（按钮/表单
 - Modify: `endfield/react/src/index.ts`
 
 **Interfaces:**
-- Consumes: Task 1（`cx`、Tailwind 工具类与 `@utility`）、Task 2（`Badge`、`TIER_VAR`、`Tier`、`Button`）
+- Consumes: Task 1（`cx`；`@theme` 颜色与圆角工具类；`@utility`：`chamfer`、`chamfer-sm`、`corner-frame`、`corner-frame-all`、`hatch`、`hatch-soft`、`hatch-accent`、`scanline`、`grid-backdrop`、`industrial-shell`、`top-signal-strip`、`tier-strip`、`skeleton-sweep`；以及 `[data-tier="1"]`…`[data-tier="6"]` 属性映射）、Task 2（`Badge`、`Tier`、`Button`）
 - Produces:
   - `Panel`、`PanelHeader`、`PanelTitle`、`PanelBody`、`PanelFooter`
   - `SectionHeader`（`{ eyebrow?: string; title: ReactNode; actions?: ReactNode }`）
@@ -1848,7 +2136,7 @@ export function SectionHeader({
 ```tsx
 import type { AnchorHTMLAttributes, HTMLAttributes, ReactNode } from 'react';
 import { cx } from '../lib/cx';
-import { TIER_VAR, type Tier } from './Badge';
+import type { Tier } from './Badge';
 
 export function Card({ className, children, ...rest }: HTMLAttributes<HTMLDivElement>) {
   return (
@@ -1919,7 +2207,11 @@ export function ItemCard({
         'hover:-translate-y-0.5 hover:border-accent-ink',
         className,
       )}
-      style={tier ? { ...style, ['--ef-tier-color' as string]: TIER_VAR[tier] } : style}
+      /* 等级用 data-tier 属性而非内联样式（规格 §5.12）：属性由 tailwind.css 的
+         [data-tier="N"] 规则产出 --ef-tier-color 与 --ef-tier-ink，
+         子元素 .tier-strip 从祖先继承前者。 */
+      data-tier={tier !== undefined ? String(tier) : undefined}
+      style={style}
       {...rest}
     >
       <div className="relative aspect-square overflow-hidden bg-surface-muted">
@@ -2024,11 +2316,14 @@ export interface CalloutProps extends HTMLAttributes<HTMLDivElement> {
   title?: string;
 }
 
+/* 每个变体同时给出原色与 ink 色（对齐 css/components.css:1014-1041）：
+   7% tint 背景用原色，3px 左边框与标题文字必须用 ink ——
+   原色做文字在其自身 tint 上亮色主题仅 2.00–4.34:1。 */
 const VARIANT: Record<CalloutVariant, string> = {
-  info: '[--ef-callout-color:var(--ef-info)]',
-  warn: '[--ef-callout-color:var(--ef-warn)]',
-  danger: '[--ef-callout-color:var(--ef-danger)]',
-  success: '[--ef-callout-color:var(--ef-success)]',
+  info: '[--ef-callout-color:var(--ef-info)] [--ef-callout-ink:var(--ef-info-ink)]',
+  warn: '[--ef-callout-color:var(--ef-warn)] [--ef-callout-ink:var(--ef-warn-ink)]',
+  danger: '[--ef-callout-color:var(--ef-danger)] [--ef-callout-ink:var(--ef-danger-ink)]',
+  success: '[--ef-callout-color:var(--ef-success)] [--ef-callout-ink:var(--ef-success-ink)]',
 };
 
 export function Callout({
@@ -2042,7 +2337,7 @@ export function Callout({
     <div
       className={cx(
         'my-4 flex gap-3 border border-border border-l-[3px] px-4 py-3 text-sm',
-        'border-l-[var(--ef-callout-color)]',
+        'border-l-[var(--ef-callout-ink,var(--ef-callout-color))]',
         'bg-[color-mix(in_srgb,var(--ef-callout-color)_7%,var(--ef-surface))]',
         VARIANT[variant],
         className,
@@ -2051,7 +2346,7 @@ export function Callout({
     >
       <div className="min-w-0">
         {title ? (
-          <span className="mb-0.5 block font-mono text-xs uppercase tracking-[0.12em] text-[var(--ef-callout-color)]">
+          <span className="mb-0.5 block font-mono text-xs uppercase tracking-[0.12em] text-[var(--ef-callout-ink,var(--ef-callout-color))]">
             {title}
           </span>
         ) : null}
@@ -2216,7 +2511,11 @@ export function TimelineItem({
     <li
       className={cx(
         'relative pb-5',
-        'before:absolute before:left-[-19px] before:top-[5px] before:size-2.5 before:chamfer-sm',
+        // 节点为 9×9、切角 3px、位置 left: calc(-1 * var(--ef-space-6) + 1px)、top: 5px
+        // （对齐 css/components.css:1166-1182）。chamfer 的尺寸回退写在 var() 里，
+        // 故可用 [--ef-chamfer-size:3px] 覆盖。
+        'before:absolute before:left-[calc(-1*var(--ef-space-6)+1px)] before:top-[5px]',
+        'before:size-[9px] before:chamfer before:[--ef-chamfer-size:3px]',
         accent ? 'before:bg-accent-ink' : 'before:bg-border-strong',
         className,
       )}
@@ -2766,6 +3065,8 @@ export function useFocusTrap(
 
 创建 `endfield/react/src/components/Modal.tsx`：
 
+> 本步骤用到的 `corner-frame-all` `@utility` 与 `ef-corner-in`、`ef-drawer-in`、`ef-drawer-in-left` 关键帧**均已在 Task 1 Step 5 声明在 `src/styles/tailwind.css`**，此处只消费，**不要重复声明**（关键帧形状见本步骤末尾）。
+
 ```tsx
 import { useCallback, useId, type ReactNode } from 'react';
 import { cx } from '../lib/cx';
@@ -2791,6 +3092,11 @@ export function Modal({ open, onClose, title, footer, children, className }: Mod
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* 遮罩是明暗两主题下都要压暗背景，不随主题变化，故用固定 rgb(0 0 0 / 60%)
+          （对齐 css/components.css:1371）—— 它是本库唯一的**与主题无关**的颜色字面量。
+          库中另有几处字面量，都只在 CSS 层本身就写死的地方出现，且各自就近注释：
+          危险按钮的白色前景（css/components.css:99）与 Select 箭头 SVG 的描边色
+          （css/components.css:249，数据 URI 读不到 CSS 变量）。 */}
       <div
         className="absolute inset-0 bg-black/60"
         onClick={close}
@@ -2803,7 +3109,8 @@ export function Modal({ open, onClose, title, footer, children, className }: Mod
         aria-labelledby={titleId}
         tabIndex={-1}
         className={cx(
-          'relative flex max-h-[85vh] w-full max-w-lg flex-col',
+          // 面板宽度与四角括号对齐 css/components.css:1377 与 index.html:1461。
+          'corner-frame-all relative flex max-h-[85vh] w-full max-w-[34rem] flex-col',
           'border border-border bg-surface-raised',
           'animate-[ef-corner-in_0.25s_var(--ef-ease-out-quint)_both]',
           className,
@@ -2863,6 +3170,7 @@ export function Drawer({
 
   return (
     <div className="fixed inset-0 z-50">
+      {/* 遮罩固定 rgb(0 0 0 / 60%)，与主题无关（对齐 css/components.css:1371）。 */}
       <div className="absolute inset-0 bg-black/60" onClick={close} aria-hidden="true" />
       <div
         ref={panelRef}
@@ -2873,8 +3181,11 @@ export function Drawer({
         className={cx(
           'absolute inset-y-0 flex w-[min(24rem,92vw)] flex-col',
           'border-border bg-surface-raised',
+          // 右侧抽屉的关键帧对齐 css/components.css:1429-1435。
+          // 左侧抽屉 CSS 层没有实现（.ef-drawer 只做右侧），
+          // ef-drawer-in-left 由 tailwind.css 为 React 层补充声明。
           side === 'right'
-            ? 'right-0 border-l animate-[ef-drawer-in-right_0.25s_var(--ef-ease-out-quint)_both]'
+            ? 'right-0 border-l animate-[ef-drawer-in_0.25s_var(--ef-ease-out-quint)_both]'
             : 'left-0 border-r animate-[ef-drawer-in-left_0.25s_var(--ef-ease-out-quint)_both]',
           className,
         )}
@@ -2894,10 +3205,10 @@ export function Drawer({
 }
 ```
 
-`Drawer` 用到了两个关键帧，需要加进 `src/styles/tailwind.css` 末尾（Tailwind v4 中自定义关键帧写在 `@theme` 内或用普通 `@keyframes`）：
+`Drawer` 用到的两个关键帧**已在 Task 1 Step 5 声明在 `src/styles/tailwind.css`**（`ef-drawer-in` 与 `ef-drawer-in-left`），此处只需确认它们存在，**不要重复声明**。应已存在的形状如下：
 
 ```css
-@keyframes ef-drawer-in-right {
+@keyframes ef-drawer-in {
   from { transform: translateX(100%); }
   to   { transform: none; }
 }
@@ -3083,8 +3394,11 @@ export function Tabs({ items, value, defaultValue, onChange, className }: TabsPr
                 'cursor-pointer border-0 border-b-2 border-transparent bg-transparent',
                 'px-4 py-2 font-mono text-xs uppercase tracking-[0.12em]',
                 'transition-colors duration-150',
+                // 激活态斜纹用 hatch-accent（主色 22% 斜纹，对齐 css/components.css:1285-1291）。
+                // 不用 hatch：它取 currentColor，而此处文字是 text-ink（亮色主题 #000000），
+                // 会画出近黑斜纹，与层里的主色斜纹相反。
                 selected
-                  ? 'border-b-accent-ink text-ink hatch [background-size:auto]'
+                  ? 'border-b-accent-ink text-ink hatch-accent'
                   : 'text-ink-muted hover:text-ink',
               )}
             >
@@ -3137,11 +3451,17 @@ type Push = (message: string, variant?: ToastVariant) => void;
 
 const ToastContext = createContext<Push | null>(null);
 
+/* 与 Callout 同样的 ink 分叉（对齐 css/components.css:1453-1474）：
+   3px 左边框用 ink，原色只用于语义标识。
+   注意一处有意的分歧：CSS 层没有 --info toast 变体 —— 它的默认 toast 是中性的
+   （--ef-toast-color: var(--ef-border-strong)、--ef-toast-ink: var(--ef-ink-muted)，
+   css/components.css:1454-1455），而默认 Callout 是信息蓝。React 层把 info 映射到
+   信息蓝，以与 Callout 及 4 变体 API 保持一致。这是裁决，不是疏漏。 */
 const VARIANT: Record<ToastVariant, string> = {
-  info: '[--ef-toast-color:var(--ef-info)]',
-  success: '[--ef-toast-color:var(--ef-success)]',
-  warn: '[--ef-toast-color:var(--ef-warn)]',
-  danger: '[--ef-toast-color:var(--ef-danger)]',
+  info: '[--ef-toast-color:var(--ef-info)] [--ef-toast-ink:var(--ef-info-ink)]',
+  success: '[--ef-toast-color:var(--ef-success)] [--ef-toast-ink:var(--ef-success-ink)]',
+  warn: '[--ef-toast-color:var(--ef-warn)] [--ef-toast-ink:var(--ef-warn-ink)]',
+  danger: '[--ef-toast-color:var(--ef-danger)] [--ef-toast-ink:var(--ef-danger-ink)]',
 };
 
 export function ToastProvider({ children }: { children: ReactNode }) {
@@ -3163,14 +3483,16 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <div
         role="status"
         aria-live="polite"
-        className="pointer-events-none fixed right-4 top-20 z-60 flex flex-col gap-2"
+        // 堆叠位置对齐 css/components.css:1442：
+        // top = var(--ef-header-bar-h) + var(--ef-space-4) = 56px + 16px = 72px。
+        className="pointer-events-none fixed right-4 top-[calc(var(--ef-header-bar-h)+var(--ef-space-4))] z-60 flex flex-col gap-2"
       >
         {items.map((t) => (
           <div
             key={t.id}
             className={cx(
               'pointer-events-auto flex min-w-64 max-w-96 items-start gap-2',
-              'border border-border border-l-[3px] border-l-[var(--ef-toast-color)]',
+              'border border-border border-l-[3px] border-l-[var(--ef-toast-ink,var(--ef-toast-color))]',
               'bg-surface-raised px-4 py-3 text-sm shadow-[0_6px_20px_rgb(0_0_0/25%)]',
               'animate-[ef-rise-in_0.25s_var(--ef-ease-out-quint)_both]',
               VARIANT[t.variant],
@@ -3192,7 +3514,7 @@ export function useToast(): Push {
 }
 ```
 
-`Toast` 用到 `ef-rise-in` 关键帧与 `ef-corner-in`，加进 `src/styles/tailwind.css`：
+`Toast` 用到 `ef-rise-in` 与 `ef-corner-in` 两个关键帧，**它们已在 Task 1 Step 5 声明在 `src/styles/tailwind.css`**，此处只需确认存在，**不要重复声明**。应已存在的形状如下：
 
 ```css
 @keyframes ef-rise-in {
@@ -3312,6 +3634,8 @@ export function Demo({ children }: { children: ReactNode }) {
 
 创建 `endfield/react/src/demo/App.tsx`：
 
+> 这里用到的 `.ef-skip-link` 基础层样式（Task 1 Step 5 的 `@layer base`）与 `top-signal-strip` `@utility` 同样**已在 Task 1 Step 5 定义**，本任务只消费，不要重复声明。
+
 ```tsx
 import { useState } from 'react';
 import { ToastProvider } from '../components/Toast';
@@ -3345,6 +3669,8 @@ export function App() {
   return (
     <ToastProvider>
       <div className="min-h-screen">
+        {/* 跳到主内容：spec §9 要求每页首个可聚焦元素是它。 */}
+        <a className="ef-skip-link" href="#ef-main">跳到主内容</a>
         <header className="sticky top-0 z-40 border-b border-border bg-surface">
           <div className="top-signal-strip" />
           <div className="flex h-14 items-center gap-4 px-4">
@@ -3361,7 +3687,10 @@ export function App() {
         </header>
 
         <div className="mx-auto flex max-w-[90rem] gap-6 px-4 py-6">
-          <aside className="sticky top-20 hidden h-[calc(100vh-6rem)] w-56 shrink-0 overflow-y-auto border-r border-border pr-3 lg:block">
+          {/* 侧栏紧贴顶栏下方：top = var(--ef-header-bar-h) + var(--ef-header-signal-h)
+              = 56px + 3px = 59px（对齐 css/layout.css:87）；
+              高度取视口减去这 59px 再留 1.5rem 余量，保证不溢出视口。 */}
+          <aside className="sticky top-[59px] hidden h-[calc(100vh-59px-1.5rem)] w-56 shrink-0 overflow-y-auto border-r border-border pr-3 lg:block">
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-subtle">
               ◆ 章节
             </p>
@@ -3397,7 +3726,7 @@ export function App() {
             </div>
           </aside>
 
-          <main className="min-w-0 flex-1">
+          <main id="ef-main" tabIndex={-1} className="min-w-0 flex-1">
             <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
               <div>
                 <span className="font-mono text-xs uppercase tracking-[0.12em] text-ink-subtle">
@@ -3407,8 +3736,8 @@ export function App() {
                   Endfield React 组件库
                 </h1>
                 <p className="mt-2 max-w-2xl text-sm text-ink-muted">
-                  与 HTML/CSS 层令牌同源的 React 组件。全部组件为函数组件 + forwardRef，
-                  零运行时依赖。
+                  与 HTML/CSS 层令牌同源的 React 组件。按钮与表单控件为函数组件 + forwardRef，
+                  展示型容器透传 className 与原生属性；零运行时依赖。
                 </p>
               </div>
               <div className="flex gap-2">
@@ -4221,10 +4550,12 @@ Run: `cd endfield/react && npm run dev`
 
 - 顶栏有 3px 信号条（品红→主色→青），左侧品牌名，中间搜索框，右侧主题按钮与图标按钮。
 - 侧栏 7 个章节锚点，点击可跳转且当前项有主色左竖条。
+- 「跳到主内容」链接在页面首次 `Tab` 时出现，聚焦后跳到 `#ef-main`。
 - **令牌章节**：色块直接反映当前主题；切换主题后所有色块**立即**变色。
 - **排版章节**：10 档字号正确；大写拉丁标签字距明显。
 - **原子章节**：全部组件渲染正常；6 个分级徽标颜色各异；条目卡分级条颜色随 tier 变化。
 - **表单章节**：受控输入框输入有反应，下方提示文字实时更新。
+- 选中态复选框同时可见主色填充、斜纹与勾形（验证 Task 2 Step 5 的双层 `background-image`）。
 - **结构章节**：4 种 Callout 左侧色条颜色正确；折叠面板可点击展开且箭头方向正确。
 - **交互章节**：
   - 打开模态 → 焦点进入，`Tab` 循环，`Esc` 关闭，焦点归还。
@@ -4246,10 +4577,11 @@ Run: `cd endfield/react && npm run dev`
 2. **安装与运行** — `npm install`、`npm run dev`、`npm run build`、`npm run typecheck`。
 3. **令牌同步** — 说明 `sync:tokens` 的作用与 `--check` 用法；强调不要手改 `src/styles/tokens.css`。
 4. **组件清单** — 按类别列出全部导出名，每条一句话。
-5. **Tailwind 工具类** — 列出 `@theme` 映射出的颜色/字体工具类，以及 `chamfer`、`chamfer-sm`、`corner-frame-all`、`hatch`、`scanline`、`grid-backdrop`、`industrial-shell`、`top-signal-strip`、`tier-strip` 这些 `@utility`。
-6. **主题** — `useTheme` 与 `ThemeToggle` 用法，`data-theme` 与 `localStorage` 键名 `ef-theme`。
-7. **约定** — 组件均为 `forwardRef` 且 `className` 可覆盖；零运行时依赖；图标内联 SVG。
-8. **可访问性** — 键盘可达、焦点陷阱、`aria-*`、`prefers-reduced-motion`。
+5. **Tailwind 工具类** — 列出 `@theme` 映射出的颜色/字体工具类，以及 `chamfer`、`chamfer-sm`、`corner-frame`、`corner-frame-all`、`hatch`、`hatch-soft`、`hatch-accent`、`scanline`、`grid-backdrop`、`industrial-shell`、`top-signal-strip`、`tier-strip`、`skeleton-sweep` 这些 `@utility`。
+6. **分级色约定** — 说明等级通过 `data-tier` **属性**传递（`Badge variant="tier" tier={n}`、`ItemCard tier={n}`），不是内联样式；`[data-tier="N"]` 规则同时产出 `--ef-tier-color`（填充）与 `--ef-tier-ink`（文字与描边），子元素 `.tier-strip` 从祖先继承填充色。
+7. **主题** — `useTheme` 与 `ThemeToggle` 用法，`data-theme` 与 `localStorage` 键名 `ef-theme`。
+8. **约定** — 按钮与表单控件均为 `forwardRef`，所有组件 `className` 可覆盖；零运行时依赖；图标内联 SVG。
+9. **可访问性** — 键盘可达、焦点陷阱、`aria-*`、`prefers-reduced-motion`。
 
 - [ ] **Step 8: 最终验收**
 
@@ -4278,7 +4610,7 @@ git commit -m "feat(endfield-react): 加入演示站与组件库说明"
 | §8 技术栈（Vite + React 18 + TS strict + Tailwind v4） | Task 1 Step 2–3 |
 | §8 令牌经 `@theme` 映射 | Task 1 Step 5 |
 | §8 令牌同源与 `sync:tokens` | Task 1 Step 4、Step 10 |
-| §8 组件同名同 API、`forwardRef`、零运行时依赖、内部 `cx()` | Task 2–4 全部 |
+| §8 组件同名同 API、`forwardRef`（按钮与表单控件）、零运行时依赖、内部 `cx()` | Task 2–4 全部 |
 | §8 演示站不引 `react-router-dom`，用 `useState` 切换 | Task 5 Step 1 |
 | §8 `tsc --noEmit` 与 `vite build` 须通过 | Task 1 Step 9、Task 5 Step 5/8 |
 | §6.1 原子组件（13 类） | Task 2 |
@@ -4294,14 +4626,14 @@ git commit -m "feat(endfield-react): 加入演示站与组件库说明"
 
 **2. 占位符扫描**
 
-已检查：无 "TBD"、"TODO"、"待补"、"类似 Task N" 表述。Task 5 Step 7 的 README 以「包含以下 8 个小节」加每节要点的方式给出——这是文档提纲而非代码，提纲已具体到可逐条落地，不属于占位符。
+已检查：无 "TBD"、"TODO"、"待补"、"类似 Task N" 表述。Task 5 Step 7 的 README 以「包含以下 9 个小节」加每节要点的方式给出——这是文档提纲而非代码，提纲已具体到可逐条落地，不属于占位符。
 
 **3. 类型与命名一致性**
 
 已核对以下跨任务引用：
 
 - `cx`：Task 1 定义（`ClassValue` 类型 + `cx` 函数），Task 2–5 全部消费，一致。
-- `Tier` 与 `TIER_VAR`：Task 2 在 `Badge.tsx` 定义，Task 3 的 `Card.tsx` 与 `ItemCard` 消费，Task 5 演示站消费，一致。
+- `Tier`：Task 2 在 `Badge.tsx` 定义，Task 3 的 `Card.tsx` 与 `ItemCard` 消费，Task 5 演示站消费，一致。（分级色不经内联样式传递，改用 `data-tier` 属性，见 `tailwind.css` 的 `[data-tier="N"]` 映射。）
 - `IconButton` 的 `label` 为必填：Task 2 定义，Task 4 的 `Modal`/`Drawer` 与 Task 5 全部正确传入，一致。
 - `useFocusTrap(active, onEscape)` 返回 `RefObject<HTMLDivElement | null>`：Task 4 Step 2 定义，`Modal` 与 `Drawer` 按此消费，一致。
 - `useToast()` 返回 `(message, variant?) => void`：Task 4 Step 6 定义，Task 5 的 `InteractiveSection` 按此调用，一致。
@@ -4311,8 +4643,8 @@ git commit -m "feat(endfield-react): 加入演示站与组件库说明"
 - `TimelineItem` 的 `time`/`dateTime`/`accent`：Task 3 Step 3 定义，Task 5 消费，一致。
 - `StatCard` 的 `glow`：Task 3 Step 2 定义，Task 5 消费，一致。
 - Tailwind 工具类名（`bg-surface-muted`、`text-ink-subtle`、`border-accent-strong` 等）：Task 1 Step 5 的 `@theme` 映射定义了它们，Task 2–5 全部消费，名称一致。
-- `@utility` 名（`chamfer`、`chamfer-sm`、`corner-frame-all`、`hatch`、`scanline`、`grid-backdrop`、`industrial-shell`、`top-signal-strip`、`tier-strip`）：Task 1 Step 5 定义，Task 2–5 消费，一致。
-- 关键帧 `ef-corner-in`、`ef-rise-in`、`ef-drawer-in-right`、`ef-drawer-in-left`：分别在 Task 4 Step 3 与 Step 6 定义于 `tailwind.css`，Task 4 组件消费，一致。
+- `@utility` 名（`chamfer`、`chamfer-sm`、`corner-frame`、`corner-frame-all`、`hatch`、`hatch-soft`、`hatch-accent`、`scanline`、`grid-backdrop`、`industrial-shell`、`top-signal-strip`、`tier-strip`、`skeleton-sweep`）与 `[data-tier="1"]`…`[data-tier="6"]` 属性映射：Task 1 Step 5 定义，Task 2–5 消费，一致。
+- 关键帧 `ef-corner-in`、`ef-rise-in`、`ef-drawer-in`、`ef-drawer-in-left`、`ef-skeleton-sweep`：全部在 Task 1 Step 5 定义于 `tailwind.css`，Task 2/4 组件消费，一致。
 
 **4. Review Focus 覆盖**
 

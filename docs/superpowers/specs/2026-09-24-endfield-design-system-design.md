@@ -496,10 +496,15 @@ box-decoration-break: clone;
   里通过 `@theme` 块映射（`--color-surface: var(--ef-surface)` 等），
   使 `bg-surface`、`text-ink-muted`、`border-border` 等工具类可用；
   `@import "./tokens.css"` 保证令牌同源。
-- **组件**：与 §6 同名同 API，全部为函数组件 + `forwardRef`，
-  导出 `variant` / `size` 等受控属性；不引入运行时依赖（无 classnames 库，
-  用内部 `cx()` 工具）。样式用 Tailwind 工具类 + 少量 `@utility` 定义
-  切角、角括号等无法用工具类表达的原子。
+- **组件**：与 §6 同名同 API。
+  - 按钮与表单控件（Button、IconButton、Input、Textarea、Select、SearchBar、
+    Checkbox、Radio、Switch）为函数组件 + `forwardRef`，导出 `variant` / `size`
+    等受控属性。
+  - 其余组件（含展示型容器）为函数组件，透传 `className` 与其余原生属性，
+    不强制 `forwardRef` —— React 18 无 ref-as-prop，展示型容器加 `forwardRef`
+    只增加样板而没有消费方。
+  - 不引入运行时依赖（无 classnames 库，用内部 `cx()` 工具）。样式用 Tailwind
+    工具类 + 少量 `@utility` 定义切角、角括号等无法用工具类表达的原子。
 - **演示站**：单页应用，左侧导航列出全部组件，右侧渲染实时示例与代码片段。
   用锚点或 `useState` 切换展示区，**不引入 `react-router-dom`**，减少依赖。
   演示站需能跑起来（`npm run dev`）且 `npm run build` 通过。
