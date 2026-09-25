@@ -4934,6 +4934,19 @@ git commit -m "feat(endfield): 加入页面校验脚本、设计系统总览页�
 
 ### Task 9: 页面模板 — 首页、列表页、详情页
 
+**页面级约束（Task 9 审查实测得出，后续页面任务一并遵守）：**
+
+- **`data-tier` 必须与分级徽标写在同一个元素上。** 自定义属性只沿 DOM 向下继承；
+  把 `data-tier` 放在隔壁 `<td>` 上，徽标读不到 `--ef-tier-color` / `--ef-tier-ink`，
+  会静默退化成灰底灰字（实测亮色 `rgb(58,58,58)`、暗色 `rgb(168,176,183)`）。
+- **每页只允许一个 `[data-sidebar-toggle]`。** `ui.js` 只更新被点击的那个按钮的
+  `aria-expanded`，放两个会让它们状态分裂（顶栏关闭后侧栏页脚那个仍是 `true`）。
+  侧栏页脚放静态文字即可，参考 `index.html`。
+- **hero 的 `<h1>` 若不带 `.ef-page-header__title`，必须自己写 `overflow-wrap:anywhere`**，
+  否则超长无断点标题会撑出横向滚动条（实测 `scrollWidth 1393` vs `clientWidth 360`）。
+- **指向尚未创建页面的链接必须带 `<!-- TODO(Task NN) -->` 标记**，并先指向已存在的页面，
+  使 `check-pages.mjs` 全程保持绿灯；Task 13 依赖这些标记找出全部待改锚点。
+
 三个核心内容页。它们定义页面级组合模式，后续页面沿用。
 
 **Files:**
@@ -5014,8 +5027,10 @@ git commit -m "feat(endfield): 加入页面校验脚本、设计系统总览页�
       <a class="ef-sidebar__item" href="settings.html"><span class="ef-label-pair"><b>设置</b><i>Settings</i></span></a>
     </nav>
     <div class="ef-sidebar__footer">
-      <button class="ef-btn ef-btn--sm" data-sidebar-toggle
-              aria-expanded="true" aria-controls="ef-sidebar" style="width:100%">收起侧栏</button>
+      <!-- 不要在这里再放一个 data-sidebar-toggle：ui.js 只更新被点击的那个按钮的
+           aria-expanded，两个 toggle 会各自持有一份状态，用遮罩或 Esc 关闭后
+           另一个仍停留在 true。侧栏折叠只由顶栏那一个按钮负责。 -->
+      <p class="ef-subtle ef-mono" style="margin:0;font-size:var(--ef-text-xs)">v1.0 · 零构建静态站</p>
     </div>
   </aside>
 
@@ -5027,7 +5042,9 @@ git commit -m "feat(endfield): 加入页面校验脚本、设计系统总览页�
         <div class="ef-row ef-row--between" style="align-items:flex-start">
           <div style="min-width:0">
             <span class="ef-eyebrow">// Archive Index</span>
-            <h1 class="ef-boot-title" style="font-size:var(--ef-text-5xl);margin:.2em 0">档案库</h1>
+            <!-- 必须自带 overflow-wrap：hero 标题没有 .ef-page-header__title 包裹，
+                 超长无断点文本会撑破页面（list/detail 的 h1 靠该类的 anywhere 生效） -->
+            <h1 class="ef-boot-title" style="font-size:var(--ef-text-5xl);margin:.2em 0;overflow-wrap:anywhere">档案库</h1>
             <p class="ef-muted" style="max-width:36rem">工业军事科幻 HUD 设计系统示例站。全部内容为中性占位文案。</p>
             <div class="ef-row" style="margin-top:var(--ef-space-5)">
               <a class="ef-btn ef-btn--primary ef-btn--lg" href="list.html">浏览条目</a>
