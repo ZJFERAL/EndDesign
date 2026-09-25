@@ -1,0 +1,501 @@
+@import "./tokens.css";
+
+@import "tailwindcss";
+
+/* ==========================================================================
+   令牌 → Tailwind 主题映射
+   Tailwind v4 用 CSS-first 配置，不使用 tailwind.config.ts。
+   映射后即可用 bg-surface / text-ink-muted / border-border 等工具类。
+   ========================================================================== */
+
+@theme {
+  /* 表面 */
+  --color-surface-sunken: var(--ef-surface-sunken);
+  --color-surface: var(--ef-surface);
+  --color-surface-muted: var(--ef-surface-muted);
+  --color-surface-raised: var(--ef-surface-raised);
+  --color-surface-inverse: var(--ef-surface-inverse);
+
+  /* 文字 */
+  --color-ink: var(--ef-ink);
+  --color-ink-muted: var(--ef-ink-muted);
+  --color-ink-subtle: var(--ef-ink-subtle);
+  --color-ink-inverse: var(--ef-ink-inverse);
+
+  /* 描边 */
+  --color-border: var(--ef-border);
+  --color-border-strong: var(--ef-border-strong);
+
+  /* 主色 */
+  --color-accent: var(--ef-accent);
+  --color-accent-strong: var(--ef-accent-strong);
+  --color-accent-soft: var(--ef-accent-soft);
+  --color-accent-fg: var(--ef-accent-fg);
+  --color-accent-glow: var(--ef-accent-glow);
+  --color-accent-ink: var(--ef-accent-ink);
+
+  /* 信号色 */
+  --color-signal-yellow: var(--ef-signal-yellow);
+  --color-signal-cyan: var(--ef-signal-cyan);
+  --color-signal-magenta: var(--ef-signal-magenta);
+
+  /* 语义色 */
+  --color-system: var(--ef-system);
+  --color-success: var(--ef-success);
+  --color-warn: var(--ef-warn);
+  --color-danger: var(--ef-danger);
+  --color-info: var(--ef-info);
+
+  /* 分级色 */
+  --color-tier-1: var(--ef-tier-1);
+  --color-tier-2: var(--ef-tier-2);
+  --color-tier-3: var(--ef-tier-3);
+  --color-tier-4: var(--ef-tier-4);
+  --color-tier-5: var(--ef-tier-5);
+  --color-tier-6: var(--ef-tier-6);
+
+  /* 语义色 ink：tint 填充用原色，其中的文字与描边必须用 ink。
+     原色在自身 12% tint 上亮色主题仅 1.92–4.01:1，低于 4.5:1。 */
+  --color-info-ink: var(--ef-info-ink);
+  --color-success-ink: var(--ef-success-ink);
+  --color-warn-ink: var(--ef-warn-ink);
+  --color-danger-ink: var(--ef-danger-ink);
+
+  /* 分级色 ink */
+  --color-tier-1-ink: var(--ef-tier-1-ink);
+  --color-tier-2-ink: var(--ef-tier-2-ink);
+  --color-tier-3-ink: var(--ef-tier-3-ink);
+  --color-tier-4-ink: var(--ef-tier-4-ink);
+  --color-tier-5-ink: var(--ef-tier-5-ink);
+  --color-tier-6-ink: var(--ef-tier-6-ink);
+
+  /* 浮层与代码 */
+  --color-tooltip: var(--ef-tooltip);
+  --color-tooltip-fg: var(--ef-tooltip-fg);
+  --color-code-bg: var(--ef-code-bg);
+  --color-code-fg: var(--ef-code-fg);
+
+  /* 字体 */
+  --font-sans: var(--ef-font-sans);
+  --font-mono: var(--ef-font-mono);
+  --font-display: var(--ef-font-display);
+
+  /* 圆角 */
+  --radius-ef: var(--ef-radius);
+  --radius-ef-sm: var(--ef-radius-sm);
+  --radius-ef-lg: var(--ef-radius-lg);
+  --radius-pill: var(--ef-radius-pill);
+  --radius-ef-0: var(--ef-radius-0);
+}
+
+/* ==========================================================================
+   无法用工具类表达的原子效果
+   ========================================================================== */
+
+/* 切角矩形。注意 clip-path 会裁掉 border，需要描边时用 corner-frame。
+   尺寸回退写在 var() 里而非直接赋值，这样调用方可用
+   `[--ef-chamfer-size:3px]` 覆盖（见 Timeline 节点，components.css:1172）。 */
+@utility chamfer {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--ef-chamfer-size, var(--ef-chamfer))) 0,
+    100% var(--ef-chamfer-size, var(--ef-chamfer)),
+    100% 100%,
+    var(--ef-chamfer-size, var(--ef-chamfer)) 100%,
+    0 calc(100% - var(--ef-chamfer-size, var(--ef-chamfer)))
+  );
+}
+
+@utility chamfer-sm {
+  clip-path: polygon(
+    0 0,
+    calc(100% - var(--ef-chamfer-size, var(--ef-chamfer-sm))) 0,
+    100% var(--ef-chamfer-size, var(--ef-chamfer-sm)),
+    100% 100%,
+    var(--ef-chamfer-size, var(--ef-chamfer-sm)) 100%,
+    0 calc(100% - var(--ef-chamfer-size, var(--ef-chamfer-sm)))
+  );
+}
+
+/* 两角括号（左上 + 右下），画在伪元素上。对齐 css/utilities.css:34-60。 */
+@utility corner-frame {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--ef-heading-bracket);
+    border-right: 0;
+    border-bottom: 0;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--ef-heading-bracket);
+    border-left: 0;
+    border-top: 0;
+    pointer-events: none;
+  }
+}
+
+/* 四角括号（完整四角）。必须画在 ::before 上，不占用元素自身的
+   background-image，否则与 industrial-shell / grid-backdrop / hatch
+   叠在同一元素上时会互相清掉。对齐 css/utilities.css:65-105。 */
+@utility corner-frame-all {
+  position: relative;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* 同时挂上 corner-frame 时，用它来抵消那个 14×14 描边盒 */
+    width: auto;
+    height: auto;
+    border: 0;
+    background-image:
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket)),
+      linear-gradient(var(--ef-heading-bracket), var(--ef-heading-bracket));
+    background-repeat: no-repeat;
+    /* 左上横 / 左上竖 / 右上横 / 右上竖 / 左下横 / 左下竖 / 右下横 / 右下竖 */
+    background-size:
+      14px 1px, 1px 14px,
+      14px 1px, 1px 14px,
+      14px 1px, 1px 14px,
+      14px 1px, 1px 14px;
+    background-position:
+      left top, left top,
+      right top, right top,
+      left bottom, left bottom,
+      right bottom, right bottom;
+  }
+
+  /* ::before 已改为角括号层，这里只需抑制 corner-frame 的右下角，
+     避免两个类同时使用时重复画角。对齐 css/utilities.css:101-105。 */
+  &::after {
+    display: none;
+  }
+}
+
+/* 斜纹，颜色继承 currentColor */
+@utility hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    currentColor 0 1px,
+    transparent 1px 5px
+  );
+}
+
+/* 淡斜纹：Chip 激活态用。对齐 css/components.css:473-477。 */
+@utility hatch-soft {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgb(0 0 0 / 12%) 0 1px,
+    transparent 1px 5px
+  );
+}
+
+/* 主色斜纹：Tabs 激活态用。对齐 css/components.css:1287-1291。 */
+@utility hatch-accent {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    color-mix(in srgb, var(--ef-accent) 22%, transparent) 0 1px,
+    transparent 1px 5px
+  );
+}
+
+/* 扫描线 */
+@utility scanline {
+  background-image: repeating-linear-gradient(
+    0deg,
+    var(--ef-scanline) 0 1px,
+    transparent 1px 4px
+  );
+}
+
+/* 网格底纹 */
+@utility grid-backdrop {
+  background-image:
+    linear-gradient(var(--ef-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ef-grid-line) 1px, transparent 1px);
+  background-size: var(--ef-grid-size) var(--ef-grid-size);
+}
+
+/* 工业底：网格 + 右上角主色辉光 */
+@utility industrial-shell {
+  background-image:
+    radial-gradient(
+      circle at 81% 16%,
+      color-mix(in srgb, var(--ef-accent) 18%, transparent),
+      transparent 24rem
+    ),
+    linear-gradient(var(--ef-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ef-grid-line) 1px, transparent 1px);
+  background-size: auto, var(--ef-grid-size) var(--ef-grid-size),
+    var(--ef-grid-size) var(--ef-grid-size);
+  background-color: var(--ef-surface);
+}
+
+/* 顶部信号条 */
+@utility top-signal-strip {
+  height: var(--ef-header-signal-h);
+  background-image: linear-gradient(
+    90deg,
+    var(--ef-signal-magenta) 0 35%,
+    var(--ef-accent) 35% 82%,
+    var(--ef-system) 82% 100%
+  );
+}
+
+/* 分级条。等级色由祖先 [data-tier="N"] 提供的 --ef-tier-color 决定；
+   回退只写在 var() 里，不能在本元素上直接声明该变量，否则会遮蔽祖先的值。 */
+@utility tier-strip {
+  height: 3px;
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--ef-tier-color, var(--ef-tier-3)) 70%, transparent) 0 62%,
+    var(--ef-signal-cyan) 62% 74%,
+    var(--ef-signal-magenta) 74% 86%,
+    var(--ef-signal-yellow) 86% 100%
+  );
+}
+
+/* 骨架屏扫光。对齐 css/components.css:585-603。 */
+@utility skeleton-sweep {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--ef-ink) 8%, transparent),
+    transparent
+  );
+  background-size: 200% 100%;
+  animation: ef-skeleton-sweep 1.4s ease-in-out infinite;
+}
+
+/* ==========================================================================
+   分级色属性映射
+   与 css/utilities.css:286-291 等价：同时产出填充色与 ink 色。
+   组件通过 data-tier="N" 传递等级，不使用内联样式（规格 §5.12）。
+   ========================================================================== */
+
+[data-tier="1"] { --ef-tier-color: var(--ef-tier-1); --ef-tier-ink: var(--ef-tier-1-ink); }
+[data-tier="2"] { --ef-tier-color: var(--ef-tier-2); --ef-tier-ink: var(--ef-tier-2-ink); }
+[data-tier="3"] { --ef-tier-color: var(--ef-tier-3); --ef-tier-ink: var(--ef-tier-3-ink); }
+[data-tier="4"] { --ef-tier-color: var(--ef-tier-4); --ef-tier-ink: var(--ef-tier-4-ink); }
+[data-tier="5"] { --ef-tier-color: var(--ef-tier-5); --ef-tier-ink: var(--ef-tier-5-ink); }
+[data-tier="6"] { --ef-tier-color: var(--ef-tier-6); --ef-tier-ink: var(--ef-tier-6-ink); }
+
+/* ==========================================================================
+   关键帧
+   值锚定到 css/utilities.css:304/309 与 css/components.css:1432，改一处须同步。
+   ========================================================================== */
+
+@keyframes ef-corner-in {
+  from { opacity: 0; transform: scale(0.55); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes ef-rise-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* 右侧抽屉。CSS 层的 .ef-drawer 只有这一条（components.css:1429-1435）。 */
+@keyframes ef-drawer-in {
+  from { transform: translateX(100%); }
+  to   { transform: none; }
+}
+
+/* 左侧抽屉。CSS 层没有对应实现（.ef-drawer 只做右侧），此处为 React 层补充。 */
+@keyframes ef-drawer-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: none; }
+}
+
+/* 骨架屏扫光。对齐 css/components.css:600-603。 */
+@keyframes ef-skeleton-sweep {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+
+/* ==========================================================================
+   基础层
+   ========================================================================== */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: var(--ef-font-sans);
+    font-size: var(--ef-text-base);
+    line-height: var(--ef-text-base--lh);
+    color: var(--ef-ink);
+    background-color: var(--ef-surface);
+    background-image:
+      radial-gradient(
+        circle at 81% 16%,
+        color-mix(in srgb, var(--ef-accent) 18%, transparent),
+        transparent 24rem
+      ),
+      linear-gradient(var(--ef-grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--ef-grid-line) 1px, transparent 1px);
+    background-size: auto, var(--ef-grid-size) var(--ef-grid-size),
+      var(--ef-grid-size) var(--ef-grid-size);
+    background-attachment: fixed;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    margin: 0;
+    font-family: var(--ef-font-display);
+    font-weight: var(--ef-weight-bold);
+    line-height: var(--ef-leading-tight);
+    text-wrap: balance;
+  }
+
+  h1 { font-size: var(--ef-text-4xl); }
+  h2 { font-size: var(--ef-text-3xl); }
+  h3 { font-size: var(--ef-text-2xl); }
+  h4 { font-size: var(--ef-text-xl); }
+  h5 { font-size: var(--ef-text-lg); }
+  h6 { font-size: var(--ef-text-base); }
+
+  :focus-visible {
+    outline: 2px solid var(--ef-info);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--ef-accent);
+    color: var(--ef-accent-fg);
+  }
+
+  /* 跳到主内容。spec §9 要求每页首个可聚焦元素是它。 */
+  .ef-skip-link {
+    position: absolute;
+    left: var(--ef-space-4);
+    top: -100px;
+    z-index: 999;
+    padding: var(--ef-space-2) var(--ef-space-4);
+    border: 1px solid var(--ef-accent-ink);
+    border-radius: var(--ef-radius);
+    background: var(--ef-surface-raised);
+    color: var(--ef-ink);
+    font-family: var(--ef-font-mono);
+    font-size: var(--ef-text-sm);
+    text-decoration: none;
+    transition: top var(--ef-duration-fast) var(--ef-ease-out);
+  }
+
+  .ef-skip-link:focus {
+    top: var(--ef-space-4);
+  }
+
+  /* 超长无断点文本必须能换行 */
+  td,
+  th {
+    overflow-wrap: anywhere;
+  }
+}
+
+/* reduced-motion：本层不产出 .ef-reveal 类，全部动画由上面的 * 规则统一停掉，
+   故无需额外的终态规则。 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ==========================================================================
+   打印：强制白底黑字。逐字移植 css/base.css:188-246，改一处须同步。
+   ========================================================================== */
+@media print {
+  /* 必须包含 html:not([data-theme="light"])：默认（跟随系统）时不写 data-theme，
+     而 tokens.css 的暗色块正是 html:not([data-theme="light"])（优先级 0,1,1），
+     仅靠 :root（0,1,0）压不住它，会导致打印出来是深底深字。 */
+  :root,
+  html:not([data-theme="light"]),
+  html[data-theme="dark"],
+  html[data-theme="light"] {
+    --ef-surface-sunken: #ffffff;
+    --ef-surface: #ffffff;
+    --ef-surface-muted: #ffffff;
+    --ef-surface-raised: #ffffff;
+    --ef-surface-inverse: #000000;
+    --ef-ink: #000000;
+    --ef-ink-muted: #333333;
+    --ef-ink-subtle: #555555;
+    --ef-ink-inverse: #ffffff;
+    --ef-border: #999999;
+    --ef-border-strong: #666666;
+    --ef-accent: #e6e6e6;
+    --ef-accent-strong: #cccccc;
+    --ef-accent-soft: #f2f2f2;
+    --ef-accent-fg: #000000;
+    --ef-accent-glow: #e6e6e6;
+    /* 打印强制白底，暗色主题的 #d8bf00 在白底仅 1.85:1，必须钉成深灰 */
+    --ef-accent-ink: #555555;
+    /* 语义/分级 ink 的暗色值在白底上偏浅，打印统一钉深 */
+    --ef-info-ink: #1c4f8a;
+    --ef-success-ink: #00574f;
+    --ef-warn-ink: #6f3d02;
+    --ef-danger-ink: #8c1a1a;
+    --ef-tier-1-ink: #4a5055;
+    --ef-tier-2-ink: #2f5427;
+    --ef-tier-3-ink: #004f6a;
+    --ef-tier-4-ink: #4e3f82;
+    --ef-tier-5-ink: #6a4500;
+    --ef-tier-6-ink: #83281e;
+    /* 热力图若不钉，暗色主题打印会输出深色块（.ef-heatmap 是这三个令牌的
+       首个消费者，原 print 块未覆盖它们） */
+    --ef-heatmap-bg: #ffffff;
+    --ef-heatmap-empty: #e7e9ec;
+    --ef-heat-ramp: #6b4500;
+    --ef-grid-line: transparent;
+    --ef-scanline: transparent;
+    --ef-weave-line: transparent;
+    --ef-code-bg: #f5f5f5;
+    --ef-code-fg: #000000;
+  }
+
+  body {
+    background-image: none;
+  }
+
+  .ef-no-print,
+  .ef-sidebar,
+  .ef-topbar {
+    display: none !important;
+  }
+}

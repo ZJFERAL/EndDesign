@@ -1,0 +1,308 @@
+/* ------------------------------------------------------------------
+   本文件由 scripts/sync-tokens.mjs 自动同步，请勿手改。
+   令牌唯一来源：endfield/css/tokens.css
+   修改后运行：npm run sync:tokens
+   ------------------------------------------------------------------ */
+/* ==========================================================================
+   Endfield 设计系统 — 设计令牌
+   唯一真相源。其他样式文件只消费 var(--ef-*)，不得再定义令牌。
+   主题三态：light 为 :root 默认；dark 由 [data-theme="dark"]
+   与 prefers-color-scheme: dark 双触发。
+   ========================================================================== */
+
+:root {
+  /* ---------- 字体 ---------- */
+  --ef-font-sans: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei",
+    "PingFang SC", "Hiragino Sans GB", sans-serif;
+  --ef-font-mono: "JetBrains Mono", "IBM Plex Mono", ui-monospace,
+    SFMono-Regular, Menlo, Consolas, monospace;
+  --ef-font-display: var(--ef-font-sans);
+
+  /* ---------- 字号与行高 ---------- */
+  --ef-text-xs: 0.75rem;
+  --ef-text-xs--lh: 1.3333;
+  --ef-text-sm: 0.875rem;
+  --ef-text-sm--lh: 1.4286;
+  --ef-text-base: 1rem;
+  --ef-text-base--lh: 1.5;
+  --ef-text-lg: 1.125rem;
+  --ef-text-lg--lh: 1.5556;
+  --ef-text-xl: 1.25rem;
+  --ef-text-xl--lh: 1.4;
+  --ef-text-2xl: 1.5rem;
+  --ef-text-2xl--lh: 1.3333;
+  --ef-text-3xl: 1.875rem;
+  --ef-text-3xl--lh: 1.2;
+  --ef-text-4xl: 2.25rem;
+  --ef-text-4xl--lh: 1.1111;
+  --ef-text-5xl: 3rem;
+  --ef-text-5xl--lh: 1;
+  --ef-text-6xl: 3.75rem;
+  --ef-text-6xl--lh: 1;
+
+  /* ---------- 字重 ---------- */
+  --ef-weight-normal: 400;
+  --ef-weight-medium: 500;
+  --ef-weight-semibold: 600;
+  --ef-weight-bold: 700;
+
+  /* ---------- 字距 ---------- */
+  --ef-tracking-tightest: -0.08em;
+  --ef-tracking-tight: -0.025em;
+  --ef-tracking-normal: 0em;
+  --ef-tracking-wide: 0.025em;
+  --ef-tracking-caps: 0.12em;
+  --ef-tracking-caps-lg: 0.16em;
+  --ef-tracking-caps-xl: 0.2em;
+
+  /* ---------- 行高 ---------- */
+  --ef-leading-tight: 1.25;
+  --ef-leading-snug: 1.375;
+  --ef-leading-normal: 1.5;
+  --ef-leading-relaxed: 1.625;
+
+  /* ---------- 间距 ---------- */
+  --ef-space-1: 0.25rem;
+  --ef-space-2: 0.5rem;
+  --ef-space-3: 0.75rem;
+  --ef-space-4: 1rem;
+  --ef-space-5: 1.25rem;
+  --ef-space-6: 1.5rem;
+  --ef-space-8: 2rem;
+  --ef-space-10: 2.5rem;
+  --ef-space-12: 3rem;
+  --ef-space-16: 4rem;
+
+  /* ---------- 圆角 ---------- */
+  --ef-radius-0: 0px;
+  --ef-radius-sm: 2px;
+  --ef-radius: 4px;
+  --ef-radius-lg: 8px;
+  --ef-radius-pill: 6px;
+
+  /* ---------- 切角 ---------- */
+  --ef-chamfer: 9px;
+  --ef-chamfer-sm: 6px;
+
+  /* ---------- 缓动 ---------- */
+  --ef-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ef-ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ef-ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ef-ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ef-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ---------- 时长 ---------- */
+  --ef-duration-fast: 0.15s;
+  --ef-duration-base: 0.25s;
+  --ef-duration-slow: 0.4s;
+
+  /* ---------- 层级 ---------- */
+  --ef-z-rail: 20;
+  --ef-z-floating: 30;
+  --ef-z-header: 40;
+  --ef-z-scrim: 40;
+  --ef-z-overlay: 50;
+  --ef-z-menu: 60;
+  --ef-z-lightbox: 70;
+  --ef-z-tooltip: 80;
+
+  /* ---------- 骨架尺寸 ---------- */
+  --ef-header-bar-h: 56px;
+  --ef-header-signal-h: 3px;
+  --ef-sidebar-w: 214px;
+  --ef-sidebar-w-collapsed: 56px;
+  --ef-grid-size: 24px;
+
+  /* ---------- 信号色（与主题无关） ---------- */
+  --ef-signal-yellow: #fffa00;
+  --ef-signal-cyan: #00ffa2;
+  --ef-signal-magenta: #ff00f0;
+
+  /* ---------- 语义色（与主题无关） ---------- */
+  --ef-system: #00c7bd;
+  --ef-success: #00c7bd;
+  --ef-warn: #d97706;
+  --ef-danger: #dc2626;
+  --ef-info: #248dff;
+
+  /* ---------- 语义色 ink：语义色本身做文字时在 tint 背景上不达标 ---------- */
+  --ef-info-ink: #1960ae;
+  --ef-success-ink: #006e69;
+  --ef-warn-ink: #914f04;
+  --ef-danger-ink: #b31f1f;
+
+  /* ---------- 分级色 1–6（与主题无关） ---------- */
+  --ef-tier-1: #94a0aa;
+  --ef-tier-2: #68b457;
+  --ef-tier-3: #009dd1;
+  --ef-tier-4: #9a7dff;
+  --ef-tier-5: #ed9a00;
+  --ef-tier-6: #ff503c;
+
+  /* ---------- 分级色 ink ---------- */
+  --ef-tier-1-ink: #5b6268;
+  --ef-tier-2-ink: #3e6b34;
+  --ef-tier-3-ink: #006688;
+  --ef-tier-4-ink: #6451a6;
+  --ef-tier-5-ink: #875700;
+  --ef-tier-6-ink: #a83528;
+
+  /* ======================================================================
+     Light 主题（默认）
+     ====================================================================== */
+
+  /* ---------- 表面 ---------- */
+  --ef-surface-sunken: #ebebeb;
+  --ef-surface: #ffffff;
+  --ef-surface-muted: #f5f5f5;
+  --ef-surface-raised: #ffffff;
+  --ef-surface-inverse: #000000;
+
+  /* ---------- 文字 ---------- */
+  --ef-ink: #000000;
+  --ef-ink-muted: #3a3a3a;
+  --ef-ink-subtle: #606060;
+  --ef-ink-inverse: #ffffff;
+
+  /* ---------- 描边 ---------- */
+  --ef-border: #bcbcbc;
+  --ef-border-strong: #808080;
+
+  /* ---------- 主色 ---------- */
+  --ef-accent: var(--ef-user-accent, #f2cc00);
+  --ef-accent-strong: var(--ef-user-accent-strong, #d9ad00);
+  --ef-accent-soft: var(--ef-user-accent-soft, #fff1a6);
+  --ef-accent-fg: #111827;
+  --ef-accent-glow: var(--ef-user-accent-glow, #ffd84a);
+  /* 主色作为文字/细图形时使用。亮色主题下 #f2cc00 在白底仅 1.57:1，
+     不达标，故分叉为深黄 #8a6d00（白底 4.92:1，次表面 4.51:1）。 */
+  --ef-accent-ink: var(--ef-user-accent-ink, #8a6d00);
+
+  /* ---------- 装饰 ---------- */
+  --ef-grid-line: #e0e0e0;
+  --ef-scanline: rgb(0 0 0 / 5%);
+  --ef-weave-line: rgb(0 0 0 / 5%);
+  --ef-heading-bracket: #797979;
+  --ef-heading-bar: #c2c2c2;
+  --ef-heading-bar-fade: #c2c2c226;
+  --ef-heading-rule: #adadad;
+  --ef-heatmap-bg: #f4f5f7;
+  --ef-heatmap-empty: #e7e9ec;
+  /* 热力图递增色：亮色下用深黄才能拉开亮度差（见 .ef-heatmap 注释） */
+  --ef-heat-ramp: #8c5b00;
+
+  /* ---------- 浮层与代码 ---------- */
+  --ef-tooltip: #18181b;
+  --ef-tooltip-fg: #fafafa;
+  --ef-code-bg: #f5f5f5;
+  --ef-code-fg: #111827;
+}
+
+/* ==========================================================================
+   Dark 主题
+   两处触发条件必须给出完全相同的值，改一处必须同步改另一处。
+   ========================================================================== */
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --ef-surface-sunken: #121212;
+    --ef-surface: #181818;
+    --ef-surface-muted: #1f1f1f;
+    --ef-surface-raised: #232323;
+    --ef-surface-inverse: #f8fafc;
+
+    --ef-ink: #eeeeee;
+    --ef-ink-muted: #a8b0b7;
+    --ef-ink-subtle: rgb(255 255 255 / 70%);
+    --ef-ink-inverse: #111827;
+
+    --ef-border: #2b3136;
+    --ef-border-strong: #41484f;
+
+    --ef-accent: var(--ef-user-accent, #d8bf00);
+    --ef-accent-strong: var(--ef-user-accent-strong, #b99b00);
+    --ef-accent-soft: var(--ef-user-accent-soft, #272302);
+    --ef-accent-fg: #111827;
+    --ef-accent-glow: var(--ef-user-accent-glow, #ecd548);
+    /* 暗色主题的 #d8bf00 在 #181818 上已有 9.62:1，无需分叉 */
+    --ef-accent-ink: var(--ef-user-accent-ink, #d8bf00);
+    /* 语义色/分级色 ink 的暗色值：亮色值在深底上会太暗 */
+    --ef-info-ink: #419cff;
+    --ef-success-ink: #00c7bd;
+    --ef-warn-ink: #dd851f;
+    --ef-danger-ink: #e76d6d;
+    --ef-tier-1-ink: #96a2ab;
+    --ef-tier-2-ink: #68b457;
+    --ef-tier-3-ink: #1da8d6;
+    --ef-tier-4-ink: #a68cff;
+    --ef-tier-5-ink: #ed9a00;
+    --ef-tier-6-ink: #ff6a58;
+
+    --ef-grid-line: #ffffff0e;
+    --ef-scanline: rgb(255 255 255 / 5%);
+    --ef-weave-line: rgb(255 255 255 / 2.5%);
+    --ef-heading-bracket: #8c8c8c;
+    --ef-heading-bar: #5c5c5c;
+    --ef-heading-bar-fade: #5c5c5c26;
+    --ef-heading-rule: #6c6c6c;
+    --ef-heatmap-bg: #202020;
+    --ef-heatmap-empty: #2c2c2c;
+    --ef-heat-ramp: #d8bf00;
+
+    --ef-tooltip: #f4f4f5;
+    --ef-tooltip-fg: #18181b;
+    --ef-code-bg: #101013;
+    --ef-code-fg: #e6e8eb;
+  }
+}
+
+html[data-theme="dark"] {
+  --ef-surface-sunken: #121212;
+  --ef-surface: #181818;
+  --ef-surface-muted: #1f1f1f;
+  --ef-surface-raised: #232323;
+  --ef-surface-inverse: #f8fafc;
+
+  --ef-ink: #eeeeee;
+  --ef-ink-muted: #a8b0b7;
+  --ef-ink-subtle: rgb(255 255 255 / 70%);
+  --ef-ink-inverse: #111827;
+
+  --ef-border: #2b3136;
+  --ef-border-strong: #41484f;
+
+  --ef-accent: var(--ef-user-accent, #d8bf00);
+  --ef-accent-strong: var(--ef-user-accent-strong, #b99b00);
+  --ef-accent-soft: var(--ef-user-accent-soft, #272302);
+  --ef-accent-fg: #111827;
+  --ef-accent-glow: var(--ef-user-accent-glow, #ecd548);
+  /* 暗色主题的 #d8bf00 在 #181818 上已有 9.62:1，无需分叉 */
+  --ef-accent-ink: var(--ef-user-accent-ink, #d8bf00);
+  /* 语义色/分级色 ink 的暗色值：亮色值在深底上会太暗 */
+  --ef-info-ink: #419cff;
+  --ef-success-ink: #00c7bd;
+  --ef-warn-ink: #dd851f;
+  --ef-danger-ink: #e76d6d;
+  --ef-tier-1-ink: #96a2ab;
+  --ef-tier-2-ink: #68b457;
+  --ef-tier-3-ink: #1da8d6;
+  --ef-tier-4-ink: #a68cff;
+  --ef-tier-5-ink: #ed9a00;
+  --ef-tier-6-ink: #ff6a58;
+
+  --ef-grid-line: #ffffff0e;
+  --ef-scanline: rgb(255 255 255 / 5%);
+  --ef-weave-line: rgb(255 255 255 / 2.5%);
+  --ef-heading-bracket: #8c8c8c;
+  --ef-heading-bar: #5c5c5c;
+  --ef-heading-bar-fade: #5c5c5c26;
+  --ef-heading-rule: #6c6c6c;
+  --ef-heatmap-bg: #202020;
+  --ef-heatmap-empty: #2c2c2c;
+  --ef-heat-ramp: #d8bf00;
+
+  --ef-tooltip: #f4f4f5;
+  --ef-tooltip-fg: #18181b;
+  --ef-code-bg: #101013;
+  --ef-code-fg: #e6e8eb;
+}
