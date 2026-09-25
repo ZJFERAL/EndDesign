@@ -4160,13 +4160,19 @@ git commit -m "feat(endfield): 实现结构组件样式（面板/卡片/表格/�
   // 首帧前应用，避免主题闪烁
   apply(read());
 
-  document.addEventListener('DOMContentLoaded', function () {
-    document.addEventListener('click', function (e) {
-      var btn = e.target.closest('[data-theme-toggle]');
-      if (btn) EFTheme.toggle();
-    });
-    syncButtons(read());
+  // 监听器立即注册，不放进 DOMContentLoaded —— 事件委托不依赖 DOM 就绪，
+  // 若脚本在 DOMContentLoaded 之后才注入，放进回调会导致点击切换永久失效
+  // （ui.js 用 readyState 判断处理了同一问题，两个文件需保持一致）。
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-theme-toggle]');
+    if (btn) EFTheme.toggle();
   });
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { syncButtons(read()); });
+  } else {
+    syncButtons(read());
+  }
 })();
 ```
 
@@ -4237,14 +4243,17 @@ git commit -m "feat(endfield): 实现结构组件样式（面板/卡片/表格/�
       });
     }
 
-    // 根因修复：窄屏打开抽屉后把窗口拉宽，.is-open 会残留在 .ef-app 上，
-    // 此时 Esc（或合成事件）会把「可见的」宽屏侧栏标成 aria-hidden，
-    // 读屏软件会整块跳过它。切到宽屏时清掉抽屉状态与相关 ARIA。
+    // 根因修复：抽屉的两种残留状态必须分别清理，不能只清理其一。
+    //   (a) 窄屏打开抽屉后拉宽窗口 → .is-open 残留；
+    //   (b) 窄屏关闭抽屉后拉宽窗口 → 关闭路径写下的 aria-hidden="true" 残留。
+    // (b) 与 .is-open 无关：三条关闭路径都会独立设置 aria-hidden="true"，
+    // 所以早退条件只检查 is-open 会漏掉它，让「可见的」宽屏侧栏被读屏整块跳过。
+    // 因此这里不做提前返回，而是无条件把状态归一化到宽屏应有的样子。
     function clearDrawerState() {
-      if (!app.classList.contains('is-open')) return;
       app.classList.remove('is-open');
       var toggle = root.querySelector('[data-sidebar-toggle]');
-      if (toggle) toggle.setAttribute('aria-expanded', 'false');
+      if (toggle) toggle.setAttribute('aria-expanded', 'true');
+      // 宽屏侧栏始终可见，必须移除 aria-hidden，而不是设成 "true"
       if (sidebar) sidebar.removeAttribute('aria-hidden');
     }
 
@@ -4403,7 +4412,13 @@ git commit -m "feat(endfield): 实现结构组件样式（面板/卡片/表格/�
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       var menus = root.querySelectorAll('.ef-dropdown__menu');
-      Array.prototype.forEach.call(menus, function (menu) { menu.hidden = true; });
+      Array.prototype.forEach.call(menus, function (menu) {
+        menu.hidden = true;
+        // 与外部点击路径一致：关闭菜单时必须同步触发器的 aria-expanded，
+        // 否则菜单已隐藏但 aria-expanded 仍为 true，读屏会认为它还开着。
+        var btn = root.querySelector('[data-dropdown-toggle="' + menu.id + '"]');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      });
     });
   }
 
