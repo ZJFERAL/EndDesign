@@ -19,7 +19,7 @@
   padding: 0.55rem 1rem;
   border: 1px solid var(--ef-btn-border);
   border-radius: var(--ef-radius);
-  background: var(--ef-btn-bg);
+  background-color: var(--ef-btn-bg);
   color: var(--ef-btn-fg);
   font-family: var(--ef-font-sans);
   font-size: var(--ef-text-sm);
@@ -36,7 +36,7 @@
 
 .ef-btn:hover {
   border-color: var(--ef-border-strong);
-  background: color-mix(in srgb, var(--ef-btn-bg) 88%, var(--ef-ink) 12%);
+  background-color: color-mix(in srgb, var(--ef-btn-bg) 88%, var(--ef-ink) 12%);
 }
 
 .ef-btn:active {
@@ -65,7 +65,7 @@
 }
 
 .ef-btn--primary:hover {
-  background: var(--ef-accent-strong);
+  background-color: var(--ef-accent-strong);
   border-color: var(--ef-accent-strong);
 }
 
@@ -77,7 +77,7 @@
 }
 
 .ef-btn--secondary:hover {
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
 }
 
 /* 幽灵按钮 */
@@ -88,7 +88,7 @@
 }
 
 .ef-btn--ghost:hover {
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   border-color: transparent;
   color: var(--ef-ink);
 }
@@ -101,7 +101,7 @@
 }
 
 .ef-btn--danger:hover {
-  background: color-mix(in srgb, var(--ef-danger) 82%, #000000);
+  background-color: color-mix(in srgb, var(--ef-danger) 82%, #000000);
   border-color: color-mix(in srgb, var(--ef-danger) 82%, #000000);
 }
 
@@ -149,7 +149,7 @@
   height: 32px;
   padding: 0;
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink-muted);
   cursor: pointer;
   --ef-chamfer-size: var(--ef-chamfer-sm);
@@ -167,7 +167,7 @@
 }
 
 .ef-icon-btn:hover {
-  background: var(--ef-accent);
+  background-color: var(--ef-accent);
   color: var(--ef-accent-fg);
 }
 
@@ -207,7 +207,7 @@
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
   color: var(--ef-ink);
   font-family: var(--ef-font-sans);
   font-size: var(--ef-text-sm);
@@ -298,7 +298,7 @@
   height: 1rem;
   margin: 0;
   border: 1px solid var(--ef-border-strong);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
   cursor: pointer;
   transition:
     background-color var(--ef-duration-fast) var(--ef-ease-out),
@@ -343,7 +343,7 @@
   height: 6px;
   margin: 4px auto;
   border-radius: 50%;
-  background: var(--ef-accent-fg);
+  background-color: var(--ef-accent-fg);
 }
 
 /* 开关 */
@@ -365,7 +365,7 @@
   margin: 0;
   border: 1px solid var(--ef-border-strong);
   border-radius: var(--ef-radius-pill);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
   cursor: pointer;
   transition:
     background-color var(--ef-duration-base) var(--ef-ease-out),
@@ -380,7 +380,7 @@
   width: calc(1.25rem - 6px);
   height: calc(1.25rem - 6px);
   border-radius: 50%;
-  background: var(--ef-ink-subtle);
+  background-color: var(--ef-ink-subtle);
   transition:
     transform var(--ef-duration-base) var(--ef-ease-out-quint),
     background-color var(--ef-duration-base) var(--ef-ease-out);
@@ -388,12 +388,12 @@
 
 .ef-switch input:checked {
   border-color: var(--ef-accent-strong);
-  background: var(--ef-accent);
+  background-color: var(--ef-accent);
 }
 
 .ef-switch input:checked::after {
   transform: translateX(1rem);
-  background: var(--ef-accent-fg);
+  background-color: var(--ef-accent-fg);
 }
 
 /* ==========================================================================
@@ -407,7 +407,7 @@
   padding: 0.1em 0.5em;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink-muted);
   font-family: var(--ef-font-mono);
   font-size: 0.6875rem;
@@ -418,18 +418,18 @@
 
 /* tint 填充用原色；其中文字与描边必须用 *-ink —— 原色在自身 12% tint 上
    亮色主题仅 1.92–4.01:1，全部低于 4.5:1。 */
-.ef-badge--info    { border-color: var(--ef-info-ink);    color: var(--ef-info-ink);    background: color-mix(in srgb, var(--ef-info) 12%, transparent); }
-.ef-badge--success { border-color: var(--ef-success-ink); color: var(--ef-success-ink); background: color-mix(in srgb, var(--ef-success) 12%, transparent); }
-.ef-badge--warn    { border-color: var(--ef-warn-ink);    color: var(--ef-warn-ink);    background: color-mix(in srgb, var(--ef-warn) 12%, transparent); }
-.ef-badge--danger  { border-color: var(--ef-danger-ink);  color: var(--ef-danger-ink);  background: color-mix(in srgb, var(--ef-danger) 12%, transparent); }
-.ef-badge--accent  { border-color: var(--ef-accent-strong); color: var(--ef-accent-fg); background: var(--ef-accent); }
+.ef-badge--info    { border-color: var(--ef-info-ink);    color: var(--ef-info-ink);    background-color: color-mix(in srgb, var(--ef-info) 12%, transparent); }
+.ef-badge--success { border-color: var(--ef-success-ink); color: var(--ef-success-ink); background-color: color-mix(in srgb, var(--ef-success) 12%, transparent); }
+.ef-badge--warn    { border-color: var(--ef-warn-ink);    color: var(--ef-warn-ink);    background-color: color-mix(in srgb, var(--ef-warn) 12%, transparent); }
+.ef-badge--danger  { border-color: var(--ef-danger-ink);  color: var(--ef-danger-ink);  background-color: color-mix(in srgb, var(--ef-danger) 12%, transparent); }
+.ef-badge--accent  { border-color: var(--ef-accent-strong); color: var(--ef-accent-fg); background-color: var(--ef-accent); }
 
 /* 分级徽标：色由 data-tier 决定 */
 .ef-badge--tier {
   /* 文字与描边用分级 ink 色，tint 填充用分级原色（见 [data-tier] 的映射） */
   border-color: var(--ef-tier-ink, var(--ef-border));
   color: var(--ef-tier-ink, var(--ef-ink-muted));
-  background: color-mix(in srgb, var(--ef-tier-color, transparent) 14%, transparent);
+  background-color: color-mix(in srgb, var(--ef-tier-color, transparent) 14%, transparent);
 }
 
 /* ---------- 标签（可选中，用于筛选行） ---------- */
@@ -447,7 +447,7 @@
   padding: 0.3rem 0.7rem;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius-pill);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink-muted);
   font-size: var(--ef-text-sm);
   line-height: 1.3;
@@ -488,7 +488,7 @@
   height: 1px;
   margin: var(--ef-space-4) 0;
   border: 0;
-  background: var(--ef-border);
+  background-color: var(--ef-border);
 }
 
 .ef-divider--labeled {
@@ -496,7 +496,12 @@
   align-items: center;
   gap: var(--ef-space-3);
   height: auto;
-  background: none;
+  /* 用两条长写抵消 .ef-divider 的横条：一条清零颜色，一条清掉可能由
+     手法类带来的底纹。不能改用简写形式（会把 background-image 一并重置，
+     正是本次要消除的耦合）；也不能把颜色写成 none（无效值，解析阶段即被
+     丢弃，横条不会被抵消，已实测）。 */
+  background-color: transparent;
+  background-image: none;
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-xs);
   letter-spacing: var(--ef-tracking-caps);
@@ -509,7 +514,7 @@
   content: "";
   flex: 1 1 auto;
   height: 1px;
-  background: var(--ef-border);
+  background-color: var(--ef-border);
 }
 
 /* ---------- 键盘提示 ---------- */
@@ -521,7 +526,7 @@
   border: 1px solid var(--ef-border);
   border-bottom-width: 2px;
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-surface-raised);
+  background-color: var(--ef-surface-raised);
   color: var(--ef-ink-muted);
   font-family: var(--ef-font-mono);
   font-size: 0.6875rem;
@@ -539,7 +544,7 @@
   width: 36px;
   height: 36px;
   border: 1px solid var(--ef-border);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   color: var(--ef-ink-muted);
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-sm);
@@ -581,7 +586,7 @@
   display: block;
   height: 1em;
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-surface-muted);
+  background-color: var(--ef-surface-muted);
   background-image: linear-gradient(
     90deg,
     transparent,
@@ -605,7 +610,7 @@
   overflow: hidden;
   border: 1px solid var(--ef-border);
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-surface-sunken);
+  background-color: var(--ef-surface-sunken);
 }
 
 .ef-progress__bar {
@@ -631,7 +636,7 @@
   transform: translateX(-50%);
   padding: 0.3rem 0.55rem;
   border-radius: var(--ef-radius-sm);
-  background: var(--ef-tooltip);
+  background-color: var(--ef-tooltip);
   color: var(--ef-tooltip-fg);
   font-family: var(--ef-font-mono);
   font-size: var(--ef-text-xs);
