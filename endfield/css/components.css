@@ -1750,10 +1750,13 @@
 }
 
 /* 强度由 data-level 控制 1–4 */
-.ef-heatmap > span[data-level="1"] { background-color: color-mix(in srgb, var(--ef-accent) 30%, var(--ef-heatmap-empty)); }
-.ef-heatmap > span[data-level="2"] { background-color: color-mix(in srgb, var(--ef-accent) 55%, var(--ef-heatmap-empty)); }
-.ef-heatmap > span[data-level="3"] { background-color: color-mix(in srgb, var(--ef-accent) 78%, var(--ef-heatmap-empty)); }
-.ef-heatmap > span[data-level="4"] { background-color: var(--ef-accent); }
+/* 用 --ef-heat-ramp 而非 --ef-accent 做递增色：亮色主题的 accent 是亮黄
+   (#f2cc00)，混入浅灰底后各级亮度只差 1.04–1.10:1，肉眼分不出深浅；
+   改用深黄 ramp 后各级拉开到 1.27–1.94:1。暗色主题的 ramp 取 accent 同值。 */
+.ef-heatmap > span[data-level="1"] { background-color: color-mix(in srgb, var(--ef-heat-ramp) 18%, var(--ef-heatmap-empty)); }
+.ef-heatmap > span[data-level="2"] { background-color: color-mix(in srgb, var(--ef-heat-ramp) 38%, var(--ef-heatmap-empty)); }
+.ef-heatmap > span[data-level="3"] { background-color: color-mix(in srgb, var(--ef-heat-ramp) 62%, var(--ef-heatmap-empty)); }
+.ef-heatmap > span[data-level="4"] { background-color: var(--ef-heat-ramp); }
 
 /* ---------- 图表（纯 SVG，无第三方库） ---------- */
 .ef-chart {

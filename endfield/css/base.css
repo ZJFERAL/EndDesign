@@ -217,6 +217,11 @@ th,
     --ef-tier-4-ink: #4e3f82;
     --ef-tier-5-ink: #6a4500;
     --ef-tier-6-ink: #83281e;
+    /* 热力图若不钉，暗色主题打印会输出深色块（.ef-heatmap 是这三个令牌的
+       首个消费者，原 print 块未覆盖它们） */
+    --ef-heatmap-bg: #ffffff;
+    --ef-heatmap-empty: #e7e9ec;
+    --ef-heat-ramp: #6b4500;
     --ef-grid-line: transparent;
     --ef-scanline: transparent;
     --ef-weave-line: transparent;

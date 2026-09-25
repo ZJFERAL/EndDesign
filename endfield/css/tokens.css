@@ -183,6 +183,8 @@
   --ef-heading-rule: #adadad;
   --ef-heatmap-bg: #f4f5f7;
   --ef-heatmap-empty: #e7e9ec;
+  /* 热力图递增色：亮色下用深黄才能拉开亮度差（见 .ef-heatmap 注释） */
+  --ef-heat-ramp: #8c5b00;
 
   /* ---------- 浮层与代码 ---------- */
   --ef-tooltip: #18181b;
@@ -240,6 +242,7 @@
     --ef-heading-rule: #6c6c6c;
     --ef-heatmap-bg: #202020;
     --ef-heatmap-empty: #2c2c2c;
+    --ef-heat-ramp: #d8bf00;
 
     --ef-tooltip: #f4f4f5;
     --ef-tooltip-fg: #18181b;
@@ -291,6 +294,7 @@ html[data-theme="dark"] {
   --ef-heading-rule: #6c6c6c;
   --ef-heatmap-bg: #202020;
   --ef-heatmap-empty: #2c2c2c;
+  --ef-heat-ramp: #d8bf00;
 
   --ef-tooltip: #f4f4f5;
   --ef-tooltip-fg: #18181b;
