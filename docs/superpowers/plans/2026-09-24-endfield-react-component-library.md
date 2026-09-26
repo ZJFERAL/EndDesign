@@ -28,7 +28,7 @@
 
 以下 5 类条件，规格隐含要求但单任务的类型检查不会覆盖。每条都已在拥有该代码的任务里配了对应验证。
 
-1. **`className` 覆盖失效** — 把 `className` 拼在内置类之后是**必要条件，但不是充分条件**。Tailwind v4 在 `@layer utilities` 内按自己的规范顺序发射工具类；同一个 CSS 属性上，**后发射的那条赢**，而发射顺序由 Tailwind 的排序规则决定，使用方既看不到也控制不了。因此「追加在最后」只保证参与竞争，不保证获胜：`p-8` 永远输给内置的 `px-4`/`py-2`，`bg-danger` 在 `Button variant="primary"` 上赢（`bg-accent` 先发射）却在 `Button variant="secondary"`/`variant="ghost"`（`bg-transparent` 后发射）和 `Chip`（`bg-surface-muted` 后发射）上输，`rounded-none` 在 `Button` 上赢（`rounded-ef` 先发射）却在 `Chip` 上输（`rounded-pill` 后发射）。结论：**拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`），它产出 `!important`，绕过发射顺序，在以上全部场景都实测生效。要求组件把 `className` 拼在最后，验证步骤实测「不加 `!` 会输」与「加 `!` 会赢」两类用例，README 里说明拿不准就用 `!`。注意 Toggle 家族（Checkbox/Radio/Switch）不适用上面这组例子：它们的 `className` 落在包裹用的 `<label>` 上，方框的 `rounded-pill` 与之无关（见 Task 2 Step 5）。
+1. **`className` 覆盖失效** — 把 `className` 拼在内置类之后是**必要条件，但不是充分条件**。Tailwind v4 在 `@layer utilities` 内按自己的规范顺序发射工具类；同一个 CSS 属性上，**后发射的那条赢**，而发射顺序由 Tailwind 的排序规则决定，使用方既看不到也控制不了。因此「追加在最后」只保证参与竞争，不保证获胜：`p-8` 永远输给内置的 `px-4`/`py-2`，`bg-danger` 在 `Button variant="primary"` 上赢（`bg-accent` 先发射）却在 `Button variant="secondary"`/`variant="ghost"`（`bg-transparent` 后发射）和 `Chip`（`bg-surface-muted` 后发射）上输，`rounded-none` 在 `Button` 上赢（`rounded-ef` 先发射）却在 `Chip` 上输（`rounded-pill` 后发射）。结论：**拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`），它产出 `!important`，绕过发射顺序，在以上全部场景都实测生效。要求组件把 `className` 拼在最后，验证步骤实测「不加 `!` 会输」与「加 `!` 会赢」两类用例，README 里说明拿不准就用 `!`。注意 Toggle 家族（Checkbox/Radio/Switch）不适用上面这组例子：它们的 `className` 落在包裹用的 `<label>` 上，且方框根本拿不到 `className`（`...rest` 只携带非 `className` 的原生属性），所以方框圆角与 `className` 无关 —— 顺带一提，三者圆角并不相同：只有 `Switch` 的方框是 `rounded-pill`，`Checkbox` 是 `rounded-ef-sm`（2px），`Radio` 是 `rounded-full`（见 Task 2 Step 5）。
 2. **`tsc` 在 `strict` 下的 `forwardRef` 泛型** — `forwardRef` 与泛型、联合类型 props 组合时容易推出 `any`。要求 `tsc --noEmit` 零错误，且不使用 `as any` 绕过。
 3. **令牌同步漂移** — 改了 `../css/tokens.css` 却忘记跑 `sync:tokens`，React 层配色与 HTML 层不一致且无任何报错。要求有一个校验步骤比对两份文件。
 4. **SSR / 首次渲染的主题闪烁** — 演示站若在 `useEffect` 里才读 `localStorage` 并设主题，首帧会是错误的主题。要求主题读取在渲染前完成。
@@ -1610,9 +1610,18 @@ export function ChipGroup({ label, className, children, ...rest }: ChipGroupProp
 
 > **`className` 落在包裹用的 `<label>` 上**，不是 `<input>` 上（对齐 HTML/CSS 层：
 > `.ef-check` 是 label，输入框由 `.ef-check input` 选中）。因此
-> `<Checkbox className="size-8" />` 放大的是整行标签，而不是那个方框。要直接给
-> 方框加类，走 `...rest`（它会透传到 `<input>`）—— 见下方 `CheckboxProps` 的
-> `...rest` 用法。
+> `<Checkbox className="size-8" />` 放大的是整行标签，而不是那个方框。
+>
+> **方框不可能通过 `className` 拿到类**：`className` 被解构出来交给 `ToggleShell`，
+> 而 `...rest` 里已经没有它了 —— 所以「给方框加类」这条路根本不存在（实测：
+> `<Checkbox className="rounded-none" />` 之后 `<input>` 仍是 2px 圆角）。
+> `...rest` 只能携带**非 `className`** 的原生属性（如 `style`、`disabled`、`name`）。
+> 要做一次性的方框外观覆盖，用 `style`，例如
+> `<Checkbox style={{ borderRadius: 0 }} />`。
+>
+> 顺带纠正圆角归属：三者并不相同 —— `Switch` 的方框才是 `rounded-pill`；
+> `Checkbox` 是 `rounded-ef-sm`（2px），`Radio` 是 `rounded-full`。所以
+> 「`className` 不会碰到方框的 `rounded-pill`」这句话只对 `Switch` 成立。
 
 ```tsx
 import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from 'react';
@@ -2174,7 +2183,7 @@ git commit -m "feat(endfield-react): 加入图标与原子组件（按钮/表单
 创建 `endfield/react/src/components/Panel.tsx`：
 
 ```tsx
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { HTMLAttributes } from 'react';
 import { cx } from '../lib/cx';
 
 export interface PanelProps extends HTMLAttributes<HTMLDivElement> {
@@ -2248,7 +2257,9 @@ export function PanelFooter({ className, children, ...rest }: HTMLAttributes<HTM
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cx } from '../lib/cx';
 
-export interface SectionHeaderProps extends HTMLAttributes<HTMLDivElement> {
+/* Omit 掉 `title`：`HTMLAttributes` 的 `title?: string`（原生提示文本）与这里的
+   `title: ReactNode`（区块标题）同名不同义，不 Omit 会 TS2430。 */
+export interface SectionHeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   eyebrow?: string;
   title: ReactNode;
   actions?: ReactNode;
@@ -2335,7 +2346,11 @@ export function CardMeta({ className, children, ...rest }: HTMLAttributes<HTMLPa
   return <p className={cx('m-0 text-xs text-ink-subtle', className)} {...rest} />;
 }
 
-export interface ItemCardProps extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'children'> {
+/* 同时 Omit 掉 children 与 media：`AnchorHTMLAttributes` 已声明
+   `media?: string`（媒体查询描述符），与本卡片的 `media?: ReactNode`（图上内容）
+   同名不同义，不 Omit 会 TS2430。 */
+export interface ItemCardProps
+  extends Omit<AnchorHTMLAttributes<HTMLAnchorElement>, 'children' | 'media'> {
   name: string;
   sub?: string;
   /** 图上角的水印编号，如 "01"。 */
@@ -2520,7 +2535,6 @@ export function Callout({
 ```tsx
 import type {
   HTMLAttributes,
-  ReactNode,
   TableHTMLAttributes,
   TdHTMLAttributes,
   ThHTMLAttributes,
@@ -2632,7 +2646,7 @@ export function TD({ className, children, ...rest }: TdHTMLAttributes<HTMLTableC
 创建 `endfield/react/src/components/Timeline.tsx`：
 
 ```tsx
-import type { HTMLAttributes, ReactNode } from 'react';
+import type { AnchorHTMLAttributes, HTMLAttributes } from 'react';
 import { cx } from '../lib/cx';
 
 export function Timeline({ className, children, ...rest }: HTMLAttributes<HTMLOListElement>) {
@@ -2690,11 +2704,14 @@ export function TimelineItem({
   );
 }
 
+/* TimelineTitle 渲染的是 <a>，props 必须用 AnchorHTMLAttributes 才能接受 href。
+   HTMLAttributes<HTMLAnchorElement> 里没有 href，DataSection 的
+   `<TimelineTitle href="#data">` 会报 TS2322。 */
 export function TimelineTitle({
   className,
   children,
   ...rest
-}: HTMLAttributes<HTMLAnchorElement>) {
+}: AnchorHTMLAttributes<HTMLAnchorElement>) {
   return (
     <a className={cx('font-semibold [overflow-wrap:anywhere]', className)} {...rest}>
       {children}
@@ -2807,7 +2824,9 @@ export function Breadcrumb({ items, className, ...rest }: BreadcrumbProps) {
   );
 }
 
-export interface PaginationProps extends HTMLAttributes<HTMLElement> {
+/* Omit 掉 `onChange`：`HTMLAttributes` 的 `onChange?: FormEventHandler`（原生事件）
+   与这里的 `onChange?: (page: number) => void`（页码回调）签名不兼容，不 Omit 会 TS2430。 */
+export interface PaginationProps extends Omit<HTMLAttributes<HTMLElement>, 'onChange'> {
   page: number;
   total: number;
   onChange?: (page: number) => void;
@@ -3053,7 +3072,7 @@ git commit -m "feat(endfield-react): 加入结构组件（面板/卡片/表格/�
 - Consumes: Task 1–3
 - Produces:
   - `useTheme(): { theme: 'light'|'dark'|'system'; setTheme(t): void; cycle(): void }`
-  - `useFocusTrap(active: boolean): RefObject<HTMLDivElement | null>`
+  - `useFocusTrap(active: boolean): RefObject<HTMLDivElement>`
   - `ThemeToggle`（无 props，自包含三态循环按钮）
   - `Modal`（`{ open: boolean; onClose: () => void; title: string; footer?: ReactNode; children: ReactNode }`）
   - `Drawer`（`{ open: boolean; onClose: () => void; title: string; children: ReactNode; side?: 'left'|'right' }`）
@@ -3163,12 +3182,19 @@ const FOCUSABLE = [
 /**
  * 在容器内循环焦点，并支持 Esc 关闭。
  * 激活时把焦点移入容器，退出时归还给此前聚焦的元素。
+ *
+ * 返回 `RefObject<HTMLDivElement>`（不是 `RefObject<HTMLDivElement | null>`）：
+ * `@types/react` 18.3 里 `ref` prop 要的是 `LegacyRef<T>`，其中的 `RefObject<T>`
+ * 是 `readonly current: T | null`。显式把 null 写进类型实参会得到
+ * `RefObject<HTMLDivElement | null>`，与 `RefObject<HTMLDivElement>` 不兼容，
+ * 传给 `ref` 会报 TS2322。`useRef<HTMLDivElement>(null)` 已经隐含 `| null`，
+ * 无需再写；运行时逻辑完全不变（`ref.current` 仍可能为 null，下方已判空）。
  */
 export function useFocusTrap(
   active: boolean,
   onEscape?: () => void,
-): RefObject<HTMLDivElement | null> {
-  const ref = useRef<HTMLDivElement | null>(null);
+): RefObject<HTMLDivElement> {
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!active) return;
@@ -4751,7 +4777,7 @@ Run: `cd endfield/react && npm run dev`
 5. **Tailwind 工具类** — 列出 `@theme` 映射出的颜色/字体工具类，以及 `chamfer`、`chamfer-sm`、`corner-frame`、`corner-frame-all`、`hatch`、`hatch-soft`、`hatch-accent`、`scanline`、`grid-backdrop`、`industrial-shell`、`top-signal-strip`、`tier-strip`、`skeleton-sweep` 这些 `@utility`。
 6. **分级色约定** — 说明等级通过 `data-tier` **属性**传递（`Badge variant="tier" tier={n}`、`ItemCard tier={n}`），不是内联样式；`[data-tier="N"]` 规则同时产出 `--ef-tier-color`（填充）与 `--ef-tier-ink`（文字与描边），子元素 `.tier-strip` 从祖先继承填充色。
 7. **主题** — `useTheme` 与 `ThemeToggle` 用法，`data-theme` 与 `localStorage` 键名 `ef-theme`。
-8. **约定** — 按钮与表单控件均为 `forwardRef`，所有组件都透传 `className` 并拼在内置类之后。**`className` 覆盖规则**：拼在最后只是必要条件 —— 能否覆盖取决于 Tailwind v4 在 `@layer utilities` 内的规范发射顺序，同一个 CSS 属性上后发射的赢，而这个顺序使用方看不到也控制不了。因此同一个 class 在不同组件上结果可能相反：`bg-danger` 在 `Button variant="primary"` 上生效，在 `Button variant="secondary"`/`ghost` 与 `Chip` 上却被内置的 `bg-transparent`/`bg-surface-muted` 压掉；`rounded-none` 在 `Button` 上生效，在 `Chip` 上却被 `rounded-pill` 压掉；`p-8` 永远输给内置的 `px-4 py-2`。**结论：拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`），它产出 `!important`，上述全部场景都实测生效。另有一条独立的规则要写清：Toggle 家族（Checkbox/Radio/Switch）的 `className` 落在包裹用的 `<label>` 上，不是方框本身 —— 要直接给方框加类得走 `...rest`（透传到 `<input>`），`className` 不会碰到方框的 `rounded-pill`。零运行时依赖；图标内联 SVG。
+8. **约定** — 按钮与表单控件均为 `forwardRef`，所有组件都透传 `className` 并拼在内置类之后。**`className` 覆盖规则**：拼在最后只是必要条件 —— 能否覆盖取决于 Tailwind v4 在 `@layer utilities` 内的规范发射顺序，同一个 CSS 属性上后发射的赢，而这个顺序使用方看不到也控制不了。因此同一个 class 在不同组件上结果可能相反：`bg-danger` 在 `Button variant="primary"` 上生效，在 `Button variant="secondary"`/`ghost` 与 `Chip` 上却被内置的 `bg-transparent`/`bg-surface-muted` 压掉；`rounded-none` 在 `Button` 上生效，在 `Chip` 上却被 `rounded-pill` 压掉；`p-8` 永远输给内置的 `px-4 py-2`。**结论：拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`），它产出 `!important`，上述全部场景都实测生效。另有一条独立的规则要写清：Toggle 家族（Checkbox/Radio/Switch）的 `className` 落在包裹用的 `<label>` 上，不是方框本身；而且方框**根本无法**通过 `className` 拿到类 —— `className` 被解构后交给 label，`...rest` 里已不含它，只携带非 `className` 的原生属性（如 `style`、`disabled`、`name`），所以方框的一次性外观覆盖要用 `style`。方框圆角三者不同：`Switch` 是 `rounded-pill`，`Checkbox` 是 `rounded-ef-sm`（2px），`Radio` 是 `rounded-full`。零运行时依赖；图标内联 SVG。
 9. **可访问性** — 键盘可达、焦点陷阱、`aria-*`、`prefers-reduced-motion`。
 
 - [ ] **Step 8: 最终验收**
@@ -4806,7 +4832,7 @@ git commit -m "feat(endfield-react): 加入演示站与组件库说明"
 - `cx`：Task 1 定义（`ClassValue` 类型 + `cx` 函数），Task 2–5 全部消费，一致。
 - `Tier`：Task 2 在 `Badge.tsx` 定义，Task 3 的 `Card.tsx` 与 `ItemCard` 消费，Task 5 演示站消费，一致。（分级色不经内联样式传递，改用 `data-tier` 属性，见 `tailwind.css` 的 `[data-tier="N"]` 映射。）
 - `IconButton` 的 `label` 为必填：Task 2 定义，Task 4 的 `Modal`/`Drawer` 与 Task 5 全部正确传入，一致。
-- `useFocusTrap(active, onEscape)` 返回 `RefObject<HTMLDivElement | null>`：Task 4 Step 2 定义，`Modal` 与 `Drawer` 按此消费，一致。
+- `useFocusTrap(active, onEscape)` 返回 `RefObject<HTMLDivElement>`（`useRef<HTMLDivElement>(null)` 已隐含 `current: HTMLDivElement | null`，但类型实参不带 `| null`，否则与 `ref` prop 要的 `LegacyRef<T>` 不兼容）：Task 4 Step 2 定义，`Modal` 与 `Drawer` 按此消费，一致。
 - `useToast()` 返回 `(message, variant?) => void`：Task 4 Step 6 定义，Task 5 的 `InteractiveSection` 按此调用，一致。
 - `Tabs` 的 `value`/`defaultValue`/`onChange`/`items`：Task 4 Step 5 定义，Task 5 以受控方式消费，一致。
 - `Table` 的 `TH` 的 `onSort`/`sort`：Task 3 Step 3 定义，Task 5 的 `DataSection` 消费，一致。
