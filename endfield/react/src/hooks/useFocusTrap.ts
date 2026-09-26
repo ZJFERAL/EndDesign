@@ -181,7 +181,15 @@ export function useFocusTrap(
       // 激活本层之前聚焦的元素。
       const top = stack[stack.length - 1];
       if (!top) {
-        previous?.focus?.();
+        // 必须判 isConnected：激活本层之前聚焦的元素可能随本层一起卸载（例如触发按钮
+        // 就渲染在模态内部）。此时 focus() 是静默空操作，焦点会掉到 <body>，键盘与读屏
+        // 用户彻底失去位置。脱落时退到页面的主内容容器（演示站的 <main id="ef-main"
+        // tabIndex={-1}>，也是「跳到主内容」链接的目标），至少把焦点留在主内容上。
+        if (previous && previous.isConnected) {
+          previous.focus();
+        } else {
+          document.getElementById('ef-main')?.focus();
+        }
       } else if (previous && previous.isConnected && top.container.contains(previous)) {
         previous.focus();
       } else {

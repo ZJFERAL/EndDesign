@@ -32,7 +32,7 @@ export function App() {
       <div className="min-h-screen">
         {/* 跳到主内容：spec §9 要求每页首个可聚焦元素是它。 */}
         <a className="ef-skip-link" href="#ef-main">跳到主内容</a>
-        <header className="sticky top-0 z-40 border-b border-border bg-surface">
+        <header className="ef-topbar ef-no-print sticky top-0 z-40 border-b border-border bg-surface">
           <div className="top-signal-strip" />
           <div className="flex h-14 items-center gap-4 px-4">
             <span className="font-display text-lg font-bold">◈ Endfield React</span>
@@ -51,7 +51,7 @@ export function App() {
           {/* 侧栏紧贴顶栏下方：top = var(--ef-header-bar-h) + var(--ef-header-signal-h)
               = 56px + 3px = 59px（对齐 css/layout.css:87）；
               高度取视口减去这 59px 再留 1.5rem 余量，保证不溢出视口。 */}
-          <aside className="sticky top-[59px] hidden h-[calc(100vh-59px-1.5rem)] w-56 shrink-0 overflow-y-auto border-r border-border pr-3 lg:block">
+          <aside className="ef-sidebar ef-no-print sticky top-[59px] hidden h-[calc(100vh-59px-1.5rem)] w-56 shrink-0 overflow-y-auto border-r border-border pr-3 lg:block">
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-subtle">
               ◆ 章节
             </p>

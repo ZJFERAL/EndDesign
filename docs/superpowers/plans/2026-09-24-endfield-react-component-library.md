@@ -3382,7 +3382,15 @@ export function useFocusTrap(
       // 激活本层之前聚焦的元素。
       const top = stack[stack.length - 1];
       if (!top) {
-        previous?.focus?.();
+        // 必须判 isConnected：激活本层之前聚焦的元素可能随本层一起卸载（例如触发按钮
+        // 就渲染在模态内部）。此时 focus() 是静默空操作，焦点会掉到 <body>，键盘与读屏
+        // 用户彻底失去位置。脱落时退到页面的主内容容器（演示站的 <main id="ef-main"
+        // tabIndex={-1}>，也是「跳到主内容」链接的目标），至少把焦点留在主内容上。
+        if (previous && previous.isConnected) {
+          previous.focus();
+        } else {
+          document.getElementById('ef-main')?.focus();
+        }
       } else if (previous && previous.isConnected && top.container.contains(previous)) {
         previous.focus();
       } else {
@@ -4082,7 +4090,7 @@ export function App() {
       <div className="min-h-screen">
         {/* 跳到主内容：spec §9 要求每页首个可聚焦元素是它。 */}
         <a className="ef-skip-link" href="#ef-main">跳到主内容</a>
-        <header className="sticky top-0 z-40 border-b border-border bg-surface">
+        <header className="ef-topbar ef-no-print sticky top-0 z-40 border-b border-border bg-surface">
           <div className="top-signal-strip" />
           <div className="flex h-14 items-center gap-4 px-4">
             <span className="font-display text-lg font-bold">◈ Endfield React</span>
@@ -4101,7 +4109,7 @@ export function App() {
           {/* 侧栏紧贴顶栏下方：top = var(--ef-header-bar-h) + var(--ef-header-signal-h)
               = 56px + 3px = 59px（对齐 css/layout.css:87）；
               高度取视口减去这 59px 再留 1.5rem 余量，保证不溢出视口。 */}
-          <aside className="sticky top-[59px] hidden h-[calc(100vh-59px-1.5rem)] w-56 shrink-0 overflow-y-auto border-r border-border pr-3 lg:block">
+          <aside className="ef-sidebar ef-no-print sticky top-[59px] hidden h-[calc(100vh-59px-1.5rem)] w-56 shrink-0 overflow-y-auto border-r border-border pr-3 lg:block">
             <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-subtle">
               ◆ 章节
             </p>
