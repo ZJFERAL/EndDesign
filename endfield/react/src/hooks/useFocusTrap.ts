@@ -27,6 +27,22 @@ interface TrapEntry {
 const stack: TrapEntry[] = [];
 
 /**
+ * 已经处理过本次按键事件的陷阱。
+ *
+ * 一次 keydown 会在 document 上依次通知**所有**陷阱的监听器。光看「我是不是栈顶」不够：
+ * 最顶层陷阱的 onClose 可能在这次派发还没走完时就把自己卸载掉、并从 stack 里摘出去，
+ * 于是后面尚未执行的监听器再查栈顶，会得到「是我」—— 同一个 Esc 就把两层都关了。
+ * 判定必须按**事件**而不是按**监听器**来。把「本次事件已有人处理」记在事件对象上之后，
+ * 结论与监听器的注册顺序、以及监听器挂在哪个节点上全都无关。
+ *
+ * 不用 `e.stopImmediatePropagation()`：它只有在「所有陷阱都挂在同一个节点、且最顶层恰好
+ * 先注册」时才等价，一旦监听器分散在不同节点就得依赖 DOM 传播顺序；而且它会连带掐掉
+ * document 上其他无关的 keydown 监听器。WeakSet 以事件对象为键，天然按事件隔离、不跨事件
+ * 残留，也不持有事件引用。
+ */
+const handledEvents = new WeakSet<KeyboardEvent>();
+
+/**
  * body 滚动锁的引用计数。
  * 不能用「各自保存 prevOverflow 再各自还原」的写法：两个遮罩叠放时，内层捕获到的
  * 已经是内联的 'hidden'，两层都关掉后最后一次还原会把它写死成 hidden，页面再也滚不动。
@@ -46,6 +62,23 @@ function unlockScroll() {
   if (lockCount === 0) return;
   lockCount -= 1;
   if (lockCount === 0) document.body.style.overflow = savedOverflow;
+}
+
+function focusables(root: HTMLElement): HTMLElement[] {
+  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+    (el) => el.offsetParent !== null,
+  );
+}
+
+/**
+ * 把焦点交给当前栈顶（焦点已在其中则不动）。
+ * 播种与归还都走这一处，保证「焦点属于最上层」只有一个实现。
+ */
+function activateTop(): void {
+  const top = stack[stack.length - 1];
+  if (!top) return;
+  if (top.container.contains(document.activeElement)) return;
+  (focusables(top.container)[0] ?? top.container).focus();
 }
 
 /**
@@ -84,24 +117,22 @@ export function useFocusTrap(
     if (!container) return;
 
     const previous = document.activeElement as HTMLElement | null;
-    const items = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-      (el) => el.offsetParent !== null,
-    );
-    (items[0] ?? container).focus();
 
     function onKeyDown(e: KeyboardEvent) {
       const top = stack[stack.length - 1];
       if (!top || top.handler !== onKeyDown) return;
 
       if (e.key === 'Escape') {
+        // 本次按键只放行一次。见 handledEvents 的说明：栈顶处理完可能就把自己摘掉，
+        // 后面同一次派发里的监听器会误以为自己成了栈顶。
+        if (handledEvents.has(e)) return;
+        handledEvents.add(e);
         escapeRef.current?.();
         return;
       }
       if (e.key !== 'Tab') return;
 
-      const list = Array.from(container!.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-        (el) => el.offsetParent !== null,
-      );
+      const list = focusables(container!);
       if (list.length === 0) {
         // 面板里没有可聚焦元素。不拦截的话浏览器会把焦点移到遮罩后面的元素上，
         // 焦点就逃出陷阱了；这里吞掉 Tab 并把焦点按回容器（容器 tabIndex={-1} 可聚焦）。
@@ -134,12 +165,28 @@ export function useFocusTrap(
     document.addEventListener('keydown', onKeyDown);
     lockScroll();
 
+    // 播种焦点必须在入栈**之后**，且只有栈顶才播。同一提交里嵌套挂载时，子层（B）的
+    // effect 先跑并成为栈顶、播下焦点，父层（A）的 effect 后跑并插到 B 之前；若 A 在
+    // 入栈前无条件播种，就会把焦点从 B 抢走，键盘用户从错误的那层开始。
+    activateTop();
+
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       const at = stack.indexOf(entry);
       if (at >= 0) stack.splice(at, 1);
       unlockScroll();
-      previous?.focus?.();
+
+      // 归还焦点：还有下层时，优先还给「打开本层的那个元素」（前提是它仍在下层容器里）；
+      // 否则交给新的栈顶 —— 顶层关掉后焦点绝不能留在下层遮罩之外。全部关掉才还给
+      // 激活本层之前聚焦的元素。
+      const top = stack[stack.length - 1];
+      if (!top) {
+        previous?.focus?.();
+      } else if (previous && previous.isConnected && top.container.contains(previous)) {
+        previous.focus();
+      } else {
+        activateTop();
+      }
     };
   }, [active]);
 

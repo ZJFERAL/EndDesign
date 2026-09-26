@@ -23,6 +23,20 @@ import {
   IconSettings,
 } from './index';
 
+declare global {
+  interface Window {
+    __escLog?: string[];
+  }
+}
+
+// 记录各层 onClose 的实际调用，供 CDP 侧断言「一次 Esc 只产生一次 onClose」。
+// 用模块级数组挂在 window 上，避免为探针引入额外状态。
+const escLog: string[] = [];
+window.__escLog = escLog;
+function logClose(name: string) {
+  escLog.push(name);
+}
+
 const TABS = [
   { id: 'overview', label: '总览', content: <p className="m-0">总览面板内容。</p> },
   { id: 'stats', label: '统计', content: <p className="m-0">统计面板内容。</p> },
@@ -91,6 +105,15 @@ function Probe() {
   const [stackModalOpen, setStackModalOpen] = useState(false);
   const [layerAOpen, setLayerAOpen] = useState(false);
   const [layerBOpen, setLayerBOpen] = useState(false);
+  const [sameCommitOuter, setSameCommitOuter] = useState(false);
+  const [sameCommitInner, setSameCommitInner] = useState(false);
+  const [sameCommitDeepA, setSameCommitDeepA] = useState(false);
+  const [sameCommitDeepB, setSameCommitDeepB] = useState(false);
+  const [sameCommitDeepC, setSameCommitDeepC] = useState(false);
+  const [sameCommitDrawer, setSameCommitDrawer] = useState(false);
+  const [sameCommitDrawerModal, setSameCommitDrawerModal] = useState(false);
+  const [sameCommitSibA, setSameCommitSibA] = useState(false);
+  const [sameCommitSibB, setSameCommitSibB] = useState(false);
   const [spanTrapOpen, setSpanTrapOpen] = useState(false);
   const [triggerClicks, setTriggerClicks] = useState(0);
   const [tick, setTick] = useState(0);
@@ -174,6 +197,47 @@ function Probe() {
               onClick={() => setLayerAOpen(true)}
             >
               打开嵌套层 A
+            </Button>
+            <Button
+              data-probe="same-commit-nested-trigger"
+              variant="primary"
+              onClick={() => {
+                setSameCommitOuter(true);
+                setSameCommitInner(true);
+              }}
+            >
+              同提交嵌套两层
+            </Button>
+            <Button
+              data-probe="same-commit-deep-trigger"
+              variant="primary"
+              onClick={() => {
+                setSameCommitDeepA(true);
+                setSameCommitDeepB(true);
+                setSameCommitDeepC(true);
+              }}
+            >
+              同提交嵌套三层
+            </Button>
+            <Button
+              data-probe="same-commit-drawer-trigger"
+              variant="primary"
+              onClick={() => {
+                setSameCommitDrawer(true);
+                setSameCommitDrawerModal(true);
+              }}
+            >
+              同提交 Drawer+Modal
+            </Button>
+            <Button
+              data-probe="same-commit-siblings-trigger"
+              variant="primary"
+              onClick={() => {
+                setSameCommitSibA(true);
+                setSameCommitSibB(true);
+              }}
+            >
+              同提交兄弟两层
             </Button>
 
             <div data-probe="dropdown-wrap">
@@ -294,7 +358,14 @@ function Probe() {
       </Modal>
 
       {/* C2 / I1（兄弟叠放）：Drawer 先开，Modal 后开，两者是兄弟节点。 */}
-      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="抽屉标题">
+      <Drawer
+        open={drawerOpen}
+        onClose={() => {
+          logClose('separateSiblings:drawer');
+          setDrawerOpen(false);
+        }}
+        title="抽屉标题"
+      >
         <p className="m-0">抽屉主体内容。Esc 应关闭。</p>
         <Button
           data-probe="drawer-open-modal"
@@ -307,7 +378,10 @@ function Probe() {
 
       <Modal
         open={stackModalOpen}
-        onClose={() => setStackModalOpen(false)}
+        onClose={() => {
+          logClose('separateSiblings:modal');
+          setStackModalOpen(false);
+        }}
         title="叠放的模态"
         footer={
           <Button data-probe="stack-modal-close" onClick={() => setStackModalOpen(false)}>
@@ -322,7 +396,10 @@ function Probe() {
           React 的 effect 后序遍历使 B 先于 A 运行，这是最考验入栈顺序的形态。 */}
       <Modal
         open={layerAOpen}
-        onClose={() => setLayerAOpen(false)}
+        onClose={() => {
+          logClose('separateNested:A');
+          setLayerAOpen(false);
+        }}
         title="层 A"
         footer={
           <Button data-probe="layer-a-close" onClick={() => setLayerAOpen(false)}>
@@ -340,7 +417,10 @@ function Probe() {
         </Button>
         <Modal
           open={layerBOpen}
-          onClose={() => setLayerBOpen(false)}
+          onClose={() => {
+            logClose('separateNested:B');
+            setLayerBOpen(false);
+          }}
           title="层 B"
           footer={
             <Button data-probe="layer-b-close" onClick={() => setLayerBOpen(false)}>
@@ -350,6 +430,111 @@ function Probe() {
         >
           <p className="m-0">内层 B。一次 Esc 只应关掉 B。</p>
         </Modal>
+      </Modal>
+
+      {/* I1 核心夹具：两层在**同一次提交**里挂载。
+          上面那对夹具是「点按钮开 B」，属于两次提交 —— 恰好是守卫本来就work的路径，
+          所以旧套件 30/30 全绿而缺陷仍然活着。这里 A 与 B 由**同一个事件处理器**一次性
+          置位（React 18 自动批处理 → 一次提交），React 的后序遍历使 B 的 effect 先于 A 跑，
+          正是会触发「一次 Esc 关两层」的形态。
+          两层各有独立状态，关闭 B 不会连带关闭 A —— 否则测不出「只关一层」。 */}
+      <Modal
+        open={sameCommitOuter}
+        onClose={() => {
+          logClose('sameCommitNested:A');
+          setSameCommitOuter(false);
+        }}
+        title="同提交层 A"
+      >
+        <p className="m-0">外层 A（与 B 同一次提交挂载）。</p>
+        <Modal
+          open={sameCommitInner}
+          onClose={() => {
+            logClose('sameCommitNested:B');
+            setSameCommitInner(false);
+          }}
+          title="同提交层 B"
+        >
+          <p className="m-0" data-probe="same-commit-b-body">
+            内层 B（与 A 同一次提交挂载）。一次 Esc 只应关掉 B。
+          </p>
+        </Modal>
+      </Modal>
+
+      {/* 三层同提交：A ⊃ B ⊃ C，验证一次 Esc 只产生一次 onClose。 */}
+      <Modal
+        open={sameCommitDeepA}
+        onClose={() => {
+          logClose('sameCommitDeep:A');
+          setSameCommitDeepA(false);
+        }}
+        title="三层 A"
+      >
+        <p className="m-0">三层外层 A。</p>
+        <Modal
+          open={sameCommitDeepB}
+          onClose={() => {
+            logClose('sameCommitDeep:B');
+            setSameCommitDeepB(false);
+          }}
+          title="三层 B"
+        >
+          <p className="m-0">三层中层 B。</p>
+          <Modal
+            open={sameCommitDeepC}
+            onClose={() => {
+              logClose('sameCommitDeep:C');
+              setSameCommitDeepC(false);
+            }}
+            title="三层 C"
+          >
+            <p className="m-0">三层内层 C。一次 Esc 只应关掉 C。</p>
+          </Modal>
+        </Modal>
+      </Modal>
+
+      {/* 同提交的 Modal 套在 Drawer 里。 */}
+      <Drawer
+        open={sameCommitDrawer}
+        onClose={() => {
+          logClose('sameCommitDrawer:drawer');
+          setSameCommitDrawer(false);
+        }}
+        title="同提交抽屉"
+      >
+        <p className="m-0">抽屉（与其中的 Modal 同一次提交挂载）。</p>
+        <Modal
+          open={sameCommitDrawerModal}
+          onClose={() => {
+            logClose('sameCommitDrawer:modal');
+            setSameCommitDrawerModal(false);
+          }}
+          title="同提交抽屉里的模态"
+        >
+          <p className="m-0">一次 Esc 只应关掉这个 Modal。</p>
+        </Modal>
+      </Drawer>
+
+      {/* 同提交的兄弟两层：两个平级 Modal 由同一个开关打开。 */}
+      <Modal
+        open={sameCommitSibA}
+        onClose={() => {
+          logClose('sameCommitSiblings:first');
+          setSameCommitSibA(false);
+        }}
+        title="同提交兄弟一"
+      >
+        <p className="m-0">兄弟一。</p>
+      </Modal>
+      <Modal
+        open={sameCommitSibB}
+        onClose={() => {
+          logClose('sameCommitSiblings:second');
+          setSameCommitSibB(false);
+        }}
+        title="同提交兄弟二"
+      >
+        <p className="m-0">兄弟二（后挂载，应为栈顶）。</p>
       </Modal>
 
       <Drawer

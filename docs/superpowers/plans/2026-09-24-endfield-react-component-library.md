@@ -3103,7 +3103,7 @@ git commit -m "feat(endfield-react): 加入结构组件（面板/卡片/表格/�
 - Consumes: Task 1–3
 - Produces:
   - `useTheme(): { theme: 'light'|'dark'|'system'; setTheme(t): void; cycle(): void }`
-  - `useFocusTrap(active: boolean, onEscape?: () => void): RefObject<HTMLDivElement>`（`onEscape` 存 ref，不入依赖数组；见 Step 2 说明）
+  - `useFocusTrap(active: boolean, onEscape?: () => void): RefObject<HTMLDivElement>`（`onEscape` 存 ref，不入依赖数组；同一提交内堆叠的多层只有最内层响应 `Esc` 并持有初始焦点；见 Step 2 说明）
   - `ThemeToggle`（无 props，自包含三态循环按钮）
   - `Modal`（`{ open: boolean; onClose: () => void; title: string; footer?: ReactNode; children: ReactNode }`）
   - `Drawer`（`{ open: boolean; onClose: () => void; title: string; children: ReactNode; side?: 'left'|'right' }`）
@@ -3228,6 +3228,22 @@ interface TrapEntry {
 const stack: TrapEntry[] = [];
 
 /**
+ * 已经处理过本次按键事件的陷阱。
+ *
+ * 一次 keydown 会在 document 上依次通知**所有**陷阱的监听器。光看「我是不是栈顶」不够：
+ * 最顶层陷阱的 onClose 可能在这次派发还没走完时就把自己卸载掉、并从 stack 里摘出去，
+ * 于是后面尚未执行的监听器再查栈顶，会得到「是我」—— 同一个 Esc 就把两层都关了。
+ * 判定必须按**事件**而不是按**监听器**来。把「本次事件已有人处理」记在事件对象上之后，
+ * 结论与监听器的注册顺序、以及监听器挂在哪个节点上全都无关。
+ *
+ * 不用 `e.stopImmediatePropagation()`：它只有在「所有陷阱都挂在同一个节点、且最顶层恰好
+ * 先注册」时才等价，一旦监听器分散在不同节点就得依赖 DOM 传播顺序；而且它会连带掐掉
+ * document 上其他无关的 keydown 监听器。WeakSet 以事件对象为键，天然按事件隔离、不跨事件
+ * 残留，也不持有事件引用。
+ */
+const handledEvents = new WeakSet<KeyboardEvent>();
+
+/**
  * body 滚动锁的引用计数。
  * 不能用「各自保存 prevOverflow 再各自还原」的写法：两个遮罩叠放时，内层捕获到的
  * 已经是内联的 'hidden'，两层都关掉后最后一次还原会把它写死成 hidden，页面再也滚不动。
@@ -3247,6 +3263,23 @@ function unlockScroll() {
   if (lockCount === 0) return;
   lockCount -= 1;
   if (lockCount === 0) document.body.style.overflow = savedOverflow;
+}
+
+function focusables(root: HTMLElement): HTMLElement[] {
+  return Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
+    (el) => el.offsetParent !== null,
+  );
+}
+
+/**
+ * 把焦点交给当前栈顶（焦点已在其中则不动）。
+ * 播种与归还都走这一处，保证「焦点属于最上层」只有一个实现。
+ */
+function activateTop(): void {
+  const top = stack[stack.length - 1];
+  if (!top) return;
+  if (top.container.contains(document.activeElement)) return;
+  (focusables(top.container)[0] ?? top.container).focus();
 }
 
 /**
@@ -3285,24 +3318,22 @@ export function useFocusTrap(
     if (!container) return;
 
     const previous = document.activeElement as HTMLElement | null;
-    const items = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-      (el) => el.offsetParent !== null,
-    );
-    (items[0] ?? container).focus();
 
     function onKeyDown(e: KeyboardEvent) {
       const top = stack[stack.length - 1];
       if (!top || top.handler !== onKeyDown) return;
 
       if (e.key === 'Escape') {
+        // 本次按键只放行一次。见 handledEvents 的说明：栈顶处理完可能就把自己摘掉，
+        // 后面同一次派发里的监听器会误以为自己成了栈顶。
+        if (handledEvents.has(e)) return;
+        handledEvents.add(e);
         escapeRef.current?.();
         return;
       }
       if (e.key !== 'Tab') return;
 
-      const list = Array.from(container!.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
-        (el) => el.offsetParent !== null,
-      );
+      const list = focusables(container!);
       if (list.length === 0) {
         // 面板里没有可聚焦元素。不拦截的话浏览器会把焦点移到遮罩后面的元素上，
         // 焦点就逃出陷阱了；这里吞掉 Tab 并把焦点按回容器（容器 tabIndex={-1} 可聚焦）。
@@ -3335,12 +3366,28 @@ export function useFocusTrap(
     document.addEventListener('keydown', onKeyDown);
     lockScroll();
 
+    // 播种焦点必须在入栈**之后**，且只有栈顶才播。同一提交里嵌套挂载时，子层（B）的
+    // effect 先跑并成为栈顶、播下焦点，父层（A）的 effect 后跑并插到 B 之前；若 A 在
+    // 入栈前无条件播种，就会把焦点从 B 抢走，键盘用户从错误的那层开始。
+    activateTop();
+
     return () => {
       document.removeEventListener('keydown', onKeyDown);
       const at = stack.indexOf(entry);
       if (at >= 0) stack.splice(at, 1);
       unlockScroll();
-      previous?.focus?.();
+
+      // 归还焦点：还有下层时，优先还给「打开本层的那个元素」（前提是它仍在下层容器里）；
+      // 否则交给新的栈顶 —— 顶层关掉后焦点绝不能留在下层遮罩之外。全部关掉才还给
+      // 激活本层之前聚焦的元素。
+      const top = stack[stack.length - 1];
+      if (!top) {
+        previous?.focus?.();
+      } else if (previous && previous.isConnected && top.container.contains(previous)) {
+        previous.focus();
+      } else {
+        activateTop();
+      }
     };
   }, [active]);
 
@@ -3927,9 +3974,11 @@ Expected: 逐项核对：
 
 - **父组件重渲染不得夺焦**：Modal 内放一个受控 `<input>`，父组件用 `setInterval` 每 300ms 触发一次重渲染。连打几个字符，字符必须全部落到输入框里、焦点不得被拽回关闭按钮。若把 `onEscape` 写进依赖数组，第一次 tick 就会复现失败。
 - **叠放遮罩的 `Esc` 与滚动锁**：先开 `Drawer` 再在其中开 `Modal`（兄弟叠放），并另备一对**嵌套**夹具（层 B 写在层 A 的 `children` 里）。一次 `Esc` 只能关掉最上面那层；全部关掉后 `document.body.style.overflow` 必须回到原值、页面能用滚轮滚动（探针需有高于视口的填充，否则测不出差别）。
+- **同一提交内挂载的叠放层（关键，最易漏）**：上面那对夹具靠「点按钮开 B」属于**两次提交**，恰好是守卫本来就成立的路径 —— 只测它会全绿而缺陷仍在。必须另备**同一次提交**挂载的夹具：一个事件处理器里同时置位两层（React 18 自动批处理 → 一次提交），React 的后序遍历使子层 effect 先于父层跑。覆盖：嵌套两层（A ⊃ B）、嵌套三层（A ⊃ B ⊃ C）、Modal 套在 Drawer 里、以及平级兄弟两层。各层用**独立状态**，否则关掉内层会连带关掉外层，测不出「只关一层」。断言一次 `Esc` 只产生**一次** `onClose`（在 `onClose` 里记录被调用的层名，断言数组长度恰为 1 且内容是最内层），并断言**初始焦点落在最内层**。同一提交里父层 effect 后跑，若在入栈前无条件播种焦点会把焦点从子层抢走。
 - **空陷阱**：面板内只有 `<span>`（无任何可聚焦元素）时，连按 `Tab` 焦点不得离开面板。
 - **触发器自带 `onClick`**：`Dropdown` 的 trigger 传一个自增计数器，确认菜单展开**且**计数器自增（注入的 handler 必须组合而非替换）。
 - **`Tabs` 的 `value` 匹配不到任何一项**：控件仍须可用（有 roving stop、有可见面板），键盘能进入 tablist。
+- **滚动锁的反复开关**：连续开关 40 次（嵌套夹具各 20 次，每次两层），结束时锁计数须回到 0、`overflow` 复原、页面仍能滚动。按事件去重的标记不能跨事件残留，也不能让栈与锁计数失衡。
 
 - [ ] **Step 10: 构建验证并提交**
 
