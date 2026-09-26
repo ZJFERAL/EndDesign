@@ -47,3 +47,17 @@ export type {
   TOCProps,
   TOCItem,
 } from './components/Nav';
+export { Modal } from './components/Modal';
+export type { ModalProps } from './components/Modal';
+export { Drawer } from './components/Drawer';
+export type { DrawerProps } from './components/Drawer';
+export { Dropdown, DropdownItem, DropdownSeparator } from './components/Dropdown';
+export type { DropdownProps, DropdownItemProps } from './components/Dropdown';
+export { Tabs } from './components/Tabs';
+export type { TabsProps, TabItem } from './components/Tabs';
+export { ToastProvider, useToast } from './components/Toast';
+export type { ToastVariant } from './components/Toast';
+export { ThemeToggle } from './components/ThemeToggle';
+export { useTheme, THEME_LABEL } from './hooks/useTheme';
+export type { Theme } from './hooks/useTheme';
+export { useFocusTrap } from './hooks/useFocusTrap';
