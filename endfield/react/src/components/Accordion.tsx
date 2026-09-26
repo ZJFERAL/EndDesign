@@ -1,8 +1,11 @@
-import type { HTMLAttributes } from 'react';
+import type { DetailsHTMLAttributes, HTMLAttributes } from 'react';
 import { cx } from '../lib/cx';
 
-/* 两个组件都 extends HTMLAttributes，透传原生属性与 className（全局约束）。
-   AccordionItem 渲染 <details>，故用 HTMLAttributes<HTMLDetailsElement>。
+/* 两个组件都透传原生属性与 className（全局约束）：Accordion 的 props 是
+   HTMLAttributes<HTMLDivElement> 类型别名，AccordionItem 渲染 <details>，
+   故 extends 元素专用的 DetailsHTMLAttributes —— 它比 HTMLAttributes 多出
+   open / onToggle / name（原生独占分组）。与库内其余组件的惯例一致
+   （ButtonHTMLAttributes、InputHTMLAttributes、TableHTMLAttributes 等）。
    注意 title 这里是 `string`，与原生 `title?: string` 兼容（string 可赋给
    string | undefined），故无需 Omit —— 与 SectionHeader 的 `title: ReactNode`
    不同，后者不 Omit 会 TS2430。 */
@@ -17,7 +20,7 @@ export function Accordion({ className, children, ...rest }: AccordionProps) {
   );
 }
 
-export interface AccordionItemProps extends HTMLAttributes<HTMLDetailsElement> {
+export interface AccordionItemProps extends DetailsHTMLAttributes<HTMLDetailsElement> {
   title: string;
   defaultOpen?: boolean;
 }

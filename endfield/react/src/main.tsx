@@ -22,6 +22,8 @@ function Probe() {
   const [page, setPage] = useState(3);
   const [sort, setSort] = useState<'asc' | 'desc' | undefined>(undefined);
   const [lastPageEvent, setLastPageEvent] = useState<number | null>(null);
+  const [toggleCount, setToggleCount] = useState(0);
+  const onAccordionToggle = () => setToggleCount((n) => n + 1);
 
   return (
     <main className="grid gap-8 p-8">
@@ -147,13 +149,26 @@ function Probe() {
       </Timeline>
 
       {/* ---------- Accordion（3 项） ----------
-          Accordion / AccordionItem 现在透传原生属性，故可直接挂 data-probe。 */}
+          Accordion / AccordionItem 现在透传原生属性，故可直接挂 data-probe。
+          item 2 传 onToggle（DetailsHTMLAttributes 提供，HTMLAttributes 没有）
+          与 name（原生独占分组），并把 toggle 次数打印到探针里。 */}
       <div data-probe="accordion">
         <Accordion data-probe="accordion-root" data-forwarded="root">
           <AccordionItem title="第一项" defaultOpen data-forwarded="item1">第一项内容，默认展开。</AccordionItem>
-          <AccordionItem title="第二项" data-probe="accordion-item-2" data-forwarded="item2">第二项内容，默认关闭。</AccordionItem>
-          <AccordionItem title="第三项">第三项内容，默认关闭。</AccordionItem>
+          <AccordionItem
+            title="第二项"
+            data-probe="accordion-item-2"
+            data-forwarded="item2"
+            name="probe-group"
+            onToggle={onAccordionToggle}
+          >
+            第二项内容，默认关闭。
+          </AccordionItem>
+          <AccordionItem title="第三项" name="probe-group" data-probe="accordion-item-3">第三项内容，默认关闭。</AccordionItem>
         </Accordion>
+        <p data-probe="accordion-toggle-state" className="m-0 mt-2 font-mono text-xs text-ink-subtle">
+          toggles={toggleCount}
+        </p>
       </div>
 
       {/* ---------- Breadcrumb ---------- */}

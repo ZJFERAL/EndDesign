@@ -2738,11 +2738,14 @@ export function TimelineTitle({
 创建 `endfield/react/src/components/Accordion.tsx`：
 
 ```tsx
-import type { HTMLAttributes } from 'react';
+import type { DetailsHTMLAttributes, HTMLAttributes } from 'react';
 import { cx } from '../lib/cx';
 
-/* 两个组件都 extends HTMLAttributes，透传原生属性与 className（全局约束）。
-   AccordionItem 渲染 <details>，故用 HTMLAttributes<HTMLDetailsElement>。
+/* 两个组件都透传原生属性与 className（全局约束）：Accordion 的 props 是
+   HTMLAttributes<HTMLDivElement> 类型别名，AccordionItem 渲染 <details>，
+   故 extends 元素专用的 DetailsHTMLAttributes —— 它比 HTMLAttributes 多出
+   open / onToggle / name（原生独占分组）。与库内其余组件的惯例一致
+   （ButtonHTMLAttributes、InputHTMLAttributes、TableHTMLAttributes 等）。
    注意 title 这里是 `string`，与原生 `title?: string` 兼容（string 可赋给
    string | undefined），故无需 Omit —— 与 SectionHeader 的 `title: ReactNode`
    不同，后者不 Omit 会 TS2430。 */
@@ -2757,7 +2760,7 @@ export function Accordion({ className, children, ...rest }: AccordionProps) {
   );
 }
 
-export interface AccordionItemProps extends HTMLAttributes<HTMLDetailsElement> {
+export interface AccordionItemProps extends DetailsHTMLAttributes<HTMLDetailsElement> {
   title: string;
   defaultOpen?: boolean;
 }
@@ -2795,8 +2798,14 @@ export function AccordionItem({
 }
 ```
 
-注意：`AccordionItem` 的 `HTMLAttributes<HTMLDetailsElement>` 里原生 `title?: string`
-（悬停提示文本）与本组件的 `title: string`（面板标题）同名不同义，不 `Omit` 会 TS2430。
+注意：`AccordionItem` 用 `DetailsHTMLAttributes<HTMLDetailsElement>` 而非
+`HTMLAttributes<HTMLDetailsElement>`。后者缺 `open`、`onToggle`、`name` 三个
+`<details>` 专有属性，用它做基底会让使用方无法传 `onToggle`（观察展开状态的
+惯用方式）或 `name`（原生独占分组）。用元素专用接口是本库的既有惯例。
+
+`title: string` 与原生 `title?: string` 兼容（`string` 可赋给 `string | undefined`），
+故这里**无需 `Omit`** —— 与 `SectionHeader` 的情况不同：那个组件的
+`title: ReactNode` 不能赋给 `string | undefined`，不 `Omit` 才会 TS2430。
 
 关闭态箭头需要 `-rotate-90`。Tailwind 无法直接选择「details 未打开」的伪元素，
 故在 `<details>` 上挂 `[&:not([open])>summary]:before:-rotate-90` 变体类
