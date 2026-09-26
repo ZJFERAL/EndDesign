@@ -881,6 +881,9 @@ export function cx(...classes: ClassValue[]): string {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Endfield 设计系统 · React 组件库</title>
+<!-- 内联 data: favicon：冷启动的 Chrome 会请求 /favicon.ico，缺它会记一条 404
+     到控制台，让「零错误」的验证结论只在热缓存下成立。用 data: URI 避免引入二进制资产。 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23111827'/%3E%3Cpath d='M3 3h10v2H3zM3 7h7v2H3zM3 11h10v2H3z' fill='%23f2cc00'/%3E%3C/svg%3E">
 <script>
   /* 首帧前应用主题，避免闪烁 */
   (function () {
@@ -2343,7 +2346,11 @@ export function CardTitle({ className, children, ...rest }: HTMLAttributes<HTMLH
 }
 
 export function CardMeta({ className, children, ...rest }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cx('m-0 text-xs text-ink-subtle', className)} {...rest} />;
+  return (
+    <p className={cx('m-0 text-xs text-ink-subtle', className)} {...rest}>
+      {children}
+    </p>
+  );
 }
 
 /* 同时 Omit 掉 children 与 media：`AnchorHTMLAttributes` 已声明
@@ -2575,9 +2582,18 @@ export function TBody({ className, children, ...rest }: HTMLAttributes<HTMLTable
   );
 }
 
+/* 悬停底色只给表体行（对齐 css/components.css:1105 的 `.ef-table tbody tr:hover`）：
+   表头行也是 <tr>，不加 tbody 限定会连表头一起高亮。
+   最后一行的单元格去掉下边框（对齐 css/components.css:1101 的
+   `.ef-table tbody tr:last-child td`）—— 不能用 `last:border-b-0`，
+   那个 `:last-child` 落在「每行的最后一个单元格」上，会把每一行最右列的
+   分隔线都抹掉。 */
 export function TR({ className, children, ...rest }: HTMLAttributes<HTMLTableRowElement>) {
   return (
-    <tr className={cx('hover:bg-surface-muted', className)} {...rest}>
+    <tr
+      className={cx('[tbody_&]:hover:bg-surface-muted', '[&:last-child>td]:border-b-0', className)}
+      {...rest}
+    >
       {children}
     </tr>
   );
@@ -2632,7 +2648,6 @@ export function TD({ className, children, ...rest }: TdHTMLAttributes<HTMLTableC
     <td
       className={cx(
         'border-b border-border px-3 py-2 [overflow-wrap:anywhere]',
-        'last:border-b-0',
         className,
       )}
       {...rest}
@@ -2723,39 +2738,46 @@ export function TimelineTitle({
 创建 `endfield/react/src/components/Accordion.tsx`：
 
 ```tsx
-import type { ReactNode } from 'react';
+import type { HTMLAttributes } from 'react';
 import { cx } from '../lib/cx';
 
-export interface AccordionProps {
-  children: ReactNode;
-  className?: string;
-}
+/* 两个组件都 extends HTMLAttributes，透传原生属性与 className（全局约束）。
+   AccordionItem 渲染 <details>，故用 HTMLAttributes<HTMLDetailsElement>。
+   注意 title 这里是 `string`，与原生 `title?: string` 兼容（string 可赋给
+   string | undefined），故无需 Omit —— 与 SectionHeader 的 `title: ReactNode`
+   不同，后者不 Omit 会 TS2430。 */
+export type AccordionProps = HTMLAttributes<HTMLDivElement>;
 
 /** 用原生 <details>，无 JavaScript 时仍可展开。 */
-export function Accordion({ children, className }: AccordionProps) {
-  return <div className={cx('border border-border', className)}>{children}</div>;
+export function Accordion({ className, children, ...rest }: AccordionProps) {
+  return (
+    <div className={cx('border border-border', className)} {...rest}>
+      {children}
+    </div>
+  );
 }
 
-export interface AccordionItemProps {
+export interface AccordionItemProps extends HTMLAttributes<HTMLDetailsElement> {
   title: string;
   defaultOpen?: boolean;
-  children: ReactNode;
-  className?: string;
 }
 
 export function AccordionItem({
   title,
   defaultOpen = false,
-  children,
   className,
+  children,
+  ...rest
 }: AccordionItemProps) {
   return (
     <details
       open={defaultOpen}
       className={cx(
         'border-b border-border last:border-b-0',
+        '[&:not([open])>summary]:before:-rotate-90',
         className,
       )}
+      {...rest}
     >
       <summary
         className={cx(
@@ -2763,7 +2785,6 @@ export function AccordionItem({
           'text-sm font-medium hover:bg-surface-muted',
           '[&::-webkit-details-marker]:hidden',
           'before:text-accent-ink before:content-["▾"] before:transition-transform before:duration-150',
-          'open:before:rotate-0',
         )}
       >
         {title}
@@ -2774,17 +2795,12 @@ export function AccordionItem({
 }
 ```
 
-注意：`open:before:rotate-0` 在关闭态需要 `-rotate-90`。Tailwind 无法直接选择「details 未打开」的伪元素，故在 `AccordionItem` 的 `<details>` 上加 `[&:not([open])>summary]:before:-rotate-90` 变体类。把 `<details>` 的 className 改为：
+注意：`AccordionItem` 的 `HTMLAttributes<HTMLDetailsElement>` 里原生 `title?: string`
+（悬停提示文本）与本组件的 `title: string`（面板标题）同名不同义，不 `Omit` 会 TS2430。
 
-```tsx
-className={cx(
-  'border-b border-border last:border-b-0',
-  '[&:not([open])>summary]:before:-rotate-90',
-  className,
-)}
-```
-
-并把 `summary` 的 `open:before:rotate-0` 去掉。
+关闭态箭头需要 `-rotate-90`。Tailwind 无法直接选择「details 未打开」的伪元素，
+故在 `<details>` 上挂 `[&:not([open])>summary]:before:-rotate-90` 变体类
+（已含在上面的代码块里），`summary` 上不再写 `open:before:rotate-0`。
 
 - [ ] **Step 4: 写导航类组件**
 
@@ -2959,7 +2975,13 @@ export interface TOCProps extends HTMLAttributes<HTMLElement> {
 
 export function TOC({ items, activeId, title = '本页目录', className, ...rest }: TOCProps) {
   return (
-    <nav aria-label={title} className={cx('text-sm', className)} {...rest}>
+    /* sticky 与偏移对齐 css/components.css:1643-1645 的 .ef-toc
+       （top = header-bar-h + space-4 = 56px + 16px = 72px）。 */
+    <nav
+      aria-label={title}
+      className={cx('sticky top-[calc(var(--ef-header-bar-h)+var(--ef-space-4))] text-sm', className)}
+      {...rest}
+    >
       <p className="m-0 mb-2 font-mono text-xs uppercase tracking-[0.12em] text-ink-subtle">
         {title}
       </p>

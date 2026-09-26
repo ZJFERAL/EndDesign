@@ -40,9 +40,18 @@ export function TBody({ className, children, ...rest }: HTMLAttributes<HTMLTable
   );
 }
 
+/* 悬停底色只给表体行（对齐 css/components.css:1105 的 `.ef-table tbody tr:hover`）：
+   表头行也是 <tr>，不加 tbody 限定会连表头一起高亮。
+   最后一行的单元格去掉下边框（对齐 css/components.css:1101 的
+   `.ef-table tbody tr:last-child td`）—— 不能用 `last:border-b-0`，
+   那个 `:last-child` 落在「每行的最后一个单元格」上，会把每一行最右列的
+   分隔线都抹掉。 */
 export function TR({ className, children, ...rest }: HTMLAttributes<HTMLTableRowElement>) {
   return (
-    <tr className={cx('hover:bg-surface-muted', className)} {...rest}>
+    <tr
+      className={cx('[tbody_&]:hover:bg-surface-muted', '[&:last-child>td]:border-b-0', className)}
+      {...rest}
+    >
       {children}
     </tr>
   );
@@ -97,7 +106,6 @@ export function TD({ className, children, ...rest }: TdHTMLAttributes<HTMLTableC
     <td
       className={cx(
         'border-b border-border px-3 py-2 [overflow-wrap:anywhere]',
-        'last:border-b-0',
         className,
       )}
       {...rest}

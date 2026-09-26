@@ -166,7 +166,13 @@ export interface TOCProps extends HTMLAttributes<HTMLElement> {
 
 export function TOC({ items, activeId, title = '本页目录', className, ...rest }: TOCProps) {
   return (
-    <nav aria-label={title} className={cx('text-sm', className)} {...rest}>
+    /* sticky 与偏移对齐 css/components.css:1643-1645 的 .ef-toc
+       （top = header-bar-h + space-4 = 56px + 16px = 72px）。 */
+    <nav
+      aria-label={title}
+      className={cx('sticky top-[calc(var(--ef-header-bar-h)+var(--ef-space-4))] text-sm', className)}
+      {...rest}
+    >
       <p className="m-0 mb-2 font-mono text-xs uppercase tracking-[0.12em] text-ink-subtle">
         {title}
       </p>

@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Endfield 设计系统 · React 组件库</title>
+<!-- 内联 data: favicon：冷启动的 Chrome 会请求 /favicon.ico，缺它会记一条 404
+     到控制台，让「零错误」的验证结论只在热缓存下成立。用 data: URI 避免引入二进制资产。 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%23111827'/%3E%3Cpath d='M3 3h10v2H3zM3 7h7v2H3zM3 11h10v2H3z' fill='%23f2cc00'/%3E%3C/svg%3E">
 <script>
   /* 首帧前应用主题，避免闪烁 */
   (function () {

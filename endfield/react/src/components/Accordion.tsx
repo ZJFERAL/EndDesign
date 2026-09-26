@@ -1,28 +1,33 @@
-import type { ReactNode } from 'react';
+import type { HTMLAttributes } from 'react';
 import { cx } from '../lib/cx';
 
-export interface AccordionProps {
-  children: ReactNode;
-  className?: string;
-}
+/* 两个组件都 extends HTMLAttributes，透传原生属性与 className（全局约束）。
+   AccordionItem 渲染 <details>，故用 HTMLAttributes<HTMLDetailsElement>。
+   注意 title 这里是 `string`，与原生 `title?: string` 兼容（string 可赋给
+   string | undefined），故无需 Omit —— 与 SectionHeader 的 `title: ReactNode`
+   不同，后者不 Omit 会 TS2430。 */
+export type AccordionProps = HTMLAttributes<HTMLDivElement>;
 
 /** 用原生 <details>，无 JavaScript 时仍可展开。 */
-export function Accordion({ children, className }: AccordionProps) {
-  return <div className={cx('border border-border', className)}>{children}</div>;
+export function Accordion({ className, children, ...rest }: AccordionProps) {
+  return (
+    <div className={cx('border border-border', className)} {...rest}>
+      {children}
+    </div>
+  );
 }
 
-export interface AccordionItemProps {
+export interface AccordionItemProps extends HTMLAttributes<HTMLDetailsElement> {
   title: string;
   defaultOpen?: boolean;
-  children: ReactNode;
-  className?: string;
 }
 
 export function AccordionItem({
   title,
   defaultOpen = false,
-  children,
   className,
+  children,
+  ...rest
 }: AccordionItemProps) {
   return (
     <details
@@ -32,6 +37,7 @@ export function AccordionItem({
         '[&:not([open])>summary]:before:-rotate-90',
         className,
       )}
+      {...rest}
     >
       <summary
         className={cx(

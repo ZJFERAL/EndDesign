@@ -52,7 +52,7 @@ function Probe() {
           <CardMedia data-probe="card-media" />
           <CardBody>
             <CardTitle>普通卡片</CardTitle>
-            <CardMeta>CardMeta 副文本</CardMeta>
+            <CardMeta data-probe="card-meta">CardMeta 副文本</CardMeta>
           </CardBody>
         </Card>
 
@@ -146,11 +146,12 @@ function Probe() {
         <TimelineItem time="2026-09-24" dateTime="2026-09-24">归档。</TimelineItem>
       </Timeline>
 
-      {/* ---------- Accordion（3 项） ---------- */}
+      {/* ---------- Accordion（3 项） ----------
+          Accordion / AccordionItem 现在透传原生属性，故可直接挂 data-probe。 */}
       <div data-probe="accordion">
-        <Accordion>
-          <AccordionItem title="第一项" defaultOpen>第一项内容，默认展开。</AccordionItem>
-          <AccordionItem title="第二项">第二项内容，默认关闭。</AccordionItem>
+        <Accordion data-probe="accordion-root" data-forwarded="root">
+          <AccordionItem title="第一项" defaultOpen data-forwarded="item1">第一项内容，默认展开。</AccordionItem>
+          <AccordionItem title="第二项" data-probe="accordion-item-2" data-forwarded="item2">第二项内容，默认关闭。</AccordionItem>
           <AccordionItem title="第三项">第三项内容，默认关闭。</AccordionItem>
         </Accordion>
       </div>

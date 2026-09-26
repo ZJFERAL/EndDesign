@@ -38,7 +38,11 @@ export function CardTitle({ className, children, ...rest }: HTMLAttributes<HTMLH
 }
 
 export function CardMeta({ className, children, ...rest }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cx('m-0 text-xs text-ink-subtle', className)} {...rest} />;
+  return (
+    <p className={cx('m-0 text-xs text-ink-subtle', className)} {...rest}>
+      {children}
+    </p>
+  );
 }
 
 /* 同时 Omit 掉 children 与 media：`AnchorHTMLAttributes` 已声明
