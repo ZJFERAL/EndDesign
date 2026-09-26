@@ -22,14 +22,16 @@ export function Modal({ open, onClose, title, footer, children, className }: Mod
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* 遮罩是明暗两主题下都要压暗背景，不随主题变化，故用固定 rgb(0 0 0 / 60%)
-          （对齐 css/components.css:1371）—— 它是本库唯一的**与主题无关**的颜色字面量。
-          库中另有几处字面量，都只在 CSS 层本身就写死的地方出现，且各自就近注释：
+      {/* 遮罩用固定 rgb(0 0 0 / 60%)（对齐 css/components.css:1371）。
+          规则是：本库的颜色一律走令牌，唯一例外是那些**只为与主题无关**而写死的字面量，
+          遮罩就是唯一一个 —— 明暗两主题下都要压暗背景，取令牌反而会跟着主题变。
+          其余字面量不是这一类，它们是 CSS 层本就写死、React 层逐字节转写过来的：
           危险按钮的白色前景（css/components.css:99）、Select 箭头 SVG 的描边色
-          （css/components.css:249，数据 URI 读不到 CSS 变量），以及 Checkbox 选中态
-          数据 URI 里的勾形描边 #111827 与斜纹 rgb(0 0 0 / 18%)
-          （css/components.css:321-338）—— 后两者同样因为处在数据 URI 内而无法引用
-          CSS 变量，且与 CSS 层逐字节一致，属同一类已认可的例外。 */}
+          （css/components.css:249，数据 URI 读不到 CSS 变量）、Checkbox 选中态数据 URI
+          里的勾形描边 #111827 与斜纹 rgb(0 0 0 / 18%)（css/components.css:321-338，
+          同在数据 URI 内），以及本层 Dropdown / Toast 的阴影
+          rgb(0 0 0 / 25%)（对齐 css/components.css:1318 / :1467）—— 阴影在两层里
+          都是固定的，本就不随主题变化。 */}
       <div
         className="absolute inset-0 bg-black/60"
         onClick={close}

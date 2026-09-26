@@ -1,4 +1,4 @@
-import { StrictMode, useState } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles/tailwind.css';
 import {
@@ -16,6 +16,7 @@ import {
   Tabs,
   ThemeToggle,
   ToastProvider,
+  useFocusTrap,
   useToast,
   IconChevronDown,
   IconDownload,
@@ -57,6 +58,27 @@ function ToastTrigger() {
   );
 }
 
+/** I3：面板内一个可聚焦元素都没有，直接消费 useFocusTrap 验空列表分支。 */
+function SpanOnlyTrap({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const ref = useFocusTrap(open, onClose);
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60" onClick={onClose} aria-hidden="true" />
+      <div
+        ref={ref}
+        role="dialog"
+        aria-modal="true"
+        tabIndex={-1}
+        data-probe="span-only-panel"
+        className="relative border border-border bg-surface-raised p-4"
+      >
+        <span data-probe="span-only-text">面板内只有一个 span，没有任何可聚焦元素。</span>
+      </div>
+    </div>
+  );
+}
+
 function Probe() {
   const [modalOpen, setModalOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -64,6 +86,20 @@ function Probe() {
   const [overrideOpen, setOverrideOpen] = useState(false);
   const [overridePlainOpen, setOverridePlainOpen] = useState(false);
   const [controlled, setControlled] = useState('stats');
+  const [inputModalOpen, setInputModalOpen] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [stackModalOpen, setStackModalOpen] = useState(false);
+  const [layerAOpen, setLayerAOpen] = useState(false);
+  const [layerBOpen, setLayerBOpen] = useState(false);
+  const [spanTrapOpen, setSpanTrapOpen] = useState(false);
+  const [triggerClicks, setTriggerClicks] = useState(0);
+  const [tick, setTick] = useState(0);
+
+  // C1：父组件周期性重渲染。若陷阱把 onEscape 当依赖，这个 tick 每次都会重装陷阱并夺走焦点。
+  useEffect(() => {
+    const t = setInterval(() => setTick((n) => n + 1), 300);
+    return () => clearInterval(t);
+  }, []);
 
   return (
     <main className="grid gap-8 p-8">
@@ -72,6 +108,10 @@ function Probe() {
         title="交互组件实测"
         actions={<ThemeToggle />}
       />
+
+      <p data-probe="tick" className="m-0 font-mono text-xs text-ink-subtle">
+        tick={tick}
+      </p>
 
       <Panel>
         <PanelHeader>
@@ -114,6 +154,27 @@ function Probe() {
             >
               打开 className 无 ! Modal
             </Button>
+            <Button
+              data-probe="input-modal-trigger"
+              variant="primary"
+              onClick={() => setInputModalOpen(true)}
+            >
+              打开受控输入 Modal
+            </Button>
+            <Button
+              data-probe="span-trap-trigger"
+              variant="secondary"
+              onClick={() => setSpanTrapOpen(true)}
+            >
+              打开只有 span 的陷阱
+            </Button>
+            <Button
+              data-probe="layer-a-trigger"
+              variant="secondary"
+              onClick={() => setLayerAOpen(true)}
+            >
+              打开嵌套层 A
+            </Button>
 
             <div data-probe="dropdown-wrap">
               <Dropdown
@@ -141,6 +202,29 @@ function Probe() {
               </Dropdown>
             </div>
 
+            {/* I2：触发器自带 onClick，必须与展开逻辑组合而不是被顶掉。 */}
+            <div data-probe="dropdown-own-click-wrap">
+              <Dropdown
+                trigger={
+                  <Button
+                    data-probe="dropdown-own-click-trigger"
+                    onClick={() => setTriggerClicks((n) => n + 1)}
+                  >
+                    自带 onClick 的菜单
+                  </Button>
+                }
+              >
+                <DropdownItem data-probe="dropdown-own-click-item">项目一</DropdownItem>
+              </Dropdown>
+            </div>
+
+            <p
+              data-probe="trigger-clicks"
+              className="m-0 font-mono text-xs text-ink-subtle"
+            >
+              triggerClicks={triggerClicks}
+            </p>
+
             <ToastTrigger />
           </div>
         </PanelBody>
@@ -151,17 +235,18 @@ function Probe() {
       </div>
 
       <div data-probe="tabs-controlled">
-        <Tabs
-          items={TABS}
-          value={controlled}
-          onChange={setControlled}
-        />
+        <Tabs items={TABS} value={controlled} onChange={setControlled} />
         <p
           data-probe="controlled-state"
           className="m-0 mt-2 font-mono text-xs text-ink-subtle"
         >
           controlled={controlled}
         </p>
+      </div>
+
+      {/* M1：value 匹配不到任何一项时仍须可用。 */}
+      <div data-probe="tabs-bad-value">
+        <Tabs items={TABS} value="does-not-exist" />
       </div>
 
       <Modal
@@ -188,31 +273,84 @@ function Probe() {
         </p>
       </Modal>
 
+      {/* C1：受控输入 + 父组件每 300ms 重渲染。 */}
       <Modal
-        open={overridePlainOpen}
-        onClose={() => setOverridePlainOpen(false)}
-        title="无 ! 覆盖 Modal"
-        className="max-w-[20rem] bg-surface-muted"
+        open={inputModalOpen}
+        onClose={() => setInputModalOpen(false)}
+        title="受控输入模态"
       >
-        <p className="m-0">className 无 ! 实测：max-w-[20rem] 与 bg-surface-muted 都拼在内置类之后，但受 Tailwind 发射顺序支配。</p>
+        <input
+          data-probe="modal-input"
+          className="w-full border border-border bg-surface px-2 py-1 text-ink"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <p
+          data-probe="modal-input-value"
+          className="m-0 mt-2 font-mono text-xs text-ink-subtle"
+        >
+          value={inputValue}
+        </p>
       </Modal>
 
-      <Modal
-        open={overrideOpen}
-        onClose={() => setOverrideOpen(false)}
-        title="覆盖 Modal"
-        className="max-w-[20rem] max-w-[28rem]! bg-surface-muted!"
-      >
-        <p className="m-0">className 覆盖实测：不带 ! 的 max-w-[20rem] 被内置 max-w-[34rem] 压掉；带 ! 的 max-w-[28rem]! 生效。</p>
-      </Modal>
-
-      <Drawer
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        title="抽屉标题"
-      >
+      {/* C2 / I1（兄弟叠放）：Drawer 先开，Modal 后开，两者是兄弟节点。 */}
+      <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)} title="抽屉标题">
         <p className="m-0">抽屉主体内容。Esc 应关闭。</p>
+        <Button
+          data-probe="drawer-open-modal"
+          variant="primary"
+          onClick={() => setStackModalOpen(true)}
+        >
+          在抽屉里再开一个 Modal
+        </Button>
       </Drawer>
+
+      <Modal
+        open={stackModalOpen}
+        onClose={() => setStackModalOpen(false)}
+        title="叠放的模态"
+        footer={
+          <Button data-probe="stack-modal-close" onClick={() => setStackModalOpen(false)}>
+            关闭叠放模态
+          </Button>
+        }
+      >
+        <p className="m-0">叠放在抽屉之上的模态。一次 Esc 只应关掉这一层。</p>
+      </Modal>
+
+      {/* C2 / I1（嵌套叠放）：层 B 写在层 A 的 children 里，B 的陷阱容器是 A 的后代。
+          React 的 effect 后序遍历使 B 先于 A 运行，这是最考验入栈顺序的形态。 */}
+      <Modal
+        open={layerAOpen}
+        onClose={() => setLayerAOpen(false)}
+        title="层 A"
+        footer={
+          <Button data-probe="layer-a-close" onClick={() => setLayerAOpen(false)}>
+            关闭层 A
+          </Button>
+        }
+      >
+        <p className="m-0">外层 A。</p>
+        <Button
+          data-probe="layer-b-trigger"
+          variant="primary"
+          onClick={() => setLayerBOpen(true)}
+        >
+          在 A 里打开 B
+        </Button>
+        <Modal
+          open={layerBOpen}
+          onClose={() => setLayerBOpen(false)}
+          title="层 B"
+          footer={
+            <Button data-probe="layer-b-close" onClick={() => setLayerBOpen(false)}>
+              关闭层 B
+            </Button>
+          }
+        >
+          <p className="m-0">内层 B。一次 Esc 只应关掉 B。</p>
+        </Modal>
+      </Modal>
 
       <Drawer
         open={drawerLeftOpen}
@@ -222,6 +360,39 @@ function Probe() {
       >
         <p className="m-0">左侧抽屉主体内容。</p>
       </Drawer>
+
+      <SpanOnlyTrap open={spanTrapOpen} onClose={() => setSpanTrapOpen(false)} />
+
+      <Modal
+        open={overridePlainOpen}
+        onClose={() => setOverridePlainOpen(false)}
+        title="无 ! 覆盖 Modal"
+        className="max-w-[20rem] bg-surface-muted"
+      >
+        <p className="m-0">
+          className 无 ! 实测：max-w-[20rem] 与 bg-surface-muted 都拼在内置类之后，但受
+          Tailwind 发射顺序支配。
+        </p>
+      </Modal>
+
+      <Modal
+        open={overrideOpen}
+        onClose={() => setOverrideOpen(false)}
+        title="覆盖 Modal"
+        className="max-w-[20rem] max-w-[28rem]! bg-surface-muted!"
+      >
+        <p className="m-0">
+          className 覆盖实测：不带 ! 的 max-w-[20rem] 被内置 max-w-[34rem] 压掉；带 ! 的
+          max-w-[28rem]! 生效。
+        </p>
+      </Modal>
+
+      {/* C2 需要页面真的能滚，否则「滚动锁是否释放」测不出差别。
+          这段填充让内容高于视口。 */}
+      <div data-probe="scroll-filler" aria-hidden="true" className="h-[2000px]" />
+      <p data-probe="page-bottom" className="m-0 font-mono text-xs text-ink-subtle">
+        page bottom
+      </p>
     </main>
   );
 }

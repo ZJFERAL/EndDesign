@@ -20,6 +20,11 @@ export interface TabsProps {
 export function Tabs({ items, value, defaultValue, onChange, className }: TabsProps) {
   const [internal, setInternal] = useState(defaultValue ?? items[0]?.id ?? '');
   const current = value ?? internal;
+  // 受控值若不匹配任何一项（拼错 id、数据被删），不能就这么晾着：那样每个 tab 都是
+  // aria-selected=false 且 tabIndex=-1，roving tabindex 没有落点，键盘根本进不了
+  // tablist，所有面板还都被 hidden。回退到第一项，控件始终可用。
+  // 只影响选中态，不调用 onChange —— 不替使用方改状态，受控语义不变。
+  const selectedId = items.some((it) => it.id === current) ? current : (items[0]?.id ?? '');
   const baseId = useId();
   const listRef = useRef<HTMLDivElement | null>(null);
 
@@ -50,7 +55,7 @@ export function Tabs({ items, value, defaultValue, onChange, className }: TabsPr
         className="flex flex-wrap gap-1 border-b border-border"
       >
         {items.map((item, i) => {
-          const selected = item.id === current;
+          const selected = item.id === selectedId;
           return (
             <button
               key={item.id}
@@ -85,7 +90,7 @@ export function Tabs({ items, value, defaultValue, onChange, className }: TabsPr
           role="tabpanel"
           id={`${baseId}-panel-${item.id}`}
           aria-labelledby={`${baseId}-tab-${item.id}`}
-          hidden={item.id !== current}
+          hidden={item.id !== selectedId}
           className="pt-4"
         >
           {item.content}

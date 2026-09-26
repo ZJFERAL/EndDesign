@@ -3103,7 +3103,7 @@ git commit -m "feat(endfield-react): 加入结构组件（面板/卡片/表格/�
 - Consumes: Task 1–3
 - Produces:
   - `useTheme(): { theme: 'light'|'dark'|'system'; setTheme(t): void; cycle(): void }`
-  - `useFocusTrap(active: boolean): RefObject<HTMLDivElement>`
+  - `useFocusTrap(active: boolean, onEscape?: () => void): RefObject<HTMLDivElement>`（`onEscape` 存 ref，不入依赖数组；见 Step 2 说明）
   - `ThemeToggle`（无 props，自包含三态循环按钮）
   - `Modal`（`{ open: boolean; onClose: () => void; title: string; footer?: ReactNode; children: ReactNode }`）
   - `Drawer`（`{ open: boolean; onClose: () => void; title: string; children: ReactNode; side?: 'left'|'right' }`）
@@ -3210,9 +3210,53 @@ const FOCUSABLE = [
   '[tabindex]:not([tabindex="-1"])',
 ].join(',');
 
+interface TrapEntry {
+  container: HTMLDivElement;
+  handler: (e: KeyboardEvent) => void;
+}
+
+/**
+ * 当前激活的焦点陷阱，末位为最顶层，只有它能响应键盘 —— 多个遮罩叠放时，
+ * 一次 Esc 只应关掉最上面那层，Tab 也只应在最上面那层里循环。
+ *
+ * 入栈位置不能简单 append。React 的 passive effect 是后序遍历，**同一提交里子组件的
+ * effect 先于父组件运行**；若父子两层在同一次提交里挂载（例如深链直接进入两层都开的状态），
+ * 一律 append 就会把父层压在子层之上，Esc 关错层。规则：新陷阱插到**它自己包含的第一个
+ * 条目之前**，没有这样的条目就追加。于是「祖先先于后代、后代后于祖先」恒成立，
+ * 互不包含的兄弟则按激活顺序排列，与 DOM 顺序和绘制顺序一致。
+ */
+const stack: TrapEntry[] = [];
+
+/**
+ * body 滚动锁的引用计数。
+ * 不能用「各自保存 prevOverflow 再各自还原」的写法：两个遮罩叠放时，内层捕获到的
+ * 已经是内联的 'hidden'，两层都关掉后最后一次还原会把它写死成 hidden，页面再也滚不动。
+ * 改为只有第一个激活的陷阱记录原值、只有最后一个释放的陷阱还原。
+ * 增减与监听器的增删绑在同一个 effect 里，两者不会各走各的。
+ */
+let lockCount = 0;
+let savedOverflow = '';
+
+function lockScroll() {
+  if (lockCount === 0) savedOverflow = document.body.style.overflow;
+  lockCount += 1;
+  document.body.style.overflow = 'hidden';
+}
+
+function unlockScroll() {
+  if (lockCount === 0) return;
+  lockCount -= 1;
+  if (lockCount === 0) document.body.style.overflow = savedOverflow;
+}
+
 /**
  * 在容器内循环焦点，并支持 Esc 关闭。
  * 激活时把焦点移入容器，退出时归还给此前聚焦的元素。
+ *
+ * `onEscape` 存放在 ref 里，**不列入依赖数组**。调用方几乎总是写
+ * `onClose={() => setOpen(false)}`，父组件每渲染一次就是一个新函数；若把它当依赖，
+ * 父组件每重渲染都会拆掉重建陷阱，并重新把焦点种到第一个可聚焦元素上 —— 受控输入框
+ * 里打到一半的字会被夺走，计时器每跳一次也会把焦点从按钮上拽回来。故依赖只有 [active]。
  *
  * 返回 `RefObject<HTMLDivElement>`（不是 `RefObject<HTMLDivElement | null>`）：
  * `@types/react` 18.3 里 `ref` prop 要的是 `LegacyRef<T>`，其中的 `RefObject<T>`
@@ -3226,6 +3270,14 @@ export function useFocusTrap(
   onEscape?: () => void,
 ): RefObject<HTMLDivElement> {
   const ref = useRef<HTMLDivElement>(null);
+  const escapeRef = useRef(onEscape);
+
+  // 在 effect 里刷新而不是渲染期赋值：渲染期写 ref 在并发渲染下不安全。
+  // 本 effect 声明在陷阱 effect 之前，故先于它运行；而 escapeRef 只在按键时才被读取，
+  // 那时所有 effect 都已跑完，取到的必然是最新一次渲染的回调。
+  useEffect(() => {
+    escapeRef.current = onEscape;
+  });
 
   useEffect(() => {
     if (!active) return;
@@ -3239,8 +3291,11 @@ export function useFocusTrap(
     (items[0] ?? container).focus();
 
     function onKeyDown(e: KeyboardEvent) {
+      const top = stack[stack.length - 1];
+      if (!top || top.handler !== onKeyDown) return;
+
       if (e.key === 'Escape') {
-        onEscape?.();
+        escapeRef.current?.();
         return;
       }
       if (e.key !== 'Tab') return;
@@ -3248,7 +3303,13 @@ export function useFocusTrap(
       const list = Array.from(container!.querySelectorAll<HTMLElement>(FOCUSABLE)).filter(
         (el) => el.offsetParent !== null,
       );
-      if (list.length === 0) return;
+      if (list.length === 0) {
+        // 面板里没有可聚焦元素。不拦截的话浏览器会把焦点移到遮罩后面的元素上，
+        // 焦点就逃出陷阱了；这里吞掉 Tab 并把焦点按回容器（容器 tabIndex={-1} 可聚焦）。
+        e.preventDefault();
+        container!.focus();
+        return;
+      }
       const first = list[0]!;
       const last = list[list.length - 1]!;
 
@@ -3261,16 +3322,27 @@ export function useFocusTrap(
       }
     }
 
+    const entry: TrapEntry = { container, handler: onKeyDown };
+    let insertAt = stack.length;
+    for (let i = 0; i < stack.length; i += 1) {
+      if (container.contains(stack[i]!.container)) {
+        insertAt = i;
+        break;
+      }
+    }
+    stack.splice(insertAt, 0, entry);
+
     document.addEventListener('keydown', onKeyDown);
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    lockScroll();
 
     return () => {
       document.removeEventListener('keydown', onKeyDown);
-      document.body.style.overflow = prevOverflow;
+      const at = stack.indexOf(entry);
+      if (at >= 0) stack.splice(at, 1);
+      unlockScroll();
       previous?.focus?.();
     };
-  }, [active, onEscape]);
+  }, [active]);
 
   return ref;
 }
@@ -3307,14 +3379,16 @@ export function Modal({ open, onClose, title, footer, children, className }: Mod
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* 遮罩是明暗两主题下都要压暗背景，不随主题变化，故用固定 rgb(0 0 0 / 60%)
-          （对齐 css/components.css:1371）—— 它是本库唯一的**与主题无关**的颜色字面量。
-          库中另有几处字面量，都只在 CSS 层本身就写死的地方出现，且各自就近注释：
+      {/* 遮罩用固定 rgb(0 0 0 / 60%)（对齐 css/components.css:1371）。
+          规则是：本库的颜色一律走令牌，唯一例外是那些**只为与主题无关**而写死的字面量，
+          遮罩就是唯一一个 —— 明暗两主题下都要压暗背景，取令牌反而会跟着主题变。
+          其余字面量不是这一类，它们是 CSS 层本就写死、React 层逐字节转写过来的：
           危险按钮的白色前景（css/components.css:99）、Select 箭头 SVG 的描边色
-          （css/components.css:249，数据 URI 读不到 CSS 变量），以及 Checkbox 选中态
-          数据 URI 里的勾形描边 #111827 与斜纹 rgb(0 0 0 / 18%)
-          （css/components.css:321-338）—— 后两者同样因为处在数据 URI 内而无法引用
-          CSS 变量，且与 CSS 层逐字节一致，属同一类已认可的例外。 */}
+          （css/components.css:249，数据 URI 读不到 CSS 变量）、Checkbox 选中态数据 URI
+          里的勾形描边 #111827 与斜纹 rgb(0 0 0 / 18%)（css/components.css:321-338，
+          同在数据 URI 内），以及本层 Dropdown / Toast 的阴影
+          rgb(0 0 0 / 25%)（对齐 css/components.css:1318 / :1467）—— 阴影在两层里
+          都是固定的，本就不随主题变化。 */}
       <div
         className="absolute inset-0 bg-black/60"
         onClick={close}
@@ -3445,17 +3519,22 @@ export function Drawer({
 import {
   cloneElement,
   isValidElement,
+  useCallback,
   useEffect,
   useRef,
   useState,
   type ButtonHTMLAttributes,
+  type MouseEvent as ReactMouseEvent,
   type ReactElement,
   type ReactNode,
 } from 'react';
 import { cx } from '../lib/cx';
 
 export interface DropdownProps {
-  /** 触发器元素，会被注入 onClick / aria-expanded。 */
+  /**
+   * 触发器元素。会被注入 `onClick`（**组合**：先调用它自己原有的 `onClick`，
+   * 再切换展开状态）、`aria-haspopup` 与 `aria-expanded`。
+   */
   trigger: ReactElement<ButtonHTMLAttributes<HTMLButtonElement>>;
   children: ReactNode;
   align?: 'left' | 'right';
@@ -3465,6 +3544,22 @@ export interface DropdownProps {
 export function Dropdown({ trigger, children, align = 'right', className }: DropdownProps) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const items = useCallback(
+    () => Array.from(menuRef.current?.querySelectorAll<HTMLElement>('[role="menuitem"]') ?? []),
+    [],
+  );
+
+  // 回到触发器：不通过 ref 注入（会顶掉调用方自己的 ref），改为在根节点内按 ARIA 属性找。
+  const focusTrigger = useCallback(() => {
+    rootRef.current?.querySelector<HTMLElement>('[aria-haspopup="true"]')?.focus();
+  }, []);
+
+  const close = useCallback(() => {
+    setOpen(false);
+    focusTrigger();
+  }, [focusTrigger]);
 
   useEffect(() => {
     if (!open) return;
@@ -3473,7 +3568,7 @@ export function Dropdown({ trigger, children, align = 'right', className }: Drop
       if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
     }
     function onKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') setOpen(false);
+      if (e.key === 'Escape') close();
     }
 
     document.addEventListener('mousedown', onDocClick);
@@ -3482,11 +3577,39 @@ export function Dropdown({ trigger, children, align = 'right', className }: Drop
       document.removeEventListener('mousedown', onDocClick);
       document.removeEventListener('keydown', onKey);
     };
-  }, [open]);
+  }, [open, close]);
+
+  // 展开后把焦点移入第一个菜单项（菜单按钮模式）。
+  useEffect(() => {
+    if (!open) return;
+    items()[0]?.focus();
+  }, [open, items]);
+
+  function onMenuKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    const list = items();
+    if (list.length === 0) return;
+    const current = list.indexOf(document.activeElement as HTMLElement);
+    const last = list.length - 1;
+
+    let next: number | null = null;
+    if (e.key === 'ArrowDown') next = current >= last ? 0 : current + 1;
+    else if (e.key === 'ArrowUp') next = current <= 0 ? last : current - 1;
+    else if (e.key === 'Home') next = 0;
+    else if (e.key === 'End') next = last;
+
+    if (next === null) return;
+    e.preventDefault();
+    list[next]?.focus();
+  }
 
   const triggerWithProps = isValidElement(trigger)
     ? cloneElement(trigger, {
-        onClick: () => setOpen((v) => !v),
+        onClick: (e: ReactMouseEvent<HTMLButtonElement>) => {
+          // 组合而非替换：触发器自己的 onClick 必须照常触发。
+          const original = trigger.props.onClick;
+          if (typeof original === 'function') original(e);
+          setOpen((v) => !v);
+        },
         'aria-haspopup': 'true',
         'aria-expanded': open,
       })
@@ -3497,7 +3620,15 @@ export function Dropdown({ trigger, children, align = 'right', className }: Drop
       {triggerWithProps}
       {open ? (
         <div
+          ref={menuRef}
           role="menu"
+          onKeyDown={onMenuKeyDown}
+          // 激活任意菜单项后收起并归还焦点。挂在菜单容器上而非每个 item 上，
+          // 因为 children 由使用方自由组合；判定用 closest，空白处点击不误关。
+          // 键盘 Enter/Space 在按钮上同样产生 click，故键盘路径一并覆盖。
+          onClick={(e) => {
+            if ((e.target as HTMLElement).closest('[role="menuitem"]')) close();
+          }}
           className={cx(
             'absolute top-[calc(100%+4px)] z-60 min-w-48 border border-border',
             'bg-surface-raised p-1 shadow-[0_6px_20px_rgb(0_0_0/25%)]',
@@ -3566,6 +3697,11 @@ export interface TabsProps {
 export function Tabs({ items, value, defaultValue, onChange, className }: TabsProps) {
   const [internal, setInternal] = useState(defaultValue ?? items[0]?.id ?? '');
   const current = value ?? internal;
+  // 受控值若不匹配任何一项（拼错 id、数据被删），不能就这么晾着：那样每个 tab 都是
+  // aria-selected=false 且 tabIndex=-1，roving tabindex 没有落点，键盘根本进不了
+  // tablist，所有面板还都被 hidden。回退到第一项，控件始终可用。
+  // 只影响选中态，不调用 onChange —— 不替使用方改状态，受控语义不变。
+  const selectedId = items.some((it) => it.id === current) ? current : (items[0]?.id ?? '');
   const baseId = useId();
   const listRef = useRef<HTMLDivElement | null>(null);
 
@@ -3596,7 +3732,7 @@ export function Tabs({ items, value, defaultValue, onChange, className }: TabsPr
         className="flex flex-wrap gap-1 border-b border-border"
       >
         {items.map((item, i) => {
-          const selected = item.id === current;
+          const selected = item.id === selectedId;
           return (
             <button
               key={item.id}
@@ -3631,7 +3767,7 @@ export function Tabs({ items, value, defaultValue, onChange, className }: TabsPr
           role="tabpanel"
           id={`${baseId}-panel-${item.id}`}
           aria-labelledby={`${baseId}-tab-${item.id}`}
-          hidden={item.id !== current}
+          hidden={item.id !== selectedId}
           className="pt-4"
         >
           {item.content}
@@ -3786,6 +3922,14 @@ Expected: 逐项核对：
 - `Tabs`：点击切换；`←`/`→` 键切换并移动焦点；非选中面板 `hidden`。
 - Toast：点按钮后右上角出现提示，4 秒后消失。
 - **受控 Tabs 实测**：在探针里给 `Tabs` 传 `value` + `onChange`（用 `useState` 驱动），确认点击能切换。这一步覆盖 Review Focus 第 5 条。
+
+另外这五项是陷阱与遮罩的边界，`useFocusTrap` 的实现只有跑过它们才算立住，探针里都要有对应夹具：
+
+- **父组件重渲染不得夺焦**：Modal 内放一个受控 `<input>`，父组件用 `setInterval` 每 300ms 触发一次重渲染。连打几个字符，字符必须全部落到输入框里、焦点不得被拽回关闭按钮。若把 `onEscape` 写进依赖数组，第一次 tick 就会复现失败。
+- **叠放遮罩的 `Esc` 与滚动锁**：先开 `Drawer` 再在其中开 `Modal`（兄弟叠放），并另备一对**嵌套**夹具（层 B 写在层 A 的 `children` 里）。一次 `Esc` 只能关掉最上面那层；全部关掉后 `document.body.style.overflow` 必须回到原值、页面能用滚轮滚动（探针需有高于视口的填充，否则测不出差别）。
+- **空陷阱**：面板内只有 `<span>`（无任何可聚焦元素）时，连按 `Tab` 焦点不得离开面板。
+- **触发器自带 `onClick`**：`Dropdown` 的 trigger 传一个自增计数器，确认菜单展开**且**计数器自增（注入的 handler 必须组合而非替换）。
+- **`Tabs` 的 `value` 匹配不到任何一项**：控件仍须可用（有 roving stop、有可见面板），键盘能进入 tablist。
 
 - [ ] **Step 10: 构建验证并提交**
 
