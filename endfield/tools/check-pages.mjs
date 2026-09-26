@@ -16,7 +16,10 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 function walk(dir, out = []) {
   for (const name of readdirSync(dir)) {
-    if (name === 'node_modules' || name.startsWith('.')) continue;
+    // react/ 是 Vite 包，其 index.html 是构建入口：模块脚本用绝对路径由 Vite 解析，
+    // 跳到主内容链接与 <main id="ef-main"> 由 React 组件（App.tsx）渲染，
+    // 都不适用"双击 file:// 打开"这条静态页面规则，故整目录排除。
+    if (name === 'node_modules' || name === 'react' || name.startsWith('.')) continue;
     const p = join(dir, name);
     if (statSync(p).isDirectory()) walk(p, out);
     else if (name.endsWith('.html')) out.push(p);
