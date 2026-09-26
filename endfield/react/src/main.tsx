@@ -1,97 +1,236 @@
-import { StrictMode } from 'react';
+import { StrictMode, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles/tailwind.css';
 import {
-  Button, IconButton, Input, Textarea, Select, SearchBar,
-  Badge, Chip, ChipGroup, Checkbox, Radio, Switch,
-  Spinner, Skeleton, Progress, EmptyState,
-  Divider, Kbd, Avatar, Tooltip,
-  IconSearch, IconSettings, IconCheck, IconFile,
+  Button, Badge, Chip, ChipGroup,
+  Panel, PanelHeader, PanelTitle, PanelBody, PanelFooter,
+  SectionHeader,
+  Card, CardMedia, CardBody, CardTitle, CardMeta, ItemCard, Stat, StatCard,
+  Callout,
+  Table, THead, TBody, TR, TH, TD,
+  Timeline, TimelineItem, TimelineTitle,
+  Accordion, AccordionItem,
+  Breadcrumb, Pagination, FilterRow, InfoGrid, TOC,
+  IconActivity, IconBell, IconClock, IconDownload, IconFile, IconGrid,
+  IconLock, IconSearch, IconSettings, IconTrend, IconUser,
+  type Tier,
 } from './index';
 
+const TIERS: Tier[] = [1, 2, 3, 4, 5, 6];
+
 function Probe() {
+  const [page, setPage] = useState(3);
+  const [sort, setSort] = useState<'asc' | 'desc' | undefined>(undefined);
+  const [lastPageEvent, setLastPageEvent] = useState<number | null>(null);
+
   return (
-    <main className="grid gap-6 p-8">
-      <div className="flex flex-wrap gap-2">
-        <Button variant="primary">主按钮</Button>
-        <Button variant="secondary">次按钮</Button>
-        <Button variant="ghost">幽灵</Button>
-        <Button variant="danger">危险</Button>
-        <Button variant="primary" size="sm">小</Button>
-        <Button variant="primary" size="lg">大</Button>
-        <Button variant="primary" loading>载入中</Button>
-        <Button variant="primary" icon={<IconCheck />}>带图标</Button>
-        <IconButton label="设置"><IconSettings /></IconButton>
+    <main className="grid gap-8 p-8">
+      <SectionHeader
+        eyebrow="structural components"
+        title="结构组件实测"
+        actions={<Button variant="secondary" size="sm">操作</Button>}
+      />
+
+      {/* ---------- Panel ---------- */}
+      <Panel cornerFrame data-probe="panel">
+        <PanelHeader>
+          <PanelTitle>面板标题</PanelTitle>
+          <Badge variant="accent">PROBE</Badge>
+        </PanelHeader>
+        <PanelBody>
+          <p>面板主体内容。cornerFrame 打开，四角应出现括号。</p>
+        </PanelBody>
+        <PanelFooter>
+          <Button variant="primary" size="sm">确认</Button>
+          <Button variant="ghost" size="sm">取消</Button>
+        </PanelFooter>
+      </Panel>
+
+      {/* ---------- Card 族 ---------- */}
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Card data-probe="card">
+          <CardMedia data-probe="card-media" />
+          <CardBody>
+            <CardTitle>普通卡片</CardTitle>
+            <CardMeta>CardMeta 副文本</CardMeta>
+          </CardBody>
+        </Card>
+
+        <Card>
+          <CardBody>
+            <CardTitle>无图卡片</CardTitle>
+            <CardMeta>只有 CardBody</CardMeta>
+          </CardBody>
+        </Card>
       </div>
 
-      <div className="max-w-md">
-        <Input label="用户名" placeholder="请输入" hint="必填项" />
-        <Textarea label="简介" placeholder="多行文本" />
-        <Select label="语言" defaultValue="zh">
-          <option value="zh">简体中文</option>
-          <option value="en">English</option>
-        </Select>
-        <SearchBar placeholder="搜索…" />
+      {/* ---------- 6 张不同 tier 的 ItemCard ---------- */}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" data-probe="itemcards">
+        {TIERS.map((tier, i) => (
+          <ItemCard
+            key={tier}
+            href="#item"
+            index={String(i + 1).padStart(2, '0')}
+            name={`条目 ${tier}`}
+            sub={`ITEM-${tier}`}
+            tier={tier}
+            icons={<IconTrend size={14} />}
+            media={<span className="grid h-full place-items-center text-ink-subtle"><IconFile size={32} /></span>}
+          />
+        ))}
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge>默认</Badge>
-        <Badge variant="info">信息</Badge>
-        <Badge variant="success">成功</Badge>
-        <Badge variant="warn">警告</Badge>
-        <Badge variant="danger">错误</Badge>
-        <Badge variant="accent">强调</Badge>
-        <Badge variant="tier" tier={1}>1</Badge>
-        <Badge variant="tier" tier={4}>4</Badge>
-        <Badge variant="tier" tier={6}>6</Badge>
+      {/* ---------- className 覆盖实测（Review Focus 第 1 条） ----------
+          className 拼在内置类之后只是必要条件：同一个 CSS 属性上 Tailwind 按
+          自己的规范顺序发射，后发射的赢。这里并排渲染四种写法实测谁赢。 */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" data-probe="override">
+        <ItemCard data-probe="override-plain" name="内置" sub="baseline" />
+        <ItemCard data-probe="override-radius" className="rounded-pill" name="rounded-pill" sub="无 !" />
+        <ItemCard data-probe="override-bg" className="bg-danger" name="bg-danger" sub="无 !" />
+        <ItemCard data-probe="override-bg-bang" className="bg-danger!" name="bg-danger!" sub="有 !" />
       </div>
 
-      <ChipGroup label="筛选">
-        <Chip active>全部</Chip>
-        <Chip>选项一</Chip>
-        <Chip>选项二</Chip>
-      </ChipGroup>
-
-      <div className="flex flex-wrap items-center gap-4">
-        <Checkbox label="复选" defaultChecked />
-        <Radio label="单选" name="r" defaultChecked />
-        <Radio label="单选二" name="r" />
-        <Switch label="开关" defaultChecked />
+      {/* ---------- Stat 组 ---------- */}
+      <div className="grid grid-cols-3 gap-4" data-probe="stats">
+        <Stat value="128" label="记录" sub="records" />
+        <Stat value="42.7%" label="覆盖率" />
+        <Stat value="9" label="待处理" sub="pending" />
       </div>
 
-      <div className="flex items-center gap-4">
-        <Spinner />
-        <div className="w-40"><Skeleton height="1rem" /></div>
-        <div className="w-40"><Progress value={45} label="进度" /></div>
-        <Kbd>/</Kbd>
-        <Avatar fallback="AB" />
-        <Avatar size="lg" fallback="CD" />
-        <Tooltip content="提示文本"><Button>悬停我</Button></Tooltip>
+      {/* ---------- 4 个 StatCard，其一带 glow ---------- */}
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" data-probe="statcards">
+        <StatCard icon={<IconActivity />} value="1,024" label="事件总数" />
+        <StatCard data-probe="glow-card" icon={<IconTrend />} value="+18%" label="增长率" glow />
+        <StatCard icon={<IconClock />} value="3h 12m" label="平均耗时" />
+        <StatCard icon={<IconLock />} value="6" label="权限组" />
+      </div>
+
+      {/* ---------- 4 种 Callout ---------- */}
+      <div data-probe="callouts">
+        <Callout variant="info" title="info">信息提示：左侧色条与标题应为蓝色。</Callout>
+        <Callout variant="warn" title="warn">警告提示：左侧色条与标题应为橙色。</Callout>
+        <Callout variant="danger" title="danger">危险提示：左侧色条与标题应为红色。</Callout>
+        <Callout variant="success" title="success">成功提示：左侧色条与标题应为青色。</Callout>
+      </div>
+
+      {/* ---------- Table（含可排序表头） ---------- */}
+      <Table data-probe="table">
+        <THead>
+          <TR>
+            <TH {...(sort !== undefined ? { sort } : {})} onSort={() => setSort(sort === 'asc' ? 'desc' : 'asc')}>名称</TH>
+            <TH>等级</TH>
+            <TH>数量</TH>
+          </TR>
+        </THead>
+        <TBody>
+          {[1, 2, 3].map((n) => (
+            <TR key={n}>
+              <TD>条目 {n}</TD>
+              <TD><Badge variant="tier" tier={n as Tier}>{n}</Badge></TD>
+              <TD>{n * 100}</TD>
+            </TR>
+          ))}
+        </TBody>
+      </Table>
+
+      {/* ---------- Timeline（5 项，其一 accent） ---------- */}
+      <Timeline data-probe="timeline">
+        <TimelineItem time="2026-09-20" dateTime="2026-09-20">
+          <TimelineTitle href="#data">初始版本</TimelineTitle> 发布。
+        </TimelineItem>
+        <TimelineItem time="2026-09-21" dateTime="2026-09-21">补充说明。</TimelineItem>
+        <TimelineItem time="2026-09-22" dateTime="2026-09-22" accent>
+          <TimelineTitle href="#data">重点修订</TimelineTitle>，节点应为主色。
+        </TimelineItem>
+        <TimelineItem time="2026-09-23" dateTime="2026-09-23">小幅调整。</TimelineItem>
+        <TimelineItem time="2026-09-24" dateTime="2026-09-24">归档。</TimelineItem>
+      </Timeline>
+
+      {/* ---------- Accordion（3 项） ---------- */}
+      <div data-probe="accordion">
+        <Accordion>
+          <AccordionItem title="第一项" defaultOpen>第一项内容，默认展开。</AccordionItem>
+          <AccordionItem title="第二项">第二项内容，默认关闭。</AccordionItem>
+          <AccordionItem title="第三项">第三项内容，默认关闭。</AccordionItem>
+        </Accordion>
+      </div>
+
+      {/* ---------- Breadcrumb ---------- */}
+      <Breadcrumb
+        data-probe="breadcrumb"
+        items={[
+          { label: '首页', href: '#home' },
+          { label: '文档', href: '#docs' },
+          { label: '结构组件' },
+        ]}
+      />
+
+      {/* ---------- Pagination ---------- */}
+      <div>
+        <Pagination
+          data-probe="pagination"
+          page={page}
+          total={10}
+          onChange={(p) => { setLastPageEvent(p); setPage(p); }}
+        />
+        <p data-probe="page-state" className="m-0 mt-2 font-mono text-xs text-ink-subtle">
+          page={page} lastEvent={lastPageEvent === null ? 'null' : lastPageEvent}
+        </p>
+      </div>
+
+      {/* ---------- FilterRow + ChipGroup ---------- */}
+      <div data-probe="filters">
+        <FilterRow label="分类">
+          <ChipGroup label="分类">
+            <Chip active>全部</Chip>
+            <Chip>武器</Chip>
+            <Chip>装备</Chip>
+            <Chip>材料</Chip>
+          </ChipGroup>
+        </FilterRow>
+        <FilterRow label="稀有度">
+          <ChipGroup label="稀有度">
+            {TIERS.map((t) => (
+              <Chip key={t}>{t}</Chip>
+            ))}
+          </ChipGroup>
+        </FilterRow>
+      </div>
+
+      {/* ---------- InfoGrid（6 项） ---------- */}
+      <InfoGrid
+        data-probe="infogrid"
+        items={[
+          { key: 'ID', value: 'EF-0001' },
+          { key: '类型', value: '武器' },
+          { key: '等级', value: <Badge variant="tier" tier={5}>5</Badge> },
+          { key: '来源', value: '制造台' },
+          { key: '稀有度', value: '★★★★★' },
+          { key: '状态', value: '已归档' },
+        ]}
+      />
+
+      {/* ---------- TOC（5 项，其一带 sub 且 activeId 命中） ---------- */}
+      <TOC
+        data-probe="toc"
+        activeId="usage"
+        items={[
+          { id: 'intro', label: '简介' },
+          { id: 'install', label: '安装' },
+          { id: 'usage', label: '用法' },
+          { id: 'usage-1', label: '基础示例', sub: true },
+          { id: 'api', label: 'API' },
+        ]}
+      />
+
+      <div className="flex flex-wrap items-center gap-3 text-ink-subtle">
         <IconSearch />
-        <IconFile size={24} />
+        <IconSettings />
+        <IconBell />
+        <IconGrid />
+        <IconDownload />
+        <IconUser />
       </div>
-
-      <Divider label="分隔" />
-      <EmptyState icon={<IconFile size={48} />} title="暂无内容" description="试试别的关键词" action={<Button variant="primary">返回</Button>} />
-
-      {/* className 覆盖实测（Review Focus 第 1 条）：
-          className 拼在内置类之后只是必要条件 —— 同一个 CSS 属性上，Tailwind
-          按自己的规范顺序发射，后发射的赢，而这个顺序使用方看不到也控制不了。
-          所以同一个 class 在不同组件上结果可能相反，拿不准就用 ! 修饰符。 */}
-      <Button variant="primary" className="rounded-none">覆盖圆角（primary，应生效）</Button>
-      <Button variant="primary" className="bg-danger">覆盖底色（primary，应生效）</Button>
-      {/* 对照：同一个 bg-danger 在 secondary / ghost / Chip 上会被内置的
-          bg-transparent / bg-surface-muted 压掉（它们发射更晚）。 */}
-      <Button variant="secondary" className="bg-danger">覆盖底色（secondary，预期不生效）</Button>
-      <Button variant="ghost" className="bg-danger">覆盖底色（ghost，预期不生效）</Button>
-      <Chip className="bg-danger">覆盖底色（Chip，预期不生效）</Chip>
-      <Chip className="rounded-none">覆盖圆角（Chip，预期不生效）</Chip>
-      <Button variant="primary" className="p-8">覆盖内边距（无 !，预期不生效）</Button>
-      {/* 加 ! 后全部生效：!important 绕过发射顺序。 */}
-      <Button variant="primary" className="p-8!">覆盖内边距（!，应生效）</Button>
-      <Button variant="secondary" className="bg-danger!">覆盖底色（secondary + !，应生效）</Button>
-      <Chip className="bg-danger!">覆盖底色（Chip + !，应生效）</Chip>
-      <Chip className="rounded-none!">覆盖圆角（Chip + !，应生效）</Chip>
     </main>
   );
 }
