@@ -62,6 +62,9 @@ npm install
 |---|---|
 | `cx(...classes)` | 内部类名拼接，过滤假值；不引 `clsx`/`classnames` |
 
+每个组件都导出同名 Props 类型（如 `ButtonProps`、`BadgeProps`、`Tier`、`CalloutVariant`、
+`TabsProps`），从包根即可按 `import type { … } from '@endfield/react'` 取用。
+
 ### 按钮
 
 | 导出 | 说明 |
@@ -136,6 +139,14 @@ npm install
 | `Tabs` | 选项卡，支持受控（`value`+`onChange`）与非受控（`defaultValue`） |
 | `ToastProvider` / `useToast` | Toast 容器与 `toast(message, variant?)`；`variant`: `info`/`success`/`warn`/`danger` |
 | `ThemeToggle` | 三态主题切换按钮 |
+
+### Hooks
+
+| 导出 | 说明 |
+|---|---|
+| `useTheme()` | 返回 `{ theme, setTheme, cycle }`；`theme`: `light`/`dark`/`system` |
+| `THEME_LABEL` | `theme` 三态的中文名映射，用于播报与提示文案 |
+| `useFocusTrap(active, onEscape?)` | 焦点陷阱。返回 `RefObject`，挂到容器上；同一提交内堆叠的浮层只有最上层响应 `Esc` |
 
 ### 图标
 
