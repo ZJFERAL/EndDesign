@@ -28,7 +28,7 @@
 
 以下 5 类条件，规格隐含要求但单任务的类型检查不会覆盖。每条都已在拥有该代码的任务里配了对应验证。
 
-1. **`className` 覆盖失效** — 把 `className` 拼在内置类之后是**必要条件，但不是充分条件**。Tailwind v4 在 `@layer utilities` 内按自己的规范顺序发射工具类；同一个 CSS 属性上，**后发射的那条赢**，而发射顺序由 Tailwind 的排序规则决定，使用方既看不到也控制不了。因此「追加在最后」只保证参与竞争，不保证获胜：`p-8` 永远输给内置的 `px-4`/`py-2`，`bg-danger` 在 `Button variant="primary"` 上赢（`bg-accent` 先发射）却在 `Button variant="secondary"`/`variant="ghost"`（`bg-transparent` 后发射）和 `Chip`（`bg-surface-muted` 后发射）上输，`rounded-none` 在 `Button` 上赢（`rounded-ef` 先发射）却在 `Chip`/`Switch` 上输（`rounded-pill` 后发射）。结论：**拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`），它产出 `!important`，绕过发射顺序，在以上全部场景都实测生效。要求组件把 `className` 拼在最后，验证步骤实测「不加 `!` 会输」与「加 `!` 会赢」两类用例，README 里说明拿不准就用 `!`。
+1. **`className` 覆盖失效** — 把 `className` 拼在内置类之后是**必要条件，但不是充分条件**。Tailwind v4 在 `@layer utilities` 内按自己的规范顺序发射工具类；同一个 CSS 属性上，**后发射的那条赢**，而发射顺序由 Tailwind 的排序规则决定，使用方既看不到也控制不了。因此「追加在最后」只保证参与竞争，不保证获胜：`p-8` 永远输给内置的 `px-4`/`py-2`，`bg-danger` 在 `Button variant="primary"` 上赢（`bg-accent` 先发射）却在 `Button variant="secondary"`/`variant="ghost"`（`bg-transparent` 后发射）和 `Chip`（`bg-surface-muted` 后发射）上输，`rounded-none` 在 `Button` 上赢（`rounded-ef` 先发射）却在 `Chip` 上输（`rounded-pill` 后发射）。结论：**拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`），它产出 `!important`，绕过发射顺序，在以上全部场景都实测生效。要求组件把 `className` 拼在最后，验证步骤实测「不加 `!` 会输」与「加 `!` 会赢」两类用例，README 里说明拿不准就用 `!`。注意 Toggle 家族（Checkbox/Radio/Switch）不适用上面这组例子：它们的 `className` 落在包裹用的 `<label>` 上，方框的 `rounded-pill` 与之无关（见 Task 2 Step 5）。
 2. **`tsc` 在 `strict` 下的 `forwardRef` 泛型** — `forwardRef` 与泛型、联合类型 props 组合时容易推出 `any`。要求 `tsc --noEmit` 零错误，且不使用 `as any` 绕过。
 3. **令牌同步漂移** — 改了 `../css/tokens.css` 却忘记跑 `sync:tokens`，React 层配色与 HTML 层不一致且无任何报错。要求有一个校验步骤比对两份文件。
 4. **SSR / 首次渲染的主题闪烁** — 演示站若在 `useEffect` 里才读 `localStorage` 并设主题，首帧会是错误的主题。要求主题读取在渲染前完成。
@@ -149,6 +149,13 @@ Expected: 输出「令牌已就绪」。若不是，停下，先执行 HTML/CSS 
   "include": ["src", "vite.config.ts"]
 }
 ```
+
+> `exactOptionalPropertyTypes: true` 的含义：`label?: string` 表示「可以没有这个属性」，
+> 但**不接受显式的 `undefined`**；要允许 `label={maybeUndefined}` 这样的写法，必须写成
+> `label?: string | undefined`。本库的 `FieldWrapperProps`（`Input.tsx`）与
+> `ToggleShellProps`（`Toggle.tsx`）正是因为这个原因把可选属性写成 `| undefined`，
+> 不是笔误。同理，`HTMLAttributes` 把 `content` 声明成 `string`，所以 `TooltipProps`
+> 必须 `Omit<…, 'content'>` 才能把 `content` 重新声明为 `ReactNode`。
 
 创建 `endfield/react/vite.config.ts`：
 
@@ -1008,14 +1015,14 @@ git commit -m "feat(endfield-react): 搭建 Vite+TS+Tailwind 脚手架与令牌�
 创建 `endfield/react/src/components/icons.tsx`：
 
 ```tsx
-import type { SVGProps } from 'react';
+import type { ReactNode, SVGProps } from 'react';
 
 export interface IconProps extends Omit<SVGProps<SVGSVGElement>, 'children'> {
   size?: number;
 }
 
 /** 统一的图标外壳：线性、currentColor、24 视窗。 */
-function makeIcon(path: React.ReactNode, viewBox = '0 0 24 24') {
+function makeIcon(path: ReactNode, viewBox = '0 0 24 24') {
   return function Icon({ size = 16, className, ...rest }: IconProps) {
     return (
       <svg
@@ -1314,10 +1321,12 @@ const FIELD_BASE = cx(
   'focus:shadow-[0_0_0_2px_color-mix(in_srgb,var(--ef-accent)_30%,transparent)]',
 );
 
+/* 三个属性都写成 `| undefined`：本工程开了 exactOptionalPropertyTypes，
+   而这里是必包控件的入口，label/hint/id 都可能显式传 undefined。 */
 export interface FieldWrapperProps {
-  label?: string;
-  hint?: string;
-  id?: string;
+  label?: string | undefined;
+  hint?: string | undefined;
+  id?: string | undefined;
   children: (id: string) => ReactNode;
 }
 
@@ -1610,8 +1619,8 @@ import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from 'rea
 import { cx } from '../lib/cx';
 
 interface ToggleShellProps {
-  htmlFor?: string;
-  className?: string;
+  htmlFor?: string | undefined;
+  className?: string | undefined;
   children: ReactNode;
 }
 
@@ -1921,7 +1930,9 @@ export function Avatar({ size = 'md', src, alt, fallback, className, ...rest }: 
   );
 }
 
-export interface TooltipProps extends HTMLAttributes<HTMLSpanElement> {
+/* 必须剔除 content：React 的 HTMLAttributes 已把它声明成 string（meta 的
+   属性），气泡内容要收 ReactNode，不做 Omit 会是接口冲突而非可赋值问题。 */
+export interface TooltipProps extends Omit<HTMLAttributes<HTMLSpanElement>, 'content'> {
   content: ReactNode;
 }
 
@@ -4432,6 +4443,7 @@ import { Dropdown, DropdownItem, DropdownSeparator } from '../../components/Drop
 import { Tabs } from '../../components/Tabs';
 import { useToast } from '../../components/Toast';
 import { Input } from '../../components/Input';
+import { Chip } from '../../components/Chip';
 import { IconSettings, IconUser, IconClose, IconFile } from '../../components/icons';
 
 export function InteractiveSection() {
@@ -4546,7 +4558,12 @@ export function InteractiveSection() {
           <Button variant="primary" className="p-8!">加 ! 覆盖 p-8!</Button>
           <Button variant="secondary" className="bg-danger!">secondary + bg-danger!</Button>
           <Chip className="rounded-none!">Chip + rounded-none!</Chip>
-          <IconButton label="覆盖尺寸" className="size-12!"><IconClose /></IconButton>
+          {/* size-12 在 IconButton 上不生效（内置 w-8/h-8 后发射），在 Button 上却生效
+              （按钮没有 w-8/h-8 与之竞争）—— 同一个 class 换个组件结果相反。
+              两个 48px 宽的按钮只放短标签，避免文字溢出干扰肉眼核对。 */}
+          <IconButton label="尺寸无 !（不生效）" className="size-12"><IconClose /></IconButton>
+          <Button variant="primary" className="size-12">尺寸</Button>
+          <IconButton label="尺寸加 !" className="size-12!"><IconClose /></IconButton>
         </Demo>
       </div>
     </Section>
@@ -4717,7 +4734,7 @@ Run: `cd endfield/react && npm run dev`
   - 下拉菜单可展开、点外部关闭、`Esc` 关闭。
   - 受控选项卡点击切换，下方「当前选中」文字同步更新。
   - 4 个 Toast 按钮各自弹出对应颜色的提示。
-  - **className 覆盖区**（验证 Review Focus 第 1 条）：拼在最后只是必要条件，能否覆盖取决于 Tailwind 的发射顺序，拿不准就用 `!`。不加 `!` 时：`px-10 py-6` 的按钮内边距 `24px/40px`（生效），但 `p-8` 仍为 `8px/16px`（不生效，`px-4`/`py-2` 后发射）。加 `!` 后全部生效：`p-8!` → `32px`，`secondary` + `bg-danger!` → `rgb(220, 38, 38)`，`Chip` + `rounded-none!` → `0px`，`size-12!` 的图标按钮 → `48×48`（默认 `32×32`）。
+  - **className 覆盖区**（验证 Review Focus 第 1 条）：拼在最后只是必要条件，能否覆盖取决于 Tailwind 的发射顺序，拿不准就用 `!`。不加 `!` 时：`px-10 py-6` 的按钮内边距 `24px/40px`（生效），但 `p-8` 仍为 `8px/16px`（不生效，`px-4`/`py-2` 后发射）；`size-12` 在 `IconButton` 上仍为 `32×32`（不生效，内置 `w-8`/`h-8` 后发射），但在 `Button` 上**生效**为 `48×48`（按钮没有 `w-8`/`h-8` 与之竞争）—— 同一个 class 换个组件结果相反，这正是「拿不准就用 `!`」的由来。加 `!` 后全部生效：`p-8!` → `32px`，`secondary` + `bg-danger!` → `rgb(220, 38, 38)`，`Chip` + `rounded-none!` → `0px`，`size-12!` 的图标按钮 → `48×48`（默认 `32×32`）。
 - **数据章节**：表格可排序表头有箭头与 `aria-sort`；时间线节点切角且首项为主色；目录当前项有主色左边框；分页点击可切换页且当前页高亮更新。
 - 375px 宽度下：侧栏隐藏（`lg:block` 生效），内容单列，无横向滚动。
 - **首帧无主题闪烁**：在深色系统偏好下硬刷新，首帧即为深色。
@@ -4734,7 +4751,7 @@ Run: `cd endfield/react && npm run dev`
 5. **Tailwind 工具类** — 列出 `@theme` 映射出的颜色/字体工具类，以及 `chamfer`、`chamfer-sm`、`corner-frame`、`corner-frame-all`、`hatch`、`hatch-soft`、`hatch-accent`、`scanline`、`grid-backdrop`、`industrial-shell`、`top-signal-strip`、`tier-strip`、`skeleton-sweep` 这些 `@utility`。
 6. **分级色约定** — 说明等级通过 `data-tier` **属性**传递（`Badge variant="tier" tier={n}`、`ItemCard tier={n}`），不是内联样式；`[data-tier="N"]` 规则同时产出 `--ef-tier-color`（填充）与 `--ef-tier-ink`（文字与描边），子元素 `.tier-strip` 从祖先继承填充色。
 7. **主题** — `useTheme` 与 `ThemeToggle` 用法，`data-theme` 与 `localStorage` 键名 `ef-theme`。
-8. **约定** — 按钮与表单控件均为 `forwardRef`，所有组件都透传 `className` 并拼在内置类之后。**`className` 覆盖规则**：拼在最后只是必要条件 —— 能否覆盖取决于 Tailwind v4 在 `@layer utilities` 内的规范发射顺序，同一个 CSS 属性上后发射的赢，而这个顺序使用方看不到也控制不了。因此同一个 class 在不同组件上结果可能相反：`bg-danger` 在 `Button variant="primary"` 上生效，在 `Button variant="secondary"`/`ghost` 与 `Chip` 上却被内置的 `bg-transparent`/`bg-surface-muted` 压掉；`rounded-none` 在 `Button` 上生效，在 `Chip`/`Switch` 上却被 `rounded-pill` 压掉；`p-8` 永远输给内置的 `px-4 py-2`。**结论：拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`），它产出 `!important`，上述全部场景都实测生效。零运行时依赖；图标内联 SVG。
+8. **约定** — 按钮与表单控件均为 `forwardRef`，所有组件都透传 `className` 并拼在内置类之后。**`className` 覆盖规则**：拼在最后只是必要条件 —— 能否覆盖取决于 Tailwind v4 在 `@layer utilities` 内的规范发射顺序，同一个 CSS 属性上后发射的赢，而这个顺序使用方看不到也控制不了。因此同一个 class 在不同组件上结果可能相反：`bg-danger` 在 `Button variant="primary"` 上生效，在 `Button variant="secondary"`/`ghost` 与 `Chip` 上却被内置的 `bg-transparent`/`bg-surface-muted` 压掉；`rounded-none` 在 `Button` 上生效，在 `Chip` 上却被 `rounded-pill` 压掉；`p-8` 永远输给内置的 `px-4 py-2`。**结论：拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`），它产出 `!important`，上述全部场景都实测生效。另有一条独立的规则要写清：Toggle 家族（Checkbox/Radio/Switch）的 `className` 落在包裹用的 `<label>` 上，不是方框本身 —— 要直接给方框加类得走 `...rest`（透传到 `<input>`），`className` 不会碰到方框的 `rounded-pill`。零运行时依赖；图标内联 SVG。
 9. **可访问性** — 键盘可达、焦点陷阱、`aria-*`、`prefers-reduced-motion`。
 
 - [ ] **Step 8: 最终验收**
