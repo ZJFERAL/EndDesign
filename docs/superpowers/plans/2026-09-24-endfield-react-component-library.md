@@ -18,7 +18,7 @@
 - 不引入任何运行时依赖：不用 `classnames`、`clsx`、`tailwind-merge`、`react-router-dom`、任何图表库或图标库。
 - 图标一律内联 SVG 组件，放在 `src/components/icons.tsx`。
 - 所有**按钮与表单控件**（Button、IconButton、Input、Textarea、Select、SearchBar、Checkbox、Radio、Switch）必须 `forwardRef` 并透传 `className`。
-- 所有组件（含展示型容器）必须透传 `className` 与其余原生属性；`className` 总是追加在内置类之后，让使用方可以覆盖。展示型 / 容器型组件（面板、卡片、表格、导航、时间线、折叠面板、提示块、统计块等一切无用户输入状态的纯展示与布局组件）一律是普通函数组件，不套 `forwardRef` —— React 18 无 ref-as-prop，给它们套 `forwardRef` 只增加代码量而没有消费方。判断标准：需要暴露 DOM ref 给使用方操作的交互控件才用 `forwardRef`（见上一条），其余都是普通函数组件。
+- 所有组件（含展示型容器）必须透传 `className` 与其余原生属性；`className` 总是追加在内置类之后。注意这只是必要条件：Tailwind v4 按工具类组的规范发射顺序决定同一属性的胜者，跨组覆盖（如 `rounded-none`、`bg-danger`）追加在最后即可生效，**同组覆盖**（如内置 `px-4`/`py-2` 之上再传 `p-8`，或内置 `w-8`/`h-8` 之上再传 `size-12`）必须用 `!` 修饰符，详见 Review Focus 第 1 条。展示型 / 容器型组件（面板、卡片、表格、导航、时间线、折叠面板、提示块、统计块等一切无用户输入状态的纯展示与布局组件）一律是普通函数组件，不套 `forwardRef` —— React 18 无 ref-as-prop，给它们套 `forwardRef` 只增加代码量而没有消费方。判断标准：需要暴露 DOM ref 给使用方操作的交互控件才用 `forwardRef`（见上一条），其余都是普通函数组件。
 - 所有组件必须支持明暗两主题（依赖 `tokens.css`，不得硬编码颜色字面量）。例外：Modal / Drawer 的遮罩层必须用固定的 `rgb(0 0 0 / 60%)`（与 css/components.css:1371 一致）—— 遮罩的职责是在明暗两主题下都压暗背景，不能随主题变化，故不用令牌。
 - `npx tsc --noEmit` 与 `npm run build` 必须都通过，且 `tsc` 在 `strict` 下零错误。
 - 演示站不引入路由库，用 `useState` 切换展示区。
@@ -28,7 +28,7 @@
 
 以下 5 类条件，规格隐含要求但单任务的类型检查不会覆盖。每条都已在拥有该代码的任务里配了对应验证。
 
-1. **`className` 覆盖失效** — 使用方传 `className="p-8"` 时，若内部用 `p-4` 且顺序在后，Tailwind 的层叠由 CSS 生成顺序而非 class 顺序决定，覆盖会静默失效。要求组件的 `className` 总是拼在最后，并在验证步骤里实测覆盖生效。
+1. **`className` 覆盖失效** — 把 `className` 拼在内置类之后是必要条件，但不是充分条件。Tailwind v4 在 `@layer utilities` 内按规范顺序发射工具类，同一 CSS 属性的胜者由**工具类组的发射顺序**决定，而不是 class 属性里的先后。因此：跨组的覆盖（`rounded-none` 覆盖内置 `rounded-ef`、`bg-danger` 覆盖内置 `bg-accent`）追加在最后即可生效；**同一组的冲突**（`p-8` 对内置的 `px-4`/`py-2`，`size-12` 对内置的 `w-8`/`h-8`）追加在最后**仍然会输**，必须用 `!` 修饰符（`p-8!`、`size-12!`）才能覆盖。要求组件把 `className` 拼在最后，并在验证步骤里实测这两类覆盖，README 里说明同组覆盖需用 `!`。
 2. **`tsc` 在 `strict` 下的 `forwardRef` 泛型** — `forwardRef` 与泛型、联合类型 props 组合时容易推出 `any`。要求 `tsc --noEmit` 零错误，且不使用 `as any` 绕过。
 3. **令牌同步漂移** — 改了 `../css/tokens.css` 却忘记跑 `sync:tokens`，React 层配色与 HTML 层不一致且无任何报错。要求有一个校验步骤比对两份文件。
 4. **SSR / 首次渲染的主题闪烁** — 演示站若在 `useEffect` 里才读 `localStorage` 并设主题，首帧会是错误的主题。要求主题读取在渲染前完成。
@@ -2041,8 +2041,15 @@ function Probe() {
       <Divider label="分隔" />
       <EmptyState icon={<IconFile size={48} />} title="暂无内容" description="试试别的关键词" action={<Button variant="primary">返回</Button>} />
 
-      {/* className 覆盖实测：这个按钮的内边距应被 p-8 覆盖 */}
-      <Button variant="primary" className="p-8">覆盖内边距</Button>
+      {/* className 覆盖实测（Review Focus 第 1 条）：
+          className 拼在内置类之后；同一属性的胜者由 Tailwind 的规范发射顺序
+          决定，与 class 属性里的先后无关。跨组覆盖直接生效；同组冲突必须用
+          ! 修饰符。 */}
+      <Button variant="primary" className="rounded-none">覆盖圆角（跨组，应生效）</Button>
+      <Button variant="primary" className="bg-danger">覆盖底色（跨组，应生效）</Button>
+      <Button variant="primary" className="p-8!">覆盖内边距（同组，用 ! 生效）</Button>
+      {/* 负向对照：同组冲突且不加 ! —— p-8 的发射位置早于 px-4/py-2，永远输。 */}
+      <Button variant="primary" className="p-8">覆盖内边距（同组无 !，预期不生效）</Button>
     </main>
   );
 }
@@ -2062,7 +2069,11 @@ Expected: 浏览器打开后逐项核对：
 - 三个分级徽标颜色依次为灰蓝、紫、红。
 - 激活的 Chip 为主色实底 + 斜纹。
 - 复选/单选/开关选中为主色。
-- **最后一个「覆盖内边距」按钮的内边距明显大于其他按钮**（这验证 Review Focus 第 1 条：`className` 生效）。
+- **className 覆盖区**（验证 Review Focus 第 1 条，`className` 拼在内置类之后）：
+  - 「覆盖圆角」按钮的圆角为 `0px`（内置 `rounded-ef` 是 `4px`）—— 跨组覆盖生效。
+  - 「覆盖底色」按钮的背景为 `rgb(220, 38, 38)`（内置 `bg-accent` 是 `rgb(242, 204, 0)`）—— 跨组覆盖生效。
+  - 「覆盖内边距（!）」按钮的内边距为 `32px`（默认 `8px/16px`）—— 同组冲突用 `!` 生效。
+  - 「覆盖内边距（无 !）」按钮的内边距仍为 `8px/16px` —— 同组冲突不用 `!` 不生效，这是 Tailwind 规范发射顺序的预期结果，不是缺陷。
 - 切换系统深色模式，全部组件配色正确。
 
 - [ ] **Step 10: 验证受控模式可用**
@@ -4490,12 +4501,13 @@ export function InteractiveSection() {
 
       <div>
         <p className="mb-2 font-mono text-xs uppercase tracking-[0.12em] text-ink-subtle">
-          className 覆盖（内边距应明显更大）
+          className 覆盖（跨组追加即可；同组需用 !）
         </p>
         <Demo>
           <Button variant="primary">默认内边距</Button>
           <Button variant="primary" className="px-10 py-6">覆盖为 px-10 py-6</Button>
-          <IconButton label="覆盖尺寸" className="size-12"><IconClose /></IconButton>
+          <Button variant="primary" className="p-8!">同组覆盖 p-8!</Button>
+          <IconButton label="覆盖尺寸" className="size-12!"><IconClose /></IconButton>
         </Demo>
       </div>
     </Section>
@@ -4666,7 +4678,7 @@ Run: `cd endfield/react && npm run dev`
   - 下拉菜单可展开、点外部关闭、`Esc` 关闭。
   - 受控选项卡点击切换，下方「当前选中」文字同步更新。
   - 4 个 Toast 按钮各自弹出对应颜色的提示。
-  - **className 覆盖区**：`px-10 py-6` 的按钮内边距**明显大于**默认按钮；`size-12` 的图标按钮明显更大。
+  - **className 覆盖区**（验证 Review Focus 第 1 条）：`px-10 py-6` 的按钮内边距为 `24px/40px`，明显大于默认的 `8px/16px`（跨组覆盖，追加即可生效）；`p-8!` 的按钮内边距为 `32px`（同组冲突，`!` 生效）；`size-12!` 的图标按钮为 `48×48`，大于默认的 `32×32`（同组冲突，`!` 生效）。**注意 `size-12` 不加 `!` 不会生效** —— 内置 `w-8`/`h-8` 的发射顺序在 `size-12` 之后。
 - **数据章节**：表格可排序表头有箭头与 `aria-sort`；时间线节点切角且首项为主色；目录当前项有主色左边框；分页点击可切换页且当前页高亮更新。
 - 375px 宽度下：侧栏隐藏（`lg:block` 生效），内容单列，无横向滚动。
 - **首帧无主题闪烁**：在深色系统偏好下硬刷新，首帧即为深色。
@@ -4683,7 +4695,7 @@ Run: `cd endfield/react && npm run dev`
 5. **Tailwind 工具类** — 列出 `@theme` 映射出的颜色/字体工具类，以及 `chamfer`、`chamfer-sm`、`corner-frame`、`corner-frame-all`、`hatch`、`hatch-soft`、`hatch-accent`、`scanline`、`grid-backdrop`、`industrial-shell`、`top-signal-strip`、`tier-strip`、`skeleton-sweep` 这些 `@utility`。
 6. **分级色约定** — 说明等级通过 `data-tier` **属性**传递（`Badge variant="tier" tier={n}`、`ItemCard tier={n}`），不是内联样式；`[data-tier="N"]` 规则同时产出 `--ef-tier-color`（填充）与 `--ef-tier-ink`（文字与描边），子元素 `.tier-strip` 从祖先继承填充色。
 7. **主题** — `useTheme` 与 `ThemeToggle` 用法，`data-theme` 与 `localStorage` 键名 `ef-theme`。
-8. **约定** — 按钮与表单控件均为 `forwardRef`，所有组件 `className` 可覆盖；零运行时依赖；图标内联 SVG。
+8. **约定** — 按钮与表单控件均为 `forwardRef`，所有组件都透传 `className` 并拼在内置类之后。**`className` 覆盖规则**：跨组覆盖（改圆角、改背景色等不同 CSS 属性）追加即可生效；覆盖**同一组**的内置工具类（如按钮内置 `px-4 py-2` 之上再传 `p-8`，图标按钮内置 `w-8 h-8` 之上再传 `size-12`）必须用 Tailwind 的 `!` 修饰符（`p-8!`、`size-12!`），因为 Tailwind v4 在 `@layer utilities` 内按规范顺序发射，胜者由工具类组的发射顺序而非 class 属性里的先后决定。零运行时依赖；图标内联 SVG。
 9. **可访问性** — 键盘可达、焦点陷阱、`aria-*`、`prefers-reduced-motion`。
 
 - [ ] **Step 8: 最终验收**
@@ -4753,7 +4765,7 @@ git commit -m "feat(endfield-react): 加入演示站与组件库说明"
 
 | Review Focus 项 | 对应验证 |
 |---|---|
-| 1. `className` 覆盖失效 | Task 2 Step 9、Task 5 Step 6（`px-10 py-6` 与 `size-12` 实测） |
+| 1. `className` 覆盖失效 | Task 2 Step 9、Task 5 Step 6（跨组 `rounded-none`/`bg-danger`/`px-10 py-6` 实测生效；同组 `p-8!`/`size-12!` 实测生效，`p-8`/`size-12` 不加 `!` 实测不生效） |
 | 2. `tsc` strict 下 `forwardRef` 泛型 | Task 2 Step 8、Task 3 Step 6、Task 4 Step 8、Task 5 Step 5 |
 | 3. 令牌同步漂移 | Task 1 Step 10（负向测试，证明 `--check` 会失败） |
 | 4. 首帧主题闪烁 | Task 1 Step 7（`index.html` 内联脚本）、Task 5 Step 6（硬刷新核对） |
