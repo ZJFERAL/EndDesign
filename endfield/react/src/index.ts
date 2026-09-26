@@ -19,6 +19,6 @@ export type { ChipProps, ChipGroupProps } from './components/Chip';
 export { Checkbox, Radio, Switch } from './components/Toggle';
 export type { CheckboxProps, RadioProps, SwitchProps } from './components/Toggle';
 export { Spinner, Skeleton, Progress, EmptyState } from './components/Feedback';
-export type { SkeletonProps, ProgressProps, EmptyStateProps } from './components/Feedback';
+export type { SpinnerProps, SkeletonProps, ProgressProps, EmptyStateProps } from './components/Feedback';
 export { Divider, Kbd, Avatar, Tooltip } from './components/Misc';
-export type { DividerProps, AvatarProps, AvatarSize, TooltipProps } from './components/Misc';
+export type { DividerProps, KbdProps, AvatarProps, AvatarSize, TooltipProps } from './components/Misc';

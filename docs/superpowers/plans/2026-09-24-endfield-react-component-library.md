@@ -18,7 +18,7 @@
 - 不引入任何运行时依赖：不用 `classnames`、`clsx`、`tailwind-merge`、`react-router-dom`、任何图表库或图标库。
 - 图标一律内联 SVG 组件，放在 `src/components/icons.tsx`。
 - 所有**按钮与表单控件**（Button、IconButton、Input、Textarea、Select、SearchBar、Checkbox、Radio、Switch）必须 `forwardRef` 并透传 `className`。
-- 所有组件（含展示型容器）必须透传 `className` 与其余原生属性；`className` 总是追加在内置类之后。注意这只是必要条件：Tailwind v4 按工具类组的规范发射顺序决定同一属性的胜者，跨组覆盖（如 `rounded-none`、`bg-danger`）追加在最后即可生效，**同组覆盖**（如内置 `px-4`/`py-2` 之上再传 `p-8`，或内置 `w-8`/`h-8` 之上再传 `size-12`）必须用 `!` 修饰符，详见 Review Focus 第 1 条。展示型 / 容器型组件（面板、卡片、表格、导航、时间线、折叠面板、提示块、统计块等一切无用户输入状态的纯展示与布局组件）一律是普通函数组件，不套 `forwardRef` —— React 18 无 ref-as-prop，给它们套 `forwardRef` 只增加代码量而没有消费方。判断标准：需要暴露 DOM ref 给使用方操作的交互控件才用 `forwardRef`（见上一条），其余都是普通函数组件。
+- 所有组件（含展示型容器）必须透传 `className` 与其余原生属性；`className` 总是追加在内置类之后 —— 但这是必要条件而非充分条件：能否覆盖取决于 Tailwind 在同一 CSS 属性上的规范发射顺序，使用方看不到也控制不了，**拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`）。详见 Review Focus 第 1 条。展示型 / 容器型组件（面板、卡片、表格、导航、时间线、折叠面板、提示块、统计块等一切无用户输入状态的纯展示与布局组件）一律是普通函数组件，不套 `forwardRef` —— React 18 无 ref-as-prop，给它们套 `forwardRef` 只增加代码量而没有消费方。判断标准：需要暴露 DOM ref 给使用方操作的交互控件才用 `forwardRef`（见上一条），其余都是普通函数组件。
 - 所有组件必须支持明暗两主题（依赖 `tokens.css`，不得硬编码颜色字面量）。例外：Modal / Drawer 的遮罩层必须用固定的 `rgb(0 0 0 / 60%)`（与 css/components.css:1371 一致）—— 遮罩的职责是在明暗两主题下都压暗背景，不能随主题变化，故不用令牌。
 - `npx tsc --noEmit` 与 `npm run build` 必须都通过，且 `tsc` 在 `strict` 下零错误。
 - 演示站不引入路由库，用 `useState` 切换展示区。
@@ -28,7 +28,7 @@
 
 以下 5 类条件，规格隐含要求但单任务的类型检查不会覆盖。每条都已在拥有该代码的任务里配了对应验证。
 
-1. **`className` 覆盖失效** — 把 `className` 拼在内置类之后是必要条件，但不是充分条件。Tailwind v4 在 `@layer utilities` 内按规范顺序发射工具类，同一 CSS 属性的胜者由**工具类组的发射顺序**决定，而不是 class 属性里的先后。因此：跨组的覆盖（`rounded-none` 覆盖内置 `rounded-ef`、`bg-danger` 覆盖内置 `bg-accent`）追加在最后即可生效；**同一组的冲突**（`p-8` 对内置的 `px-4`/`py-2`，`size-12` 对内置的 `w-8`/`h-8`）追加在最后**仍然会输**，必须用 `!` 修饰符（`p-8!`、`size-12!`）才能覆盖。要求组件把 `className` 拼在最后，并在验证步骤里实测这两类覆盖，README 里说明同组覆盖需用 `!`。
+1. **`className` 覆盖失效** — 把 `className` 拼在内置类之后是**必要条件，但不是充分条件**。Tailwind v4 在 `@layer utilities` 内按自己的规范顺序发射工具类；同一个 CSS 属性上，**后发射的那条赢**，而发射顺序由 Tailwind 的排序规则决定，使用方既看不到也控制不了。因此「追加在最后」只保证参与竞争，不保证获胜：`p-8` 永远输给内置的 `px-4`/`py-2`，`bg-danger` 在 `Button variant="primary"` 上赢（`bg-accent` 先发射）却在 `Button variant="secondary"`/`variant="ghost"`（`bg-transparent` 后发射）和 `Chip`（`bg-surface-muted` 后发射）上输，`rounded-none` 在 `Button` 上赢（`rounded-ef` 先发射）却在 `Chip`/`Switch` 上输（`rounded-pill` 后发射）。结论：**拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`），它产出 `!important`，绕过发射顺序，在以上全部场景都实测生效。要求组件把 `className` 拼在最后，验证步骤实测「不加 `!` 会输」与「加 `!` 会赢」两类用例，README 里说明拿不准就用 `!`。
 2. **`tsc` 在 `strict` 下的 `forwardRef` 泛型** — `forwardRef` 与泛型、联合类型 props 组合时容易推出 `any`。要求 `tsc --noEmit` 零错误，且不使用 `as any` 绕过。
 3. **令牌同步漂移** — 改了 `../css/tokens.css` 却忘记跑 `sync:tokens`，React 层配色与 HTML 层不一致且无任何报错。要求有一个校验步骤比对两份文件。
 4. **SSR / 首次渲染的主题闪烁** — 演示站若在 `useEffect` 里才读 `localStorage` 并设主题，首帧会是错误的主题。要求主题读取在渲染前完成。
@@ -844,10 +844,12 @@ console.log(`已同步令牌：${source} → ${target}`);
  * 拼接类名，过滤假值。
  * 不引入 classnames / clsx —— 本库保持零运行时依赖。
  * 注意：组件的 className 必须拼在最后，但这是必要条件而非充分条件 ——
- * Tailwind v4 在 @layer utilities 内按规范顺序发射，同一属性的胜者由工具类组
- * 的发射顺序决定，而非 class 属性里的先后。跨组覆盖（改圆角、改背景色等）
- * 追加即可生效；覆盖同一组的内置工具类（如 px-4/py-2 之上再传 p-8）必须用
- * Tailwind 的 ! 修饰符。详见 Review Focus 第 1 条。
+ * Tailwind v4 在 @layer utilities 内按自己的规范顺序发射，同一个 CSS 属性上
+ * 后发射的赢，而这个顺序使用方看不到也控制不了。同一个 class 在不同组件上
+ * 结果可能相反（bg-danger 在 Button primary 上生效，在 secondary/ghost/Chip
+ * 上被内置的 bg-transparent/bg-surface-muted 压掉）。拿不准就用 Tailwind 的
+ * ! 修饰符（bg-danger!、rounded-none!、p-8!），它产出 !important，绕过发射顺序。
+ * 详见实施计划的 Review Focus 第 1 条。
  */
 export type ClassValue = string | false | null | undefined;
 
@@ -1547,7 +1549,9 @@ export interface ChipProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 /**
  * 可选中标签，用于筛选行。
- * active 为受控；也可用 defaultPressed 走非受控。
+ * active 为受控：由使用方传入，本组件不持有内部状态，仅把它映射为 aria-pressed。
+ * 不提供 defaultPressed 之类的非受控入口 —— 它既不是合法 DOM 属性，
+ * 又会经 ...rest 漏到 DOM 上并触发 React 警告。
  */
 export function Chip({ active = false, className, children, ...rest }: ChipProps) {
   return (
@@ -1595,6 +1599,12 @@ export function ChipGroup({ label, className, children, ...rest }: ChipGroupProp
 
 创建 `endfield/react/src/components/Toggle.tsx`：
 
+> **`className` 落在包裹用的 `<label>` 上**，不是 `<input>` 上（对齐 HTML/CSS 层：
+> `.ef-check` 是 label，输入框由 `.ef-check input` 选中）。因此
+> `<Checkbox className="size-8" />` 放大的是整行标签，而不是那个方框。要直接给
+> 方框加类，走 `...rest`（它会透传到 `<input>`）—— 见下方 `CheckboxProps` 的
+> `...rest` 用法。
+
 ```tsx
 import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from 'react';
 import { cx } from '../lib/cx';
@@ -1638,6 +1648,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
           'checked:border-accent-strong checked:bg-accent',
           // 斜纹与勾形是同一 background-image 的两层，避免其中一个静默覆盖另一个。
           // 斜纹对齐 css/components.css:321-325，勾形对齐 :328-338。
+          // 数据 URI 内读不到 CSS 变量，故勾形描边 #111827 与斜纹 rgb(0 0 0 / 18%)
+          // 是写死的颜色字面量 —— 与 CSS 层逐字节一致，属已认可的例外（同 Select
+          // 箭头）。斜纹与勾形都必须保留，缺一即与 CSS 层不一致。
           'checked:bg-[image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2012%2012%27%3E%3Cpath%20d=%27M2%206.2l2.6%202.6L10%203.4%27%20fill=%27none%27%20stroke=%27%23111827%27%20stroke-width=%272%27/%3E%3C/svg%3E"),repeating-linear-gradient(-45deg,rgb(0_0_0/18%)_0_1px,transparent_1px_4px)]',
           'checked:bg-[length:100%,auto] checked:bg-[position:center,0_0] checked:bg-no-repeat',
         )}
@@ -1724,7 +1737,9 @@ export const Switch = forwardRef<HTMLInputElement, SwitchProps>(function Switch(
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cx } from '../lib/cx';
 
-export function Spinner({ className }: { className?: string }) {
+export type SpinnerProps = HTMLAttributes<HTMLSpanElement>;
+
+export function Spinner({ className, ...rest }: SpinnerProps) {
   return (
     <span
       role="status"
@@ -1733,6 +1748,7 @@ export function Spinner({ className }: { className?: string }) {
         'inline-block size-5 animate-spin rounded-full border-2 border-border border-t-accent-ink',
         className,
       )}
+      {...rest}
     />
   );
 }
@@ -1850,7 +1866,11 @@ export function Divider({ label, className, ...rest }: DividerProps) {
   );
 }
 
-export function Kbd({ children, className }: { children: ReactNode; className?: string }) {
+export interface KbdProps extends HTMLAttributes<HTMLElement> {
+  children: ReactNode;
+}
+
+export function Kbd({ children, className, ...rest }: KbdProps) {
   return (
     <kbd
       className={cx(
@@ -1858,6 +1878,7 @@ export function Kbd({ children, className }: { children: ReactNode; className?: 
         'bg-surface-raised px-1.5 text-center font-mono text-[11px] leading-normal text-ink-muted',
         className,
       )}
+      {...rest}
     >
       {children}
     </kbd>
@@ -1953,9 +1974,9 @@ export type { ChipProps, ChipGroupProps } from './components/Chip';
 export { Checkbox, Radio, Switch } from './components/Toggle';
 export type { CheckboxProps, RadioProps, SwitchProps } from './components/Toggle';
 export { Spinner, Skeleton, Progress, EmptyState } from './components/Feedback';
-export type { SkeletonProps, ProgressProps, EmptyStateProps } from './components/Feedback';
+export type { SpinnerProps, SkeletonProps, ProgressProps, EmptyStateProps } from './components/Feedback';
 export { Divider, Kbd, Avatar, Tooltip } from './components/Misc';
-export type { DividerProps, AvatarProps, AvatarSize, TooltipProps } from './components/Misc';
+export type { DividerProps, KbdProps, AvatarProps, AvatarSize, TooltipProps } from './components/Misc';
 ```
 
 - [ ] **Step 8: 类型检查**
@@ -2045,14 +2066,23 @@ function Probe() {
       <EmptyState icon={<IconFile size={48} />} title="暂无内容" description="试试别的关键词" action={<Button variant="primary">返回</Button>} />
 
       {/* className 覆盖实测（Review Focus 第 1 条）：
-          className 拼在内置类之后；同一属性的胜者由 Tailwind 的规范发射顺序
-          决定，与 class 属性里的先后无关。跨组覆盖直接生效；同组冲突必须用
-          ! 修饰符。 */}
-      <Button variant="primary" className="rounded-none">覆盖圆角（跨组，应生效）</Button>
-      <Button variant="primary" className="bg-danger">覆盖底色（跨组，应生效）</Button>
-      <Button variant="primary" className="p-8!">覆盖内边距（同组，用 ! 生效）</Button>
-      {/* 负向对照：同组冲突且不加 ! —— p-8 的发射位置早于 px-4/py-2，永远输。 */}
-      <Button variant="primary" className="p-8">覆盖内边距（同组无 !，预期不生效）</Button>
+          className 拼在内置类之后只是必要条件 —— 同一个 CSS 属性上，Tailwind
+          按自己的规范顺序发射，后发射的赢，而这个顺序使用方看不到也控制不了。
+          所以同一个 class 在不同组件上结果可能相反，拿不准就用 ! 修饰符。 */}
+      <Button variant="primary" className="rounded-none">覆盖圆角（primary，应生效）</Button>
+      <Button variant="primary" className="bg-danger">覆盖底色（primary，应生效）</Button>
+      {/* 对照：同一个 bg-danger 在 secondary / ghost / Chip 上会被内置的
+          bg-transparent / bg-surface-muted 压掉（它们发射更晚）。 */}
+      <Button variant="secondary" className="bg-danger">覆盖底色（secondary，预期不生效）</Button>
+      <Button variant="ghost" className="bg-danger">覆盖底色（ghost，预期不生效）</Button>
+      <Chip className="bg-danger">覆盖底色（Chip，预期不生效）</Chip>
+      <Chip className="rounded-none">覆盖圆角（Chip，预期不生效）</Chip>
+      <Button variant="primary" className="p-8">覆盖内边距（无 !，预期不生效）</Button>
+      {/* 加 ! 后全部生效：!important 绕过发射顺序。 */}
+      <Button variant="primary" className="p-8!">覆盖内边距（!，应生效）</Button>
+      <Button variant="secondary" className="bg-danger!">覆盖底色（secondary + !，应生效）</Button>
+      <Chip className="bg-danger!">覆盖底色（Chip + !，应生效）</Chip>
+      <Chip className="rounded-none!">覆盖圆角（Chip + !，应生效）</Chip>
     </main>
   );
 }
@@ -2072,11 +2102,11 @@ Expected: 浏览器打开后逐项核对：
 - 三个分级徽标颜色依次为灰蓝、紫、红。
 - 激活的 Chip 为主色实底 + 斜纹。
 - 复选/单选/开关选中为主色。
-- **className 覆盖区**（验证 Review Focus 第 1 条，`className` 拼在内置类之后）：
-  - 「覆盖圆角」按钮的圆角为 `0px`（内置 `rounded-ef` 是 `4px`）—— 跨组覆盖生效。
-  - 「覆盖底色」按钮的背景为 `rgb(220, 38, 38)`（内置 `bg-accent` 是 `rgb(242, 204, 0)`）—— 跨组覆盖生效。
-  - 「覆盖内边距（!）」按钮的内边距为 `32px`（默认 `8px/16px`）—— 同组冲突用 `!` 生效。
-  - 「覆盖内边距（无 !）」按钮的内边距仍为 `8px/16px` —— 同组冲突不用 `!` 不生效，这是 Tailwind 规范发射顺序的预期结果，不是缺陷。
+- **className 覆盖区**（验证 Review Focus 第 1 条）：拼在最后只是必要条件，能否覆盖取决于 Tailwind 的发射顺序，拿不准就用 `!`。
+  - 不加 `!` 且**生效**：`primary` + `rounded-none` → 圆角 `0px`（内置 `rounded-ef` 是 `4px`）；`primary` + `bg-danger` → `rgb(220, 38, 38)`（内置 `bg-accent` 是 `rgb(242, 204, 0)`）。
+  - 不加 `!` 且**不生效**（同一个 class，换个组件就输）：`secondary`/`ghost` + `bg-danger` → 仍是透明（`bg-transparent` 后发射）；`Chip` + `bg-danger` → 仍是 `rgb(245, 245, 245)`（`bg-surface-muted` 后发射）；`Chip` + `rounded-none` → 仍是 `6px`（`rounded-pill` 后发射）；`primary` + `p-8` → 内边距仍是 `8px/16px`（`px-4`/`py-2` 后发射）。
+  - 加 `!` 后**全部生效**：`p-8!` → `32px`；`secondary` + `bg-danger!` → `rgb(220, 38, 38)`；`Chip` + `bg-danger!` → `rgb(220, 38, 38)`；`Chip` + `rounded-none!` → `0px`。
+  - 以上不生效的用例是 Tailwind 规范发射顺序的预期结果，**不是缺陷**；这正是「拿不准就用 `!`」的原因。
 - 切换系统深色模式，全部组件配色正确。
 
 - [ ] **Step 10: 验证受控模式可用**
@@ -3212,8 +3242,11 @@ export function Modal({ open, onClose, title, footer, children, className }: Mod
       {/* 遮罩是明暗两主题下都要压暗背景，不随主题变化，故用固定 rgb(0 0 0 / 60%)
           （对齐 css/components.css:1371）—— 它是本库唯一的**与主题无关**的颜色字面量。
           库中另有几处字面量，都只在 CSS 层本身就写死的地方出现，且各自就近注释：
-          危险按钮的白色前景（css/components.css:99）与 Select 箭头 SVG 的描边色
-          （css/components.css:249，数据 URI 读不到 CSS 变量）。 */}
+          危险按钮的白色前景（css/components.css:99）、Select 箭头 SVG 的描边色
+          （css/components.css:249，数据 URI 读不到 CSS 变量），以及 Checkbox 选中态
+          数据 URI 里的勾形描边 #111827 与斜纹 rgb(0 0 0 / 18%)
+          （css/components.css:321-338）—— 后两者同样因为处在数据 URI 内而无法引用
+          CSS 变量，且与 CSS 层逐字节一致，属同一类已认可的例外。 */}
       <div
         className="absolute inset-0 bg-black/60"
         onClick={close}
@@ -4504,12 +4537,15 @@ export function InteractiveSection() {
 
       <div>
         <p className="mb-2 font-mono text-xs uppercase tracking-[0.12em] text-ink-subtle">
-          className 覆盖（跨组追加即可；同组需用 !）
+          className 覆盖（拿不准就用 !）
         </p>
         <Demo>
           <Button variant="primary">默认内边距</Button>
           <Button variant="primary" className="px-10 py-6">覆盖为 px-10 py-6</Button>
-          <Button variant="primary" className="p-8!">同组覆盖 p-8!</Button>
+          <Button variant="primary" className="p-8">无 ! 覆盖 p-8（不生效）</Button>
+          <Button variant="primary" className="p-8!">加 ! 覆盖 p-8!</Button>
+          <Button variant="secondary" className="bg-danger!">secondary + bg-danger!</Button>
+          <Chip className="rounded-none!">Chip + rounded-none!</Chip>
           <IconButton label="覆盖尺寸" className="size-12!"><IconClose /></IconButton>
         </Demo>
       </div>
@@ -4681,7 +4717,7 @@ Run: `cd endfield/react && npm run dev`
   - 下拉菜单可展开、点外部关闭、`Esc` 关闭。
   - 受控选项卡点击切换，下方「当前选中」文字同步更新。
   - 4 个 Toast 按钮各自弹出对应颜色的提示。
-  - **className 覆盖区**（验证 Review Focus 第 1 条）：`px-10 py-6` 的按钮内边距为 `24px/40px`，明显大于默认的 `8px/16px`（跨组覆盖，追加即可生效）；`p-8!` 的按钮内边距为 `32px`（同组冲突，`!` 生效）；`size-12!` 的图标按钮为 `48×48`，大于默认的 `32×32`（同组冲突，`!` 生效）。**注意 `size-12` 不加 `!` 不会生效** —— 内置 `w-8`/`h-8` 的发射顺序在 `size-12` 之后。
+  - **className 覆盖区**（验证 Review Focus 第 1 条）：拼在最后只是必要条件，能否覆盖取决于 Tailwind 的发射顺序，拿不准就用 `!`。不加 `!` 时：`px-10 py-6` 的按钮内边距 `24px/40px`（生效），但 `p-8` 仍为 `8px/16px`（不生效，`px-4`/`py-2` 后发射）。加 `!` 后全部生效：`p-8!` → `32px`，`secondary` + `bg-danger!` → `rgb(220, 38, 38)`，`Chip` + `rounded-none!` → `0px`，`size-12!` 的图标按钮 → `48×48`（默认 `32×32`）。
 - **数据章节**：表格可排序表头有箭头与 `aria-sort`；时间线节点切角且首项为主色；目录当前项有主色左边框；分页点击可切换页且当前页高亮更新。
 - 375px 宽度下：侧栏隐藏（`lg:block` 生效），内容单列，无横向滚动。
 - **首帧无主题闪烁**：在深色系统偏好下硬刷新，首帧即为深色。
@@ -4698,7 +4734,7 @@ Run: `cd endfield/react && npm run dev`
 5. **Tailwind 工具类** — 列出 `@theme` 映射出的颜色/字体工具类，以及 `chamfer`、`chamfer-sm`、`corner-frame`、`corner-frame-all`、`hatch`、`hatch-soft`、`hatch-accent`、`scanline`、`grid-backdrop`、`industrial-shell`、`top-signal-strip`、`tier-strip`、`skeleton-sweep` 这些 `@utility`。
 6. **分级色约定** — 说明等级通过 `data-tier` **属性**传递（`Badge variant="tier" tier={n}`、`ItemCard tier={n}`），不是内联样式；`[data-tier="N"]` 规则同时产出 `--ef-tier-color`（填充）与 `--ef-tier-ink`（文字与描边），子元素 `.tier-strip` 从祖先继承填充色。
 7. **主题** — `useTheme` 与 `ThemeToggle` 用法，`data-theme` 与 `localStorage` 键名 `ef-theme`。
-8. **约定** — 按钮与表单控件均为 `forwardRef`，所有组件都透传 `className` 并拼在内置类之后。**`className` 覆盖规则**：跨组覆盖（改圆角、改背景色等不同 CSS 属性）追加即可生效；覆盖**同一组**的内置工具类（如按钮内置 `px-4 py-2` 之上再传 `p-8`，图标按钮内置 `w-8 h-8` 之上再传 `size-12`）必须用 Tailwind 的 `!` 修饰符（`p-8!`、`size-12!`），因为 Tailwind v4 在 `@layer utilities` 内按规范顺序发射，胜者由工具类组的发射顺序而非 class 属性里的先后决定。零运行时依赖；图标内联 SVG。
+8. **约定** — 按钮与表单控件均为 `forwardRef`，所有组件都透传 `className` 并拼在内置类之后。**`className` 覆盖规则**：拼在最后只是必要条件 —— 能否覆盖取决于 Tailwind v4 在 `@layer utilities` 内的规范发射顺序，同一个 CSS 属性上后发射的赢，而这个顺序使用方看不到也控制不了。因此同一个 class 在不同组件上结果可能相反：`bg-danger` 在 `Button variant="primary"` 上生效，在 `Button variant="secondary"`/`ghost` 与 `Chip` 上却被内置的 `bg-transparent`/`bg-surface-muted` 压掉；`rounded-none` 在 `Button` 上生效，在 `Chip`/`Switch` 上却被 `rounded-pill` 压掉；`p-8` 永远输给内置的 `px-4 py-2`。**结论：拿不准就用 `!` 修饰符**（`bg-danger!`、`rounded-none!`、`p-8!`），它产出 `!important`，上述全部场景都实测生效。零运行时依赖；图标内联 SVG。
 9. **可访问性** — 键盘可达、焦点陷阱、`aria-*`、`prefers-reduced-motion`。
 
 - [ ] **Step 8: 最终验收**
@@ -4768,7 +4804,7 @@ git commit -m "feat(endfield-react): 加入演示站与组件库说明"
 
 | Review Focus 项 | 对应验证 |
 |---|---|
-| 1. `className` 覆盖失效 | Task 2 Step 9、Task 5 Step 6（跨组 `rounded-none`/`bg-danger`/`px-10 py-6` 实测生效；同组 `p-8!`/`size-12!` 实测生效，`p-8`/`size-12` 不加 `!` 实测不生效） |
+| 1. `className` 覆盖失效 | Task 2 Step 9、Task 5 Step 6（不加 `!` 时 `rounded-none`/`bg-danger` 在 `Button primary` 上实测生效、在 `secondary`/`ghost`/`Chip` 上实测不生效，`p-8` 实测不生效；加 `!` 后 `p-8!`/`bg-danger!`/`rounded-none!`/`size-12!` 全部实测生效） |
 | 2. `tsc` strict 下 `forwardRef` 泛型 | Task 2 Step 8、Task 3 Step 6、Task 4 Step 8、Task 5 Step 5 |
 | 3. 令牌同步漂移 | Task 1 Step 10（负向测试，证明 `--check` 会失败） |
 | 4. 首帧主题闪烁 | Task 1 Step 7（`index.html` 内联脚本）、Task 5 Step 6（硬刷新核对） |

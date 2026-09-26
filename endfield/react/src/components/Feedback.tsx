@@ -1,7 +1,9 @@
 import type { HTMLAttributes, ReactNode } from 'react';
 import { cx } from '../lib/cx';
 
-export function Spinner({ className }: { className?: string }) {
+export type SpinnerProps = HTMLAttributes<HTMLSpanElement>;
+
+export function Spinner({ className, ...rest }: SpinnerProps) {
   return (
     <span
       role="status"
@@ -10,6 +12,7 @@ export function Spinner({ className }: { className?: string }) {
         'inline-block size-5 animate-spin rounded-full border-2 border-border border-t-accent-ink',
         className,
       )}
+      {...rest}
     />
   );
 }

@@ -75,14 +75,23 @@ function Probe() {
       <EmptyState icon={<IconFile size={48} />} title="暂无内容" description="试试别的关键词" action={<Button variant="primary">返回</Button>} />
 
       {/* className 覆盖实测（Review Focus 第 1 条）：
-          className 拼在内置类之后；同一属性的胜者由 Tailwind 的规范发射顺序
-          决定，与 class 属性里的先后无关。跨组覆盖直接生效；同组冲突必须用
-          ! 修饰符。 */}
-      <Button variant="primary" className="rounded-none">覆盖圆角（跨组，应生效）</Button>
-      <Button variant="primary" className="bg-danger">覆盖底色（跨组，应生效）</Button>
-      <Button variant="primary" className="p-8!">覆盖内边距（同组，用 ! 生效）</Button>
-      {/* 负向对照：同组冲突且不加 ! —— p-8 的发射位置早于 px-4/py-2，永远输。 */}
-      <Button variant="primary" className="p-8">覆盖内边距（同组无 !，预期不生效）</Button>
+          className 拼在内置类之后只是必要条件 —— 同一个 CSS 属性上，Tailwind
+          按自己的规范顺序发射，后发射的赢，而这个顺序使用方看不到也控制不了。
+          所以同一个 class 在不同组件上结果可能相反，拿不准就用 ! 修饰符。 */}
+      <Button variant="primary" className="rounded-none">覆盖圆角（primary，应生效）</Button>
+      <Button variant="primary" className="bg-danger">覆盖底色（primary，应生效）</Button>
+      {/* 对照：同一个 bg-danger 在 secondary / ghost / Chip 上会被内置的
+          bg-transparent / bg-surface-muted 压掉（它们发射更晚）。 */}
+      <Button variant="secondary" className="bg-danger">覆盖底色（secondary，预期不生效）</Button>
+      <Button variant="ghost" className="bg-danger">覆盖底色（ghost，预期不生效）</Button>
+      <Chip className="bg-danger">覆盖底色（Chip，预期不生效）</Chip>
+      <Chip className="rounded-none">覆盖圆角（Chip，预期不生效）</Chip>
+      <Button variant="primary" className="p-8">覆盖内边距（无 !，预期不生效）</Button>
+      {/* 加 ! 后全部生效：!important 绕过发射顺序。 */}
+      <Button variant="primary" className="p-8!">覆盖内边距（!，应生效）</Button>
+      <Button variant="secondary" className="bg-danger!">覆盖底色（secondary + !，应生效）</Button>
+      <Chip className="bg-danger!">覆盖底色（Chip + !，应生效）</Chip>
+      <Chip className="rounded-none!">覆盖圆角（Chip + !，应生效）</Chip>
     </main>
   );
 }

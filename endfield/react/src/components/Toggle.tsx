@@ -40,6 +40,9 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(function Che
           'checked:border-accent-strong checked:bg-accent',
           // 斜纹与勾形是同一 background-image 的两层，避免其中一个静默覆盖另一个。
           // 斜纹对齐 css/components.css:321-325，勾形对齐 :328-338。
+          // 数据 URI 内读不到 CSS 变量，故勾形描边 #111827 与斜纹 rgb(0 0 0 / 18%)
+          // 是写死的颜色字面量 —— 与 CSS 层逐字节一致，属已认可的例外（同 Select
+          // 箭头）。斜纹与勾形都必须保留，缺一即与 CSS 层不一致。
           'checked:bg-[image:url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20viewBox=%270%200%2012%2012%27%3E%3Cpath%20d=%27M2%206.2l2.6%202.6L10%203.4%27%20fill=%27none%27%20stroke=%27%23111827%27%20stroke-width=%272%27/%3E%3C/svg%3E"),repeating-linear-gradient(-45deg,rgb(0_0_0/18%)_0_1px,transparent_1px_4px)]',
           'checked:bg-[length:100%,auto] checked:bg-[position:center,0_0] checked:bg-no-repeat',
         )}

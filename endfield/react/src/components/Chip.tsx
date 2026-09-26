@@ -7,7 +7,9 @@ export interface ChipProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 /**
  * 可选中标签，用于筛选行。
- * active 为受控；也可用 defaultPressed 走非受控。
+ * active 为受控：由使用方传入，本组件不持有内部状态，仅把它映射为 aria-pressed。
+ * 不提供 defaultPressed 之类的非受控入口 —— 它既不是合法 DOM 属性，
+ * 又会经 ...rest 漏到 DOM 上并触发 React 警告。
  */
 export function Chip({ active = false, className, children, ...rest }: ChipProps) {
   return (

@@ -24,7 +24,11 @@ export function Divider({ label, className, ...rest }: DividerProps) {
   );
 }
 
-export function Kbd({ children, className }: { children: ReactNode; className?: string }) {
+export interface KbdProps extends HTMLAttributes<HTMLElement> {
+  children: ReactNode;
+}
+
+export function Kbd({ children, className, ...rest }: KbdProps) {
   return (
     <kbd
       className={cx(
@@ -32,6 +36,7 @@ export function Kbd({ children, className }: { children: ReactNode; className?: 
         'bg-surface-raised px-1.5 text-center font-mono text-[11px] leading-normal text-ink-muted',
         className,
       )}
+      {...rest}
     >
       {children}
     </kbd>
