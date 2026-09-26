@@ -1,0 +1,14 @@
+# 令牌同步产物由脚本按字节生成：内容必须与 ../css/tokens.css 严格一致，
+# 若被 autocrlf 转成 CRLF，`sync:tokens --check` 会误报漂移（脚本按字符串比较）。
+# 这里钉死为 LF。
+endfield/react/src/styles/tokens.css text eol=lf
+
+# 常规文本文件按平台换行检出，但入库统一为 LF。
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.mjs text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.md text eol=lf
+*.json text eol=lf
